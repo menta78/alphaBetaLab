@@ -85,7 +85,8 @@ class abAlphaBetaMeshPlotter:
     self.alphaColor = 'red'
     self.cellColor = 'darkgreen'
     self.mainAxesPosition = [0, 0, 1, 1]
-    self.landColor = 'palegreen'
+   #self.landColor = 'palegreen'
+    self.landColor = 'lightgray'
     self.seaColor = 'lightblue'
     self.margin = 1 #if a cell has the centroid closer that 1 deg from the plot boundary, it is not plot
     self.nPlottedCells = None #if != None, only the first cells are plotted. Useful for debug
