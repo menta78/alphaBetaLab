@@ -57,7 +57,7 @@ class pointsObstacleDrawer(abstractObstacleDrawer):
     self.xs = xs
 
   def drawObstacle(self):
-    if self.xs != None:
+    if not self.xs is None:
       self.bathymetryBase[self.ys, self.xs] = 0.
       self.maskBase[self.ys, self.xs] = 0.
 
