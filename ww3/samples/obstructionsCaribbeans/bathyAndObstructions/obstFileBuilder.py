@@ -28,6 +28,8 @@ nParWorker = 4
 # etopo file path (a different path if I launch from home or from the office)
 if platform.node() == 'pcmenta':
   etopoFilePath = '/home/lmentaschi/usr/WaveWatchIII/gridgen1.1/reference_data/etopo1.nc'
+elif platform.node() == 'user-VirtualBox':
+  etopoFilePath = '/media/sf_DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
 else:
   etopoFilePath = '/DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
 
