@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #############################################################################
 #                                                                           #
 # run_WW3.sh  : Script to run wave model end to end.           #
@@ -20,11 +20,17 @@
 
   set -e
 
-	exepath='/STORAGE/usr/WaveWatchIII/v4.18_obstructions/exe/'
-        windFilePath='/ClimateRun5/LISCOAST3/Climate_data/CFSR/ww3_wind_data/wind_g_glb150w.nc'
-        cdocmd='/STORAGE/usr/cdo/1.7.2/bin/cdo.sh'
+        # PATH TO THE EXE
+	exepath='/home/user/usr/ww3/v4.18UOST/exe'
+        # cdo command
+        cdocmd='cdo'
+        
+        # n of parallel proc for MPI. If nParallelProc==1 runs without mpirun 
+        nParallelProc=1
+        # command for mpirun
         mpicmd='/usr/lib64/mpich-3.2/bin/mpiexec'
-        nParallelProc=12
+
+        windFilePath='../windData/wind_g_glb150w.nc'
 
 	# Time inputs
         t_beg=$1;
@@ -32,7 +38,9 @@
         then
           t_beg='20000101 000000'  # Starting time of run
         fi
-  	t_end='20100101 000000'  # Ending time of run
+  	t_end='20000301 000000'  # Ending time of run
+        # the model starts saving when it has warmed up a little
+        heatedModelStartDate='20000201';
 
 
 
@@ -52,7 +60,6 @@
         dtspec='14400'                     # time step for spectra point output
 	strt_val='3'			# Value for the strt input file
 	ncname='wind.nc'
-        heatedModelStartDate='20000101';
 	
 	wind='yes';
         gridname='g_glb150';

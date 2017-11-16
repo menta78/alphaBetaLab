@@ -141,7 +141,13 @@ rm -f shelFooter.txt
 
   # call to launch ww3 parallel from menta pc
 # /usr/lib64/mpich/bin/mpirun -np 12 $exepath/ww3_multi > ww3_multi.out 2>&1 &
-  $mpicmd -np $nproc $exepath/ww3_multi > ww3_multi.out 2>&1 &
+
+  if (( $nproc==1 ));
+  then
+    $exepath/ww3_multi > ww3_multi.out 2>&1 &
+  else
+    $mpicmd -np $nproc $exepath/ww3_multi > ww3_multi.out 2>&1 &
+  fi
 
   # call to launch ww3 parallel from the jrc hpc cluster
   #$PWD/qsubSync.sh $PWD/ww3_multi.pbs
