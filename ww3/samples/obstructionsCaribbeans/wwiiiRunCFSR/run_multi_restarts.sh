@@ -38,9 +38,9 @@
         then
           t_beg='20000101 000000'  # Starting time of run
         fi
-  	t_end='20000102 000000'  # Ending time of run
+  	t_end='20000301 000000'  # Ending time of run
         # the model starts saving when it has warmed up a little
-        heatedModelStartDate='20000101';
+        heatedModelStartDate='20000201';
 
 
 
