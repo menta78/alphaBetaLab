@@ -5,7 +5,7 @@ import shutil
 from abHighResAlphaMatrix import *
 from abEstimateAndSave import _abEstimateAndSave
 import abCellsEstimator
-from wwiiiSyntheticGridManager.wwiiiSyntheticGridManager import *
+from test.wwiiiSyntheticGridManager.wwiiiSyntheticGridManager import *
 from abRectangularGridBuilder import abRectangularGridBuilder
 from abHighResAlphaMatrix import abHighResAlphaMatrix as hiResAMtx
 from abOptionManager import abOptions
