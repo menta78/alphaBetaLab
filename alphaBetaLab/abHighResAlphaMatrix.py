@@ -9,7 +9,7 @@ dytol = .0001
 class abHighResAlphaMatrix:
   def __init__(self, xs, ys, alphas, freqs = None):
     """
-    abHighResAlphaMatrix: class representing the high resolution matrix of alpha and beta.
+    abHighResAlphaMatrix: class representing the high resolution matrix of alpha.
     Alpha and beta must be defined on a regular matrix.
     """
     if len(ys) != alphas.shape[0]:
