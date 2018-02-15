@@ -9,7 +9,8 @@ fname = 'Global.obstr_lev1'
 mskFName = 'g_glb150.mask'
 lonlims = (-99, -58)
 latlims = (7, 32)
-landColor = 'palegreen'
+#landColor = 'palegreen'
+landColor = 'lightgray'
 
 obsAll = np.loadtxt(fname)
 mskAll = np.loadtxt(mskFName)
