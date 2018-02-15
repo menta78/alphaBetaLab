@@ -16,99 +16,6 @@ import abCoastalCellDetector
 
 
 ################################################################
-##### IMPLEMENTATION ON FINITE ELEMET MESHES ##################
-################################################################
-
-def abEstimateAndSaveFiniteElemetsEtopo1(dirs, freqs, gridName, feGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
-  """
-  abEstimateAndSaveFiniteElementsEtopo1:
-  builds highResolutionBathyMatrix from etopo1, an abGrid object a feGridSpec, and invokes _abEstimateAndSave.
-  """
-  
-  # instatiating the builder of abGrid object for regular grids
-  r = GridSpec
-  xmin, ymin = r.xmin, r.ymin
-  dx, dy = r.dx, r.dy
-  nx, ny = r.nx, r.ny
-  mask = r.mask
-  #THE MODULE aFiniteElementGridBuilder, that should convert a smc grid into a list of polygons, still needs to be implemented
-  gridBld = abFiniteElementGridBuilder.abFinElmGridBuilder(feGridSpec, nParWorker = nParWorker)
-
-  # building the high resolution matrix of alpha based on etopo1
-  llcrnr = getOption(abOptions, 'llcrnr', [])
-  urcrnr = getOption(abOptions, 'urcrnr', [])
-  zlim = -.1
-  print('loading etopo1 bathymetry ...')
-  x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
-  alphamtx = np.ones(z.shape)
-  alphamtx[z > zlim] = 0
-  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
-
-  # creating the detector of the cells located along the coasts of big coastal bodies.
-  # These bodies are resolved correctly by the model, and do not need subscale modelling
-  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
-
-  # creating the grid object (where each cell is represented as a polygon)
-  grid = gridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
-
-  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
-
-################################################################
-################################################################
-################################################################
-
-
-
-
-
-################################################################
-##### IMPLEMENTATION ON SMC GRIDS ##############################
-################################################################
-
-def abEstimateAndSaveSMCEtopo1(dirs, freqs, gridName, smcGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
-  """
-  abEstimateAndSaveSMCEtopo1:
-  builds highResolutionBathyMatrix from etopo1, an abGrid object a scmGridSpec, and invokes _abEstimateAndSave.
-  THIS IS ONLY A STUB.
-  """
-  
-  # instatiating the builder of abGrid object for regular grids
-  r = GridSpec
-  xmin, ymin = r.xmin, r.ymin
-  dx, dy = r.dx, r.dy
-  nx, ny = r.nx, r.ny
-  mask = r.mask
-  #THE MODULE abSmcGridBuilder, that should convert a smc grid into a list of polygons, still needs to be implemented
-  gridBld = abSmcGridBuilder.abSmcGridBuilder(smcGridSpec, nParWorker = nParWorker)
-
-  # building the high resolution matrix of alpha based on etopo1
-  llcrnr = getOption(abOptions, 'llcrnr', [])
-  urcrnr = getOption(abOptions, 'urcrnr', [])
-  zlim = -.1
-  print('loading etopo1 bathymetry ...')
-  x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
-  alphamtx = np.ones(z.shape)
-  alphamtx[z > zlim] = 0
-  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
-
-  # creating the detector of the cells located along the coasts of big coastal bodies.
-  # These bodies are resolved correctly by the model, and do not need subscale modelling
-  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
-
-  # creating the grid object (where each cell is represented as a polygon)
-  grid = gridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
-
-  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
-
-################################################################
-################################################################
-################################################################
-
-
-
-
-
-################################################################
 ##### IMPLEMENTATION ON REGULAR GRIDS ##########################
 ################################################################
 
@@ -177,6 +84,110 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
 ################################################################
 ################################################################
 ################################################################
+
+
+
+
+################################################################
+##### IMPLEMENTATION ON FINITE ELEMET MESHES ##################
+################################################################
+
+def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+  """
+  abEstimateAndSaveFiniteElementsEtopo1: 
+  this is a stub for a to-be-implemented method.
+  This method should:
+
+  - build an instance of _abGrid from the input feGridSpec object (that should represent 
+    the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
+  - build an instance of highResolutionBathyMatrix from etopo1
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
+  """
+  
+  # instatiating the builder of abGrid object for regular grids
+  r = GridSpec
+  xmin, ymin = r.xmin, r.ymin
+  dx, dy = r.dx, r.dy
+  nx, ny = r.nx, r.ny
+  mask = r.mask
+  #THE MODULE aFiniteElementGridBuilder, that should convert a smc grid into a list of polygons, still needs to be implemented
+  gridBld = abFiniteElementGridBuilder.abFinElmGridBuilder(feGridSpec, nParWorker = nParWorker)
+
+  # building the high resolution matrix of alpha based on etopo1
+  llcrnr = getOption(abOptions, 'llcrnr', [])
+  urcrnr = getOption(abOptions, 'urcrnr', [])
+  zlim = -.1
+  print('loading etopo1 bathymetry ...')
+  x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
+  alphamtx = np.ones(z.shape)
+  alphamtx[z > zlim] = 0
+  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
+
+  # creating the detector of the cells located along the coasts of big coastal bodies.
+  # These bodies are resolved correctly by the model, and do not need subscale modelling
+  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
+
+  # creating the grid object (where each cell is represented as a polygon)
+  grid = gridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
+
+  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
+
+################################################################
+################################################################
+################################################################
+
+
+
+
+
+################################################################
+##### IMPLEMENTATION ON SMC GRIDS ##############################
+################################################################
+
+def abEstimateAndSaveSMCEtopo1(dirs, freqs, gridName, smcGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+  """
+  abEstimateAndSaveSMCEtopo1:
+  this is a stub for a to-be-implemented method.
+  This method should:
+
+  - build an instance of _abGrid from the input smcGridSpec object (that should represent 
+    the logical structure of a smc mesh, and should be loaded from the smc configuration files)
+  - build an instance of highResolutionBathyMatrix from etopo1
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
+  """
+  
+  # instatiating the builder of abGrid object for regular grids
+  r = GridSpec
+  xmin, ymin = r.xmin, r.ymin
+  dx, dy = r.dx, r.dy
+  nx, ny = r.nx, r.ny
+  mask = r.mask
+  #THE MODULE abSmcGridBuilder, that should convert a smc grid into a list of polygons, still needs to be implemented
+  gridBld = abSmcGridBuilder.abSmcGridBuilder(smcGridSpec, nParWorker = nParWorker)
+
+  # building the high resolution matrix of alpha based on etopo1
+  llcrnr = getOption(abOptions, 'llcrnr', [])
+  urcrnr = getOption(abOptions, 'urcrnr', [])
+  zlim = -.1
+  print('loading etopo1 bathymetry ...')
+  x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
+  alphamtx = np.ones(z.shape)
+  alphamtx[z > zlim] = 0
+  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
+
+  # creating the detector of the cells located along the coasts of big coastal bodies.
+  # These bodies are resolved correctly by the model, and do not need subscale modelling
+  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
+
+  # creating the grid object (where each cell is represented as a polygon)
+  grid = gridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
+
+  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
+
+################################################################
+################################################################
+################################################################
+
 
 
 
