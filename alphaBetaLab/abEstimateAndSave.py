@@ -16,13 +16,97 @@ import abCoastalCellDetector
 
 
 ################################################################
+##### IMPLEMENTATION ON REGULAR GRIDS ##########################
+################################################################
+
+def regularGridSpecWW3(xmin=0, dx=0, nx=0, ymin=0, dy=0, ny=0, maskFilePath=''):
+  """
+  regularGridSpecWWIII:
+  contains all the specifications necessary to the creation 
+  of an abGrid object based on a regular grid.
+  The mask is a matrix ny x nx with value 1 on sea cells, and 0 on land cells.
+  Here it is loaded from the mask file produced by gridgen
+  """
+  class specClass:
+    pass
+  rs = specClass()
+  rs.xmin, rs.ymin = xmin, ymin
+  rs.dx, rs.dy = dx, dy
+  rs.nx, rs.ny = nx, ny
+  
+  # loading the mask from the wwiii mask file produced by gridgen
+  mask = np.zeros([ny, nx])
+  fl = open(maskFilePath)
+  ix = 0
+  for ln in fl:
+    if ix >= nx:
+      raise Exception('regularGridSpecWWIII: wrong mask file: lon dimension does not match')
+    vlStrs = ln.strip(' \n').split()
+    vls = [int(s) for s in vlStrs]
+    mask[ix, :] = vls
+    ix += 1
+  rs.mask = mask
+  return rs
+
+def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+  """
+  abEstimateAndSaveRegularEtopo1:
+  This method does:
+
+  - build an instance of _abGrid from the input regularGridSpec object (that represents 
+    the logical structure of a latlon mesh, and can be generated with the regularGridSpecWW3 function)
+  - build an instance of highResolutionBathyMatrix from etopo1
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
+  """
+  
+  # instatiating the builder of abGrid object for regular grids
+  r = regularGridSpec
+  xmin, ymin = r.xmin, r.ymin
+  dx, dy = r.dx, r.dy
+  nx, ny = r.nx, r.ny
+  mask = r.mask
+  regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, mask, nParWorker = nParWorker)
+
+  # building the high resolution matrix of alpha based on etopo1
+  llcrnr = getOption(abOptions, 'llcrnr', [])
+  urcrnr = getOption(abOptions, 'urcrnr', [])
+  zlim = -.1
+  print('loading etopo1 bathymetry ...')
+  x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
+  alphamtx = np.ones(z.shape)
+  alphamtx[z > zlim] = 0
+  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
+
+  # creating the detector of the cells located along the coasts of big coastal bodies.
+  # These bodies are resolved correctly by the model, and do not need subscale modelling
+  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
+
+  # creating the grid object (where each cell is represented as a polygon)
+  grid = regGridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
+
+  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
+
+################################################################
+################################################################
+################################################################
+
+
+
+
+################################################################
 ##### IMPLEMENTATION ON FINITE ELEMET MESHES ##################
 ################################################################
 
-def abEstimateAndSaveFiniteElemetsEtopo1(dirs, freqs, gridName, feGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
-  abEstimateAndSaveFiniteElementsEtopo1:
-  builds highResolutionBathyMatrix from etopo1, an abGrid object a feGridSpec, and invokes _abEstimateAndSave.
+  abEstimateAndSaveFiniteElementsEtopo1: 
+  this is a stub for a to-be-implemented method.
+  This method should:
+
+  - build an instance of _abGrid from the input feGridSpec object (that should represent 
+    the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
+  - build an instance of highResolutionBathyMatrix from etopo1
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
   """
   
   # instatiating the builder of abGrid object for regular grids
@@ -68,8 +152,13 @@ def abEstimateAndSaveFiniteElemetsEtopo1(dirs, freqs, gridName, feGridSpec, etop
 def abEstimateAndSaveSMCEtopo1(dirs, freqs, gridName, smcGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
   abEstimateAndSaveSMCEtopo1:
-  builds highResolutionBathyMatrix from etopo1, an abGrid object a scmGridSpec, and invokes _abEstimateAndSave.
-  THIS IS ONLY A STUB.
+  this is a stub for a to-be-implemented method.
+  This method should:
+
+  - build an instance of _abGrid from the input smcGridSpec object (that should represent 
+    the logical structure of a smc mesh, and should be loaded from the smc configuration files)
+  - build an instance of highResolutionBathyMatrix from etopo1
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
   """
   
   # instatiating the builder of abGrid object for regular grids
@@ -104,79 +193,6 @@ def abEstimateAndSaveSMCEtopo1(dirs, freqs, gridName, smcGridSpec, etopo1FilePat
 ################################################################
 ################################################################
 
-
-
-
-
-################################################################
-##### IMPLEMENTATION ON REGULAR GRIDS ##########################
-################################################################
-
-def regularGridSpecWW3(xmin=0, dx=0, nx=0, ymin=0, dy=0, ny=0, maskFilePath=''):
-  """
-  regularGridSpecWWIII:
-  contains all the specifications necessary to the creation 
-  of an abGrid object based on a regular grid.
-  The mask is a matrix ny x nx with value 1 on sea cells, and 0 on land cells.
-  Here it is loaded from the mask file produced by gridgen
-  """
-  class specClass:
-    pass
-  rs = specClass()
-  rs.xmin, rs.ymin = xmin, ymin
-  rs.dx, rs.dy = dx, dy
-  rs.nx, rs.ny = nx, ny
-  
-  # loading the mask from the wwiii mask file produced by gridgen
-  mask = np.zeros([ny, nx])
-  fl = open(maskFilePath)
-  ix = 0
-  for ln in fl:
-    if ix >= nx:
-      raise Exception('regularGridSpecWWIII: wrong mask file: lon dimension does not match')
-    vlStrs = ln.strip(' \n').split()
-    vls = [int(s) for s in vlStrs]
-    mask[ix, :] = vls
-    ix += 1
-  rs.mask = mask
-  return rs
-
-def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
-  """
-  abEstimateAndSaveRegularEtopo1:
-  builds highResolutionBathyMatrix from etopo1, an abGrid object from regularGridSpec, and invokes _abEstimateAndSave
-  """
-  
-  # instatiating the builder of abGrid object for regular grids
-  r = regularGridSpec
-  xmin, ymin = r.xmin, r.ymin
-  dx, dy = r.dx, r.dy
-  nx, ny = r.nx, r.ny
-  mask = r.mask
-  regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, mask, nParWorker = nParWorker)
-
-  # building the high resolution matrix of alpha based on etopo1
-  llcrnr = getOption(abOptions, 'llcrnr', [])
-  urcrnr = getOption(abOptions, 'urcrnr', [])
-  zlim = -.1
-  print('loading etopo1 bathymetry ...')
-  x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
-  alphamtx = np.ones(z.shape)
-  alphamtx[z > zlim] = 0
-  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
-
-  # creating the detector of the cells located along the coasts of big coastal bodies.
-  # These bodies are resolved correctly by the model, and do not need subscale modelling
-  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
-
-  # creating the grid object (where each cell is represented as a polygon)
-  grid = regGridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
-
-  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
-
-################################################################
-################################################################
-################################################################
 
 
 
