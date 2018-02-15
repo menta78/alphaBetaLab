@@ -51,7 +51,12 @@ def regularGridSpecWW3(xmin=0, dx=0, nx=0, ymin=0, dy=0, ny=0, maskFilePath=''):
 def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
   abEstimateAndSaveRegularEtopo1:
-  builds highResolutionBathyMatrix from etopo1, an abGrid object from regularGridSpec, and invokes _abEstimateAndSave
+  This method does:
+
+  - build an instance of _abGrid from the input regularGridSpec object (that represents 
+    the logical structure of a latlon mesh, and can be generated with the regularGridSpecWW3 function)
+  - build an instance of highResolutionBathyMatrix from etopo1
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
   """
   
   # instatiating the builder of abGrid object for regular grids
