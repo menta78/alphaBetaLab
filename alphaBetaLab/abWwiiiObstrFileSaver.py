@@ -5,7 +5,7 @@ class abWwiiiObstrFileSaver:
   def __init__(self, locCoords, locGeoCoords, locAlphas, locBetas, locSizesKm,\
                      shdCoords, shdGeoCoords, shdAlphas, shdBetas, shdSizesKm):
     """
-    abWwiiiObstrFileSaver: saves the wwiii input file for the advanced 
+    abWwiiiObstrFileSaver: saves the wwiii input file for the UOST 
     parameterization of unresolved obstacles.
     """
     self.locCoords = locCoords
