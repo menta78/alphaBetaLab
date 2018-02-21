@@ -68,8 +68,8 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
   regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, mask, nParWorker = nParWorker)
 
   # building the high resolution matrix of alpha based on etopo1
-  llcrnr = getOption(abOptions, 'llcrnr', [])
-  urcrnr = getOption(abOptions, 'urcrnr', [])
+  llcrnr = getOption(abOptions, 'llcrnr', None)
+  urcrnr = getOption(abOptions, 'urcrnr', None)
   zlim = -.1
   print('loading etopo1 bathymetry ...')
   x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
@@ -119,8 +119,8 @@ def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feGridSpec, eto
   gridBld = abFiniteElementGridBuilder.abFinElmGridBuilder(feGridSpec, nParWorker = nParWorker)
 
   # building the high resolution matrix of alpha based on etopo1
-  llcrnr = getOption(abOptions, 'llcrnr', [])
-  urcrnr = getOption(abOptions, 'urcrnr', [])
+  llcrnr = getOption(abOptions, 'llcrnr', None)
+  urcrnr = getOption(abOptions, 'urcrnr', None)
   zlim = -.1
   print('loading etopo1 bathymetry ...')
   x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
@@ -171,8 +171,8 @@ def abEstimateAndSaveSMCEtopo1(dirs, freqs, gridName, smcGridSpec, etopo1FilePat
   gridBld = abSmcGridBuilder.abSmcGridBuilder(smcGridSpec, nParWorker = nParWorker)
 
   # building the high resolution matrix of alpha based on etopo1
-  llcrnr = getOption(abOptions, 'llcrnr', [])
-  urcrnr = getOption(abOptions, 'urcrnr', [])
+  llcrnr = getOption(abOptions, 'llcrnr', None)
+  urcrnr = getOption(abOptions, 'urcrnr', None)
   zlim = -.1
   print('loading etopo1 bathymetry ...')
   x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
