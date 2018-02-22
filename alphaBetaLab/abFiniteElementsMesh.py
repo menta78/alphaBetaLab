@@ -16,7 +16,7 @@ class _abFeMeshSpec:
     # node indes -> land boundary id
     self.landBoundaryNodeIds = {}
     # node indes -> open boundary id
-    self.openBoundaryNodeIds = []
+    self.openBoundaryNodeIds = {}
 
   def getCellPolygons(self, excludeLandBoundary=True):
     """
@@ -48,7 +48,7 @@ class _abFeMeshSpec:
  
 
 
-def loadFromGr3File(gr3FilePath)
+def loadFromGr3File(gr3FilePath):
   """
   loadFromGr3File: loads an instance of _abFeMeshSpec from a gr3 file 
   (format used, for example in model schism).
@@ -64,7 +64,7 @@ def loadFromGr3File(gr3FilePath)
   # loading nodes
   for inode in range(nodeCount):
     nodeline = fl.readline().strip('\n\t\r ')
-    vlsstr = [s for s in nodeline.split(' ') if s]
+    vlsstr = [s for s in nodeline.split() if s]
     nodeId = int(vlsstr[0])
     lon = float(vlsstr[1])
     lat = float(vlsstr[2])
@@ -76,7 +76,7 @@ def loadFromGr3File(gr3FilePath)
   # loading connection polygons
   for ipl in range(connPlysCount):
     polyline = fl.readline().strip('\n\t\r ')
-    vlsstr = [s for s in nodeline.split(' ') if s]
+    vlsstr = [s for s in polyline.split() if s]
     connPolyId = int(vlsstr[0])
     nodeIds = [int(s) for s in vlsstr[2:]]
     
@@ -84,12 +84,12 @@ def loadFromGr3File(gr3FilePath)
     
   # loading open boundary
   line = fl.readline().strip('\n\t\r ')
-  vlsstr = [s for s in nodeline.split(' ') if s]
+  vlsstr = [s for s in line.split() if s]
   nOpenBoundary = int(vlsstr[0])
   fl.readline()
   for ibnd in range(nOpenBoundary):
     line = fl.readline().strip('\n\t\r ')
-    vlsstr = [s for s in nodeline.split(' ') if s]
+    vlsstr = [s for s in line.split() if s]
     nNodes = int(vlsstr[0])
     for ind in range(nNodes):
       line = fl.readline().strip('\n\t\r ')
@@ -98,12 +98,12 @@ def loadFromGr3File(gr3FilePath)
     
   # loading land boundary
   line = fl.readline().strip('\n\t\r ')
-  vlsstr = [s for s in nodeline.split(' ') if s]
+  vlsstr = [s for s in line.split() if s]
   nLandBoundary = int(vlsstr[0])
   fl.readline()
   for ibnd in range(nLandBoundary):
     line = fl.readline().strip('\n\t\r ')
-    vlsstr = [s for s in nodeline.split(' ') if s]
+    vlsstr = [s for s in line.split() if s]
     nNodes = int(vlsstr[0])
     for ind in range(nNodes):
       line = fl.readline().strip('\n\t\r ')
