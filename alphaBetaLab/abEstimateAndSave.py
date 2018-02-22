@@ -11,6 +11,8 @@ from abOptionManager import getOption, printOpts
 import abEtopo1BathyLoader
 import abRectangularGridBuilder
 import abCoastalCellDetector
+import abFiniteElementsMesh
+import abFiniteElementsGridBuilder
 
 
 
@@ -96,14 +98,15 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
 ################################################################
 ##### IMPLEMENTATION ON FINITE ELEMET MESHES ##################
 ################################################################
+feMeshSpecFromMshFile = abFiniteElementsMesh.loadFromGr3File
 
-def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
   abEstimateAndSaveFiniteElementsEtopo1: 
   this is a stub for a to-be-implemented method.
   This method should:
 
-  - build an instance of _abGrid from the input feGridSpec object (that should represent 
+  - build an instance of _abGrid from the input feMeshSpec object (that should represent 
     the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
   - build an instance of highResolutionBathyMatrix from etopo1
   - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
@@ -116,7 +119,7 @@ def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feGridSpec, eto
   nx, ny = r.nx, r.ny
   mask = r.mask
   #THE MODULE aFiniteElementGridBuilder, that should convert a smc grid into a list of polygons, still needs to be implemented
-  gridBld = abFiniteElementGridBuilder.abFinElmGridBuilder(feGridSpec, nParWorker = nParWorker)
+  gridBld = abFiniteElementGridBuilder.abFinElmGridBuilder(feMeshSpec, nParWorker = nParWorker)
 
   # building the high resolution matrix of alpha based on etopo1
   llcrnr = getOption(abOptions, 'llcrnr', None)
