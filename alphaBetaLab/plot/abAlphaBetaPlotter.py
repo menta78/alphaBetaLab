@@ -2,6 +2,7 @@ import sys
 import time
 from itertools import izip
 import numpy as np
+import matplotlib
 from matplotlib import pyplot as plt
 from mpl_toolkits import basemap as bm
 import matplotlib.transforms
@@ -11,11 +12,12 @@ from .. import abWwiiiAlphaBetaLoader
 
 class abAlphaBetaSingleCellPlotter:
 
-  def __init__(self, directions, dirmeasure = 'rad', alphaColor = 'red', betaColor = 'blue'):
+  def __init__(self, directions, dirmeasure = 'rad', alphaColor = 'red', betaColor = [.3, .3, 1]):
     self.directions = directions
     self.dirmeasure = dirmeasure # can be deg
     self.alphaColor = alphaColor
     self.betaColor = betaColor
+    self.refLineWidth = 1
 
   def plotCell(self, cellPoly, ax, color = 'darkgreen', linewidth = 2):
     bnd = cellPoly.boundary.coords[:]
@@ -47,7 +49,7 @@ class abAlphaBetaSingleCellPlotter:
     ax.set_ylim([0, 1])
     ax.axis('off')
     ax.plot(0, 0, color = 'k', marker = '.')
-    ax.plot(drsRad, np.ones(drsRad.shape), linewidth = .5, color = 'k')
+    ax.plot(drsRad, np.ones(drsRad.shape), linewidth = self.refLineWidth, color = 'k')
 
 
 
@@ -81,7 +83,7 @@ class abAlphaBetaMeshPlotter:
     self.dirs = dirs
     self.cstLineRes = cstLineRes
     self.dirmeasure = 'rad'
-    self.betaColor = 'blue'
+    self.betaColor = [.3, .3, 1]
     self.alphaColor = 'red'
     self.cellColor = 'darkgreen'
     self.mainAxesPosition = [0, 0, 1, 1]
@@ -221,9 +223,16 @@ class abAlphaBetaMeshPlotter:
                                    alphaColor = self.alphaColor, betaColor = self.betaColor)
     lgndB = np.ones(self.dirs.shape)
     lgndA = lgndB/2.5
-    abPlotter.plot(lgndA, lgndB, ax = lgndax)
-    lgndax.text(0, 0, '$\\alpha$', horizontalalignment = 'center', verticalalignment = 'center', fontsize = fontsize)
-    lgndax.text(1.5*np.pi, .70, '$\\beta$', horizontalalignment = 'center', verticalalignment = 'center', fontsize = fontsize)
+    abPlotter.plot(lgndA, lgndB, ax=lgndax)
+   #lgndax.text(1.5*np.pi, .2, r'$\alpha (\leq \beta)$', horizontalalignment='center', verticalalignment='center', fontsize=fontsize)
+    lgndax.text(1.5*np.pi, .2, r'$\alpha$', horizontalalignment='center', verticalalignment='center', fontsize=fontsize)
+    lgndax.text(1.5*np.pi, .70, r'$\beta$', horizontalalignment='center', verticalalignment='center', fontsize=fontsize)
+    lgndax.plot([.5*np.pi, .5*np.pi], [0, 1], linewidth=2, color='k')
+    lgndax.text(0, .17, '0', fontsize=fontsize)
+    lgndax.text(np.pi/2.*(7./8.), .9, '1', fontsize=fontsize)
+    lgndax.plot(0, 0, marker='o', color='k')
+    lgndax.plot(np.pi/2, .99, marker='o', color='k')
+    
     return lgndax
 
 
