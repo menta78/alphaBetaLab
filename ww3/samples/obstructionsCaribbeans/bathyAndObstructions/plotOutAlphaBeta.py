@@ -86,7 +86,7 @@ def plotOutAlphaBeta2Figs(plotFigureLocal = True, plotFigureShadow = True):
     fg, ax, axs = plotter.plot()
     mp = plotter.mp
     drawMeridianAndParallels()
-    plotter.plotLegend(ax, -63, 27, fontsize = 30)
+    plotter.plotLegend(ax, -63, 27, fontsize = 25)
     ax.text(-63, 23, 'a', fontsize = 60, horizontalalignment = 'center', verticalalignment = 'center')
     plt.draw()
     fg.savefig(outPlotLocalAlphaBetaFile, dpi = 400, bbox_inches='tight')
