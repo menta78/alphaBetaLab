@@ -4,6 +4,7 @@ import numpy as np
 
 import abFiniteElementsMesh
 
+plotPolygons = True
 
 
 class testAbFiniteElementsMesh(unittest.TestCase):
@@ -55,12 +56,46 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertTrue(np.logical_and([1, 2], bnd).all())
     
     
+  def testGetCellPolygons_all(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    nodeIds, cellPly = feMeshSpec.getCellPolygons(excludeLandBoundary=False, 
+                                                  excludeOpenBoundary=False)
+    self.assertEqual(410, len(nodeIds))
+    self.assertEqual(410, len(cellPly))
+    if plotPolygons:
+      import plot.abPolyPlot as pp
+      pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
+      pp.plotPolyList(cellPly, doshow=True, title='all')
+    
+
   def testGetCellPolygons_excludeLandBoundary(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
     feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
-    nodeIds, cellPly = feMeshSpec.getCellPolygons()
-    import pdb; pdb.set_trace()
+    nodeIds, cellPly = feMeshSpec.getCellPolygons(excludeLandBoundary=True,
+                                                  excludeOpenBoundary=False)
+    self.assertEqual(362, len(nodeIds))
+    self.assertEqual(362, len(cellPly))
+    if plotPolygons:
+      import plot.abPolyPlot as pp
+      pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
+      pp.plotPolyList(cellPly, doshow=True, title='exclude land boundary')
+    
+
+  def testGetCellPolygons_excludeAllBoundary(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    nodeIds, cellPly = feMeshSpec.getCellPolygons(excludeLandBoundary=True,
+                                                  excludeOpenBoundary=True)
+    self.assertEqual(298, len(nodeIds))
+    self.assertEqual(298, len(cellPly))
+    if plotPolygons:
+      import plot.abPolyPlot as pp
+      pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
+      pp.plotPolyList(cellPly, doshow=True, title='exclude all boundary')
     
 
 
