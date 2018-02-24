@@ -14,9 +14,9 @@ class _abFeMeshSpec:
     # polygon index -> vertice nodes indices
     self.connectionPolygons = {}
     # node indes -> land boundary id
-    self.landBoundaryNodeIds = {}
+    self.landBoundaryNodes = {}
     # node indes -> open boundary id
-    self.openBoundaryNodeIds = {}
+    self.openBoundaryNodes = {}
 
   def getCellPolygons(self, excludeLandBoundary=True):
     """
@@ -31,7 +31,7 @@ class _abFeMeshSpec:
       connPoly = g.Polygon(vrtxs)
       centroid = cpl.centroid.coords[:][0]
       for nid in vrtxsNodes:
-        if excludeLandBoundary and (nid in self.landBoundaryNodeIds):
+        if excludeLandBoundary and (nid in self.landBoundaryNodes):
           continue
         nodeCentroids = centroidsByNode.get(nid, [])
         nodeCentroids.append(centroid)
@@ -94,7 +94,7 @@ def loadFromGr3File(gr3FilePath):
     for ind in range(nNodes):
       line = fl.readline().strip('\n\t\r ')
       nodeId = int(line)
-      m.openBoundaryNodeIds[nodeId] = ibnd
+      m.openBoundaryNodes[nodeId] = ibnd + 1
     
   # loading land boundary
   line = fl.readline().strip('\n\t\r ')
@@ -108,7 +108,7 @@ def loadFromGr3File(gr3FilePath):
     for ind in range(nNodes):
       line = fl.readline().strip('\n\t\r ')
       nodeId = int(line)
-      m.landBoundaryNodeIds[nodeId] = ibnd
+      m.landBoundaryNodes[nodeId] = ibnd + 1
 
   return m
 
