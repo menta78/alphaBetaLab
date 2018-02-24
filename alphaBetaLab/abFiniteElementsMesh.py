@@ -18,7 +18,7 @@ class _abFeMeshSpec:
     # node indes -> open boundary id
     self.openBoundaryNodes = {}
 
-  def getCellPolygons(self, excludeLandBoundary=True):
+  def getCellPolygons(self, excludeLandBoundary=True, excludeOpenBoundary=False):
     """
     getCellPolygons: returns an approximate cental median cell for each non-land-boundary node
     """
@@ -40,12 +40,21 @@ class _abFeMeshSpec:
     nodeIds0 = centroidsByNode.keys()
     nodeIds0.sort()
     for nid in nodeIds0:
-      if excludeLandBoundary and (nid in self.landBoundaryNodes):
-        continue
       ccc = centroidsByNode[nid]
+      if nid in self.landBoundaryNodes:
+        if excludeLandBoundary:
+          continue
+        else:
+          ccc.append(self.nodes[nid])
+      if nid in self.openBoundaryNodes:
+        if excludeOpenBoundary:
+          continue
+        else:
+          ccc.append(self.nodes[nid])
       if len(ccc) < 3:
-        nodeCrd = self.nodes[nid]
-        ccc.append(nodeCrd)
+        # only 2 nodes are connected to this node.
+        # completing the polygon adding the coordinates of the current node
+        ccc.append(self.nodes[nid])
       vrtxs = g.LineString(ccc)
       approxCell = vrtxs.convex_hull
       cellPlys.append(approxCell)
