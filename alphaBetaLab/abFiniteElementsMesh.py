@@ -29,21 +29,27 @@ class _abFeMeshSpec:
       vrtxsNodes = self.connectionPolygons[plId]
       vrtxs = [self.nodes[nid] for nid in vrtxsNodes]
       connPoly = g.Polygon(vrtxs)
-      centroid = cpl.centroid.coords[:][0]
+      centroid = connPoly.centroid.coords[:][0]
       for nid in vrtxsNodes:
-        if excludeLandBoundary and (nid in self.landBoundaryNodes):
-          continue
         nodeCentroids = centroidsByNode.get(nid, [])
         nodeCentroids.append(centroid)
         centroidsByNode[nid] = nodeCentroids
     
     cellPlys = []
-    nodeIds = centroidsByNode.keys()
-    nodeIds.sort()
-    for nid in nodeIds:
-      vrtxs = g.LineString(nodeCentroids[nid])
+    nodeIds = []
+    nodeIds0 = centroidsByNode.keys()
+    nodeIds0.sort()
+    for nid in nodeIds0:
+      if excludeLandBoundary and (nid in self.landBoundaryNodes):
+        continue
+      ccc = centroidsByNode[nid]
+      if len(ccc) < 3:
+        nodeCrd = self.nodes[nid]
+        ccc.append(nodeCrd)
+      vrtxs = g.LineString(ccc)
       approxCell = vrtxs.convex_hull
       cellPlys.append(approxCell)
+      nodeIds.append(nid)
     return nodeIds, cellPlys
  
 
