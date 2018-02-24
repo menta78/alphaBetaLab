@@ -7,6 +7,7 @@ import abFiniteElementsMesh
 
 
 class testAbFiniteElementsMesh(unittest.TestCase):
+
    
   def testLoadFromGr3File1(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
@@ -30,6 +31,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertTrue(25 in feMeshSpec.landBoundaryNodes)
     bnd = np.unique(feMeshSpec.landBoundaryNodes.values())
     self.assertEqual([1], bnd)
+
    
   def testLoadFromGr3File2(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
@@ -52,6 +54,13 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     bnd.sort()
     self.assertTrue(np.logical_and([1, 2], bnd).all())
     
+    
+  def testGetCellPolygons_excludeLandBoundary(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    nodeIds, cellPly = feMeshSpec.getCellPolygons()
+    import pdb; pdb.set_trace()
     
 
 
