@@ -103,9 +103,7 @@ feMeshSpecFromMshFile = abFiniteElementsMesh.loadFromGr3File
 def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
   abEstimateAndSaveFiniteElementsEtopo1: 
-  this is a stub for a to-be-implemented method.
-  This method should:
-
+  This method does:
   - build an instance of _abGrid from the input feMeshSpec object (that should represent 
     the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
   - build an instance of highResolutionBathyMatrix from etopo1

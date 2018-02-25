@@ -39,7 +39,8 @@ class _abFeMeshSpec:
     nodeIds = []
     nodeIds0 = centroidsByNode.keys()
     nodeIds0.sort()
-    for nid in nodeIds0:
+    npts = [g.Point(self.nodes[nid]) for nid in nodeIds0]
+    for nid, npt in zip(nodeIds0, npts):
       ccc = centroidsByNode[nid]
       if nid in self.landBoundaryNodes:
         if excludeLandBoundary:
@@ -51,10 +52,7 @@ class _abFeMeshSpec:
           continue
         else:
           ccc.append(self.nodes[nid])
-      if len(ccc) < 3:
-        # only 2 nodes are connected to this node.
-        # completing the polygon adding the coordinates of the current node
-        ccc.append(self.nodes[nid])
+      ccc.append(self.nodes[nid])
       vrtxs = g.LineString(ccc)
       approxCell = vrtxs.convex_hull
       cellPlys.append(approxCell)
