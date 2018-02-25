@@ -111,6 +111,23 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       pp.plotPolyList(cellPly, doshow=True, title='exclude all boundary')
     
 
+  def testGetCellPolygons_file2(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridSmallIsland.gr3')
+    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    nodeIds, cellPly = feMeshSpec.getCellPolygons()
+    self.assertEqual(252, len(nodeIds))
+    self.assertEqual(252, len(cellPly))
+    for nid, cp in zip(nodeIds, cellPly):
+      ndpt = g.Point(feMeshSpec.nodes[nid])
+      self.assertTrue(cp.contains(ndpt) or cp.boundary.contains(ndpt))
+      
+    if plotPolygons:
+      import plot.abPolyPlot as pp
+      pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
+      pp.plotPolyList(cellPly, doshow=True, title='exclude land boundary')
+    
+
 
 if __name__ == '__main__':
   unittest.main()
