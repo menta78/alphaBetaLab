@@ -26,7 +26,7 @@ def getLandSeaGrid(cells, cellCoordinates, nParWorker = 4):
 
 class _abGrid:
 
-  def __init__(self, cells, cellCoordinates, nParWorker = 4):
+  def __init__(self, cells, cellCoordinates, centroids=None, nParWorker = 4):
     """
     abGrid: object representing a grid as a collection of polygons, each representing a cell.
     The represented grid can be unstructured.
@@ -39,7 +39,10 @@ class _abGrid:
     """
     self.cells = cells
     self.cellCoordinates = [tuple(l) for l in cellCoordinates]
-    self.centroids = [c.centroid.coords[0] for c in cells]
+    if centroids is None:
+      self.centroids = [c.centroid.coords[0] for c in cells]
+    else:
+      self.centroids = centroids
     self.cellMap = dict(zip(self.cellCoordinates, cells))
     self.cellSfc = [c.area for c in cells]
     self.cellBnd = [tuple(c.boundary.coords[:]) for c in cells]
