@@ -8,20 +8,21 @@ from abUtils import *
 import abCoastalCellDetector
 
 
-def getSeaGrid(cells, cellCoordinates, highResAlphaMtx, coastalCellDetector, nParWorker = 4):
+def getSeaGrid(cells, cellCoordinates, highResAlphaMtx, coastalCellDetector, 
+               centroids=None, nParWorker=4):
   """
   getSeaGrid: builds an abGrid object without land/coastal cells.
   """
-  grd = _abGrid(cells, cellCoordinates, nParWorker)
+  grd = _abGrid(cells, cellCoordinates, centroids=centroids, nParWorker=nParWorker)
   seaGrid = grd.removeLandAndCoastalCells(highResAlphaMtx, coastalCellDetector)
   return seaGrid
 
 
-def getLandSeaGrid(cells, cellCoordinates, nParWorker = 4):
+def getLandSeaGrid(cells, cellCoordinates, centroids=None, nParWorker=4):
   """
   getLandSeaGrid: builds an abGrid object with all the cells, on land and sea.
   """
-  return _abGrid(cells, cellCoordinates, nParWorker)
+  return _abGrid(cells, cellCoordinates, centroids=centroids, nParWorker=nParWorker)
 
 
 class _abGrid:

@@ -8,10 +8,12 @@ class abFiniteElementsGridBuilder:
     self.nParWorker = nParWorker
 
   def buildGrid(self):
-    nodeIds, cells = self.feMeshSpec.getCellPolygons(excludeLandBoundary=True,
-                                                     excludeOpenBoundary=False)
+    fem = self.feMeshSpec
+    nodeIds, cells = fem.getCellPolygons(excludeLandBoundary=True,
+                                         excludeOpenBoundary=False)
     cellcrds = [(nid, 1) for nid in nodeIds]
-    grd = abGrid.getLandSeaGrid(cells, cellcrds, nParWorker=self.nParWorker)
+    centroids = [fem.nodes[nid] for nid in nodeIds]
+    grd = abGrid.getLandSeaGrid(cells, cellcrds, centroids=centroids, nParWorker=self.nParWorker)
     grd.isRegular = False
 
     return grd
