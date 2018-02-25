@@ -149,12 +149,6 @@ def abEstimateAndSaveSMCEtopo1(dirs, freqs, gridName, smcGridSpec, etopo1FilePat
   - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
   """
   
-  # instatiating the builder of abGrid object for regular grids
-  r = GridSpec
-  xmin, ymin = r.xmin, r.ymin
-  dx, dy = r.dx, r.dy
-  nx, ny = r.nx, r.ny
-  mask = r.mask
   #THE MODULE abSmcGridBuilder, that should convert a smc grid into a list of polygons, still needs to be implemented
   gridBld = abSmcGridBuilder.abSmcGridBuilder(smcGridSpec, nParWorker = nParWorker)
 
