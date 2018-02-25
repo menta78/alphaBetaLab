@@ -12,7 +12,7 @@ import abEtopo1BathyLoader
 import abRectangularGridBuilder
 import abCoastalCellDetector
 import abFiniteElementsMesh
-import abFiniteElementsGridBuilder
+from abFiniteElementsGridBuilder import abFiniteElementsGridBuilder
 
 
 
@@ -98,7 +98,7 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
 ################################################################
 ##### IMPLEMENTATION ON FINITE ELEMET MESHES ##################
 ################################################################
-feMeshSpecFromMshFile = abFiniteElementsMesh.loadFromGr3File
+feMeshSpecFromGr3File = abFiniteElementsMesh.loadFromGr3File
 
 def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
@@ -110,16 +110,9 @@ def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feMeshSpec, eto
   - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
   """
   
-  # instatiating the builder of abGrid object for regular grids
-  r = GridSpec
-  xmin, ymin = r.xmin, r.ymin
-  dx, dy = r.dx, r.dy
-  nx, ny = r.nx, r.ny
-  mask = r.mask
-  #THE MODULE aFiniteElementGridBuilder, that should convert a smc grid into a list of polygons, still needs to be implemented
-  gridBld = abFiniteElementGridBuilder.abFinElmGridBuilder(feMeshSpec, nParWorker = nParWorker)
+  gridBld = abFiniteElementsGridBuilder(feMeshSpec, nParWorker = nParWorker)
+  grid = gridBld.buildGrid()
 
-  # building the high resolution matrix of alpha based on etopo1
   llcrnr = getOption(abOptions, 'llcrnr', None)
   urcrnr = getOption(abOptions, 'urcrnr', None)
   zlim = -.1
@@ -129,12 +122,6 @@ def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feMeshSpec, eto
   alphamtx[z > zlim] = 0
   highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
 
-  # creating the detector of the cells located along the coasts of big coastal bodies.
-  # These bodies are resolved correctly by the model, and do not need subscale modelling
-  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
-
-  # creating the grid object (where each cell is represented as a polygon)
-  grid = gridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
 
   _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
 
@@ -241,6 +228,12 @@ def _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, o
       else:
         shdParams = None, None, None, None, None
     locCoords, locAlphas = locParams[0], locParams[2]
+
+    try:
+      os.makedirs(outputDirectory)
+    except:
+      pass
+
     wwiiiObstrFileSaver = abWwiiiObstrFileSaver.abWwiiiObstrFileSaver(*(locParams + shdParams))
     if saveLocalOnly:
       wwiiiObstrFileSaver.saveLocFile(advObstrLocFilePath)
