@@ -21,10 +21,13 @@ class testAbFiniteElementsGridBuilder(unittest.TestCase):
     self.assertFalse(grd.isRegular)
     self.assertEqual(362, len(grd.cellCoordinates))
     self.assertEqual(362, len(grd.cells))
-    for crd, cp in zip(grd.cellCoordinates, grd.cells):
+    self.assertEqual(362, len(grd.centroids))
+    for crd, cp, cntr in zip(grd.cellCoordinates, grd.cells, grd.centroids):
       nid = crd[0]
       self.assertEqual(1, crd[1])
-      ndpt = g.Point(feMeshSpec.nodes[nid])
+      ndptcrds = feMeshSpec.nodes[nid]
+      self.assertEqual(ndptcrds, cntr)
+      ndpt = g.Point(ndptcrds)
       self.assertTrue(cp.contains(ndpt) or cp.boundary.contains(ndpt))
       
 
