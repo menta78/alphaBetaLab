@@ -1,10 +1,11 @@
 import unittest
 import os
 import numpy as np
+from shapely import geometry as g
 
 import abFiniteElementsMesh
 
-plotPolygons = True
+plotPolygons = False
 
 
 class testAbFiniteElementsMesh(unittest.TestCase):
@@ -64,6 +65,10 @@ class testAbFiniteElementsMesh(unittest.TestCase):
                                                   excludeOpenBoundary=False)
     self.assertEqual(410, len(nodeIds))
     self.assertEqual(410, len(cellPly))
+    for nid, cp in zip(nodeIds, cellPly):
+      ndpt = g.Point(feMeshSpec.nodes[nid])
+      self.assertTrue(cp.contains(ndpt) or cp.boundary.contains(ndpt))
+      
     if plotPolygons:
       import plot.abPolyPlot as pp
       pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
@@ -78,6 +83,10 @@ class testAbFiniteElementsMesh(unittest.TestCase):
                                                   excludeOpenBoundary=False)
     self.assertEqual(362, len(nodeIds))
     self.assertEqual(362, len(cellPly))
+    for nid, cp in zip(nodeIds, cellPly):
+      ndpt = g.Point(feMeshSpec.nodes[nid])
+      self.assertTrue(cp.contains(ndpt) or cp.boundary.contains(ndpt))
+      
     if plotPolygons:
       import plot.abPolyPlot as pp
       pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
@@ -92,6 +101,10 @@ class testAbFiniteElementsMesh(unittest.TestCase):
                                                   excludeOpenBoundary=True)
     self.assertEqual(298, len(nodeIds))
     self.assertEqual(298, len(cellPly))
+    for nid, cp in zip(nodeIds, cellPly):
+      ndpt = g.Point(feMeshSpec.nodes[nid])
+      self.assertTrue(cp.contains(ndpt) or cp.boundary.contains(ndpt))
+      
     if plotPolygons:
       import plot.abPolyPlot as pp
       pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
