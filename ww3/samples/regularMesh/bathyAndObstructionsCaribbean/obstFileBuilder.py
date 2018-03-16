@@ -23,7 +23,7 @@ maskFilePath = os.path.join(mdlDir, gridname + '.mask')
 
 # number of cores for parallel computing
 nParWorker = 12
-nParWorker = 32
+nParWorker = 4
 
 # etopo file path (a different path if I launch from home or from the office)
 if platform.node() == 'pcmenta':
@@ -35,6 +35,8 @@ else:
 
 # low-left and up-right corners of the sub-portion of the domain, where alphaBetaLab is applied
 # if not sppecified, the system works on the whole domain
+llcrnr = [-100, 5]
+urcrnr = [-55, 30]
 
 
 
@@ -43,13 +45,13 @@ def doBuildObstacleFile():
   from alphaBetaLab.abOptionManager import abOptions
   from alphaBetaLab.abEstimateAndSave import abEstimateAndSaveRegularEtopo1, regularGridSpecWW3
 
-  opt = None
+  opt = abOptions(llcrnr=llcrnr, urcrnr=urcrnr)
   regularGridSpec = regularGridSpecWW3(
         xmin= -180, ymin=-70,
         dx=1.5, dy=1.5,
         nx=240, ny=94,
         maskFilePath=maskFilePath)
-  abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker, None)
+  abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker, opt)
 
 
 
