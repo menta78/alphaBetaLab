@@ -23,7 +23,6 @@ maskFilePath = os.path.join(mdlDir, gridname + '.mask')
 
 # number of cores for parallel computing
 nParWorker = 12
-nParWorker = 32
 
 # etopo file path (a different path if I launch from home or from the office)
 if platform.node() == 'pcmenta':
@@ -32,6 +31,7 @@ elif platform.node() == 'user-VirtualBox':
   etopoFilePath = '/media/sf_DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
 else:
   etopoFilePath = '/DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
+etopoFilePath = '/ADAPTATION/mentalo/src/git/alphaBetaLab/ww3/samples/regularMesh/bathyAndObstructionsGlobal/ETOPO1_Bed_g_gmt4.grd'
 
 # low-left and up-right corners of the sub-portion of the domain, where alphaBetaLab is applied
 # if not sppecified, the system works on the whole domain
@@ -45,11 +45,11 @@ def doBuildObstacleFile():
 
   opt = None
   regularGridSpec = regularGridSpecWW3(
-        xmin= -180, ymin=-70,
+        xmin=-180, ymin=-70,
         dx=1.5, dy=1.5,
         nx=240, ny=94,
         maskFilePath=maskFilePath)
-  abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker, None)
+  abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker, opt)
 
 
 
