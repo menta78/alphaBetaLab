@@ -2,7 +2,7 @@ import numpy as np
 import shapely.geometry as gm
 from itertools import izip, imap
 import sys
-from pathos import multiprocessing as mp
+import multiprocessing as mp
 
 from abUtils import *
 import abCoastalCellDetector

@@ -3,7 +3,7 @@ import traceback
 import numpy as np
 from shapely import geometry as g
 from itertools import izip, imap
-from pathos import multiprocessing as mp
+import multiprocessing as mp
 
 import abCellSize
 import abUtils

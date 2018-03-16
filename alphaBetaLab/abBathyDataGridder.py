@@ -2,7 +2,7 @@ from itertools import izip, imap
 import numpy as np
 import matplotlib
 from matplotlib.mlab import griddata
-from pathos import multiprocessing as mp
+import multiprocessing as mp
 from warnings import warn
 from shapely import geometry as g
 import sys
