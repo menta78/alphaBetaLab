@@ -31,6 +31,7 @@ elif platform.node() == 'user-VirtualBox':
   etopoFilePath = '/media/sf_DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
 else:
   etopoFilePath = '/DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
+etopoFilePath='ETOPO1_Bed_g_gmt4.grd'
 
 # low-left and up-right corners of the sub-portion of the domain, where alphaBetaLab is applied
 # if not sppecified, the system works on the whole domain

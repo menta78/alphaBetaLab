@@ -1,4 +1,4 @@
-from pathos import multiprocessing as mp
+import multiprocessing as mp
 from itertools import izip
 
 import abCellsEstimator
