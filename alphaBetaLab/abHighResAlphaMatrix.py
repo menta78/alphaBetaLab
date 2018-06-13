@@ -19,7 +19,7 @@ class abHighResAlphaMatrix:
     self.xs = np.array(xs)
     self.ys = np.array(ys)
     self.alphas = np.array(alphas)
-    self.hasFreqs = True if freqs != None else False
+    self.hasFreqs = True if not freqs is None else False
     self.freqs = freqs if self.hasFreqs else None
     self.polygon = None
     self.polygonCrds = []
