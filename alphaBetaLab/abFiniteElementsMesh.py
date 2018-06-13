@@ -124,5 +124,59 @@ def loadFromGr3File(gr3FilePath):
       m.landBoundaryNodes[nodeId] = ibnd + 1
 
   return m
+ 
+
+
+def loadFromMshFile(mshFilePath):
+  """
+  loadFromMshFile: loads an instance of _abFeMeshSpec from a msh file 
+  (format used, for example in model ww3).
+  """
+  m = _abFeMeshSpec()
+  fl = open(mshFilePath)
+  fl.readline()
+  fl.readline()
+  fl.readline()
+  fl.readline()
+
+  # getting nodes and polygons count
+  cntln = fl.readline().strip('\n\t\r ')
+  nodeCount = int(cntln)
+
+  # loading nodes
+  for inode in range(nodeCount):
+    nodeline = fl.readline().strip('\n\t\r ')
+    vlsstr = [s for s in nodeline.split() if s]
+    nodeId = int(vlsstr[0])
+    lon = float(vlsstr[1])
+    lat = float(vlsstr[2])
+    dpth = float(vlsstr[3])
+    
+    m.nodes[nodeId] = (lon, lat)
+    m.nodeBathy[nodeId] = dpth
+  
+  fl.readline()
+  fl.readline()
+
+  cntln = fl.readline().strip('\n\t\r ')
+  connPlysCount = int(cntln)
+  # loading connection polygons
+  for ipl in range(connPlysCount):
+    polyline = fl.readline().strip('\n\t\r ')
+    vlsstr = [s for s in polyline.split() if s]
+    connPolyId = int(vlsstr[0])
+
+    if len(vlsstr) == 6:
+      # is a boundary node. Loading it as land boundary
+      ibnd = connPolyId
+      nodeId = int(vlsstr[-1])
+      m.landBoundaryNodes[nodeId] = ibnd
+    else:  
+      nodeIds = [int(s) for s in vlsstr[6:]]
+      
+      m.connectionPolygons[connPolyId] = nodeIds
+
+  return m
+
 
 

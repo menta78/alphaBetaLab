@@ -126,6 +126,25 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       import plot.abPolyPlot as pp
       pp.plotFeMesh(feMeshSpec.nodes, feMeshSpec.connectionPolygons)
       pp.plotPolyList(cellPly, doshow=True, title='exclude land boundary')
+
+   
+  def testLoadFromMshFile1(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/med.msh')
+    feMeshSpec = abFiniteElementsMesh.loadFromMshFile(mshFilePath)
+    # some random checks
+    self.assertEqual(24996, len(feMeshSpec.connectionPolygons.keys()))
+    self.assertEqual([4293, 4292, 11180], feMeshSpec.connectionPolygons[6000])
+    self.assertEqual(16514, len(feMeshSpec.nodes.keys()))
+    self.assertAlmostEqual((4.98622, 43.39583), feMeshSpec.nodes[350])
+    self.assertEqual(16514, len(feMeshSpec.nodeBathy.keys()))
+    self.assertAlmostEqual(0, feMeshSpec.nodeBathy[150])
+    self.assertAlmostEqual(1793.89160670, feMeshSpec.nodeBathy[11234])
+    self.assertEqual(0, len(feMeshSpec.openBoundaryNodes.keys()))
+    self.assertEqual(5993, len(feMeshSpec.landBoundaryNodes.keys()))
+    self.assertTrue(1 in feMeshSpec.landBoundaryNodes)
+    self.assertTrue(100 in feMeshSpec.landBoundaryNodes)
+    self.assertFalse(6000 in feMeshSpec.landBoundaryNodes)
     
 
 
