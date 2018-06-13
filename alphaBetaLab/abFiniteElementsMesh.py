@@ -55,6 +55,8 @@ class _abFeMeshSpec:
       ccc.append(self.nodes[nid])
       vrtxs = g.LineString(ccc)
       approxCell = vrtxs.convex_hull
+      if not isinstance(vrtxs.convex_hull, g.Polygon):
+        continue
       cellPlys.append(approxCell)
       nodeIds.append(nid)
     return nodeIds, cellPlys
