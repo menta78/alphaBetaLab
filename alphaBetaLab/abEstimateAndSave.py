@@ -99,6 +99,7 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
 ##### IMPLEMENTATION ON FINITE ELEMET MESHES ##################
 ################################################################
 feMeshSpecFromGr3File = abFiniteElementsMesh.loadFromGr3File
+feMeshSpecFromMshFile = abFiniteElementsMesh.loadFromMshFile
 
 def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
