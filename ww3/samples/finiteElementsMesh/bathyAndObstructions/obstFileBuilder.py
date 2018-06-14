@@ -20,7 +20,7 @@ mshfile = 'med.msh'
 gridname = 'mediterr'
 
 # number of cores for parallel computing
-nParWorker = 4
+nParWorker = 12
 
 # etopo file path (a different path if I launch from home or from the office)
 if platform.node() == 'pcmenta':
