@@ -24,8 +24,8 @@ class testAbFiniteElementsGridBuilder(unittest.TestCase):
     self.assertEqual(362, len(grd.cells))
     self.assertEqual(362, len(grd.centroids))
     for crd, cp, cntr in zip(grd.cellCoordinates, grd.cells, grd.centroids):
-      nid = crd[0]
-      self.assertEqual(1, crd[1])
+      nid = crd[0] + 1
+      self.assertEqual(0, crd[1])
       ndptcrds = feMeshSpec.nodes[nid]
       self.assertEqual(ndptcrds, cntr)
       ndpt = g.Point(ndptcrds)
