@@ -40,7 +40,7 @@ def doBuildObstacleFile():
   from alphaBetaLab.abOptionManager import abOptions
   from alphaBetaLab.abEstimateAndSave import feMeshSpecFromMshFile, abEstimateAndSaveFiniteElementsEtopo1
 
-  opt = None
+  opt = abOptions(timeStep=180)
   feMeshSpec = feMeshSpecFromMshFile('med.msh')
   abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridname, feMeshSpec, etopoFilePath, outputDestDir, nParWorker, opt)
 
