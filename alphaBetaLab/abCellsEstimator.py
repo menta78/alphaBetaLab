@@ -46,6 +46,10 @@ class abCellsEstimator:
     self.shadRecalibFactor = getOption(options, 'shadRecalibFactor', 1.2)
     self.longBreakWaterAdjust = getOption(options, 'longBreakWaterAdjust', False)
     self.highResCoastalPolygons = getOption(options, 'highResCoastalPolygons', [])
+
+    timeStep = float(getOption(options, 'timeStep', 0.))
+    cgMax = 9.8/(4.*np.pi*min(freqs))
+    self.minSizeKm = getOption(options, 'minSizeKm', cgMax*timeStep/1000.)
     if self.longBreakWaterAdjust and len(self.highResCoastalPolygons) == 0:
       raise abException("abCellsEstimator: if longBreakWaterAdjust is enabled, highResCoastalPolygons should not be empty")
 
@@ -79,6 +83,8 @@ class abCellsEstimator:
                           maxSubSections = self.betaMaxSubSections)
         cellSizeEst = csEst.abCellSize(cell)
         cellSizes = cellSizeEst.computeSizesKm(self.dirs)
+        if min(cellSizes) < self.minSizeKm:
+          return False, None, None, None, False, None, None, cell
         lalpha = []
         lbeta = []
         totallyBlocked = False
@@ -204,6 +210,8 @@ class abCellsEstimator:
         obstrAlleviationEnabled = blockedCellCount <= self.shadowAlleviationMaxBlockedNeighborCount
         cellSizeEst = csEst.abCellSize(cell)
         cellSizes = cellSizeEst.computeSizesKm(self.dirs)
+        if min(cellSizes) < self.minSizeKm:
+          return False, None, None, None, None, None
         for dr in self.computationDirs:
           upstreamPoly = upe.getUpstreamPoly(cell, neighTotPoly, dr)
           upstreamPolyIsPolygon = upstreamPoly.__class__ == g.Polygon
