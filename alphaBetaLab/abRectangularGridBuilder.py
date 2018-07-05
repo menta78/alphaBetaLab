@@ -42,7 +42,11 @@ class abRectangularGridBuilder:
         crds.append([ix, iy])
     cells = gm.MultiPolygon(cells)
     crds = np.array(crds)
-    grd = abGrid.getSeaGrid(cells, crds, hiResAlphaMtx, coastalCellDetector, nParWorker = self.nParWorker)
+
+    if not coastalCellDetector is None: 
+      grd = abGrid.getSeaGrid(cells, crds, hiResAlphaMtx, coastalCellDetector, nParWorker=self.nParWorker)
+    else:
+      grd = abGrid.getLandSeaGrid(cells, crds, nParWorker=self.nParWorker)
 
     grd.isRegular = True
     grd.minX = minX
