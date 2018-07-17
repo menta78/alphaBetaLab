@@ -6,9 +6,9 @@ sys.path.append(os.path.join(os.path.abspath(mdlDirName), '../../'))
 sys.path.append(os.path.join(os.path.abspath(mdlDirName), '../wwiiiSyntheticGridManager'))
 from wwiiiSyntheticGridManager import *
 
-from abRectangularGridBuilder import abRectangularGridBuilder
-from abHighResAlphaMatrix import *
-from abEstimateAndSave import *
+import abRectangularGridBuilder
+import abHighResAlphaMatrix
+import abEstimateAndSave
 
 
 casename = 'case1swellonly'
@@ -75,8 +75,8 @@ hiresys = y0 + np.arange(ny)*dy
 # DEFINITION OF LOW RES GRID
 x0 = 4.2; nx = 13; dx = 0.8; y0 = 29.2; ny = 12; dy = 0.8; zbottom = -500
 # grid
-rectGridBuilder = abRectangularGridBuilder(x0, y0, dx, dy, nx, ny)
-grid = rectGridBuilder.buildGrid()
+rectGridBuilder = abRectangularGridBuilder.abRectangularGridBuilder(x0, y0, dx, dy, nx, ny)
+grid = rectGridBuilder.buildGrid(None, None)
 
 grdSpc = gridSpec(name = lowResGridName, x0 = x0, nx = nx, dx = dx, y0 = y0, ny = ny, dy = dy, zbottom = zbottom)
 grdSpc.boundaryYs = [i for i in range(ny)]
@@ -84,9 +84,10 @@ grdSpc.boundaryXs = [0 for i in range(ny)]
 grdSpc.customNameList = "&PRO3 WDTHCG = 0.5, WDTHTH = 0.5 /"
 syntGridManager = syntheticGridManager(grdSpc)
 syntGridManager.saveWWIIIGridFiles(outputGridDir)
+
+highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(hiresxs, hiresys, hiresAlpha)
 # saving alpha/beta/obstruction files
-abEstimateAndSave(directions, freqs, grid, hiresxs, hiresys, hiresAlpha, advObstrOutputDir, stdObstrOutputDir, lowResGridName,\
-                  savePropSchemeFile = True)
+abEstimateAndSave._abEstimateAndSave(directions, freqs, lowResGridName, grid, highResolutionBathyMatrix, outputDir, 4, [])
 #################################
 
 
