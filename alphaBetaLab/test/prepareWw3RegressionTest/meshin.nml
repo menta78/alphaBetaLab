@@ -1,0 +1,151 @@
+&GENERAL       
+ LPREPROC       = .F.,               ! Do only preprocessing. Stop after write init mesh
+ LXYZ           = .T.,               ! If true format of bathymetry file is xyz otherwise xfn
+ LREADEXISTMESH = .F.,               ! If true read an existing bathymetry mesh file, otherwise read only nodes
+ LISLAND        = .F.,               ! Read island polygons
+ LSTRUCT        = .F.,               ! Include structure poly file for edge information (jetties)
+ LPOLY          = .F.,               ! Use polygons for zonal refinement
+ LRIVER         = .F.,               ! Read river polygons 
+ LINVZ          = .F.,               ! Invert Z-Coordinate from bathymetry
+ LLL            = .T.,               ! If true the coordinates are longitude and latitude, otherwise meters
+ LLONLAT        = .F.,               ! Interchange of lat and lon / x and y in bathymetry
+ FNAMEITER      = 'iter',            ! Output file name for iteration mesh
+ FNAMEFINAL     = 'final',           ! Output file name for final mesh
+ FNAMEBATHY     = 'bathy',           ! Output file name for bathymetry file
+ FNAMEINIT      = 'init',            ! Output file name for initial mesh
+ ISLANDNAME     = 'insel.dat',       ! Input filename for island polygons
+ STRUCTNAME     = 'struct.dat',      ! Input filename for struct polygons
+ BOUNDARYNAME   = 'rand.dat',        ! Input filename for boundary polygon
+ DEPTHFILE      = 'xyz.dat',         ! Input filename for bathymetry
+ BINARYFILE     = 'binary.dat',      ! Input filename for bathymetry in binary format
+ CROPFNAME      = 'cropbathy.dat',   ! Output filename for cropped bathymetry. See LBATHYCROP
+ OFFSET_Z       = 0.000000000000000E+000, ! Offset for Z-coordinate e.g. MWL + Offset
+ LTRIEMBEDDED   = .T.,               ! Obsolete This variable has no effect.
+ LBINARYOUT     = .F.,               ! Write out the bathymetry mesh for reuse in binary format to binaryfile
+ LBINARYIN      = .F.,               ! Read existing bathymetry mesh in binary format from binaryfile
+ CRITERIAFILE   = 'coarscriteria.dat', ! File name of criteria file which contains criteria for polygon coarsening
+ OUTPUTFORMAT   = 'MSH',             ! Possible options are: XFN, TRIANGLE, GR3 and MSH
+ LINTERPOL      = .F.,               ! Obsolete This variable has no effect.
+ DEPTHMINOBC    = 0.000000000000000E+000, ! GMSH specific mark boundary points as active if deeper than threshold
+ DEPTHSHORE     = 0.000000000000000E+000, ! GMSH specific       
+ LBATHYBINARYOUT = .F.,               ! Write a binary bathymetry file 
+ LBATHYBINARYIN = .F.,               ! Read a binary bathymetry file
+ LBATHYCROP     = .F.,               ! Crop bathymetry using island and boundary polygon
+ LBATHYCROPWRITE = .F.,               ! Write out cropped bathymetry to CROPFNAME
+/
+
+&INTERPOLATION 
+ LITER          = .F.,               ! Enables iterative refinement
+ NITER          = 1,                 ! Number of iteration 
+ LSTRUCTINTER   = .F.,               ! Interpolate struct polygons to the bathymetry
+ LTAKESTRUCTDEPTH = .F.,               ! Take depth coordinates of stuct polygon to generate mesh
+ LSTRUCTPRDEP   = .F.,               ! If true use a prescribe constant depth for struct polygons, otherwise use the readin depth
+ LISLANDINTER   = .F.,               ! Interpolate island polygons to the bathymetry
+ LTAKEISLANDDEPTH = .F.,               ! Take depth coordinates of islands to generate mesh
+ LISLANDPRDEP   = .F.,               ! If true use a prescribe constant depth for island polygons, otherwise use the readin depth
+ DEPTHISLAND    = 0.000000000000000E+000, ! Value of prescribed island depth
+ LBOUNDARYINTER = .F.,               ! Interpolate boundary polygon to the bathymetry
+ LTAKEBOUNDDEPTH = .F.,               ! Take depth coordinates of boundary polygon to generate mesh
+ LBOUNDPRDEP    = .F.,               ! If true use a prescribe constant depth for boundary polygons, otherwise use the readin depth
+ DEPTHBOUND     = 0.000000000000000E+000, ! Value of prescribed boundary depth
+ LBOUNDARYEXP   = .F.,               ! Obsolete This variable has no effect.
+ DEPTHSTRUCT    = 0.000000000000000E+000, ! Value of prescribed struct depth
+ LFASTSEARCH    = .T.,               ! If true use bucketsearch
+ LFASTSEARCH2   = .F.,               ! If true use quadtreesearch
+ SMEMORY        = 1024,              ! Number of buckets used in X and Y direction (500-4000 should be fine)
+/
+
+&REFINEMENT    
+ ISELECT        = 2,                 ! Set 1 for flow models and 2 for wave models
+ DT             = 100000,               ! Max DT for CFL constraint
+ DTTHETA        = 100000,               ! Max DT for Theta space
+ LINIT          = .F.,               ! Create an initital regular mesh
+ DX_INIT        = 15000.0000000000000, ! Resolution of the initial regular mesh
+ ALPHA          = 1.00000000000000,  
+ BETA           = 1.00000000000000,  ! CFL specific        
+ MAXDZ          = 50.0,              ! Max delta Z in element
+ DMIN           = 0,                 ! Min depth for refinement
+ DMAX           = 0,               ! Max depth for refinement
+ DMIN_CFL       = 0.00000000000000,  ! Min depth for CFL refinement
+ DMAX_CFL       = 0,               ! Max depth for CFL refinement
+ DMIN_DZ        = 0,  ! Min depth for DZ refinement
+ DMAX_DZ        = 0,               ! Max depth for DZ refinement
+ MIN_EDGE       = 3000.0000000000000, ! Global min. edge length
+ MAX_EDGE       = 20000,             ! Global max. edge length (these crteria are only weakly enforced during the iteration procedure)
+ MIN_EDGE_DZ    = 3000.0000000000000, ! Min edge length for DZ refinement
+ MAX_EDGE_DZ    = 20000,             ! Max edge length for DZ refinement
+ MIN_EDGE_CFL   = 3000.00000000000000, ! Min edge length for CFL refinement
+ MAX_EDGE_CFL   = 20000,             ! Max edge length for CFL refinement
+ WAVEPERIOD     = 16,                ! Target wave period for Iselect = 2
+ IWAVESP        = 2,                 ! Wave speed celerity. 1 = shallow water wave, 2 = wave energy according dispersion relation, 3 = phase speed
+ MDC            = 36,                ! Number of wave directions
+ LSTAG          = .F.,               ! Stagered directional grid
+ LCFL           = .F.,               ! Use CFL constraint for mesh refinement
+ LDZ            = .F.,               ! Use DZ constraint for mesh refinement
+ LMINVAL        = .F.,               ! Either use the max. or the min. of all constraints
+/
+
+&TRIANGLEOPTIONS
+ PARABATHY      = 'Qjp',             ! Triangle parameter for bathymetry e.g. Qjp
+ PARABATHYORIG  = 'Qc',              ! Triangle parameter for bathyorig mesh e.g. Qc
+ PARAITER       = 'a0.03jDrpq25',         ! Triangle parameter during iteration e.g. Qarpq20
+!PARAINIT       = 'Qjpq1',           ! Triangle parameter for initial mesh e.g. Qjpq1
+!PARAINIT        = 'jDpq30',
+ PARAINIT        = 'jDpa.2',
+/
+
+&SMOOTH        
+ LSMOOTH        = .F.,               
+ DTMIN          = 20.0,              
+/
+
+&COARSENING    
+ DISTTOL        = 3000.000000000000000E+000, ! Minimum distance between 2 points for coarsening rotuine
+ ANGLE          = 30.00000000000000E+000, ! Boundary angle for coarsening via angle method
+ ARROWTOL       = 1.00000000000000E+000, ! Tolerance for coarsening with arrow method
+ LDIST_METHOD   = .F.,               ! Enable coarsening via distance method
+ LANGLE_METHOD_3P = .T.,               ! Enable coarsening via angle method with 3 points
+ LARROW_METHOD  = .T.,               ! Enable coarsening via arrow method
+ LBOUNDARYCOARS = .T.,               ! Enable coarsing for boundary
+ LISLANDCOARS   = .F.,               ! Enable coarsing for island
+ LFILECRITERIA  = .F.,               ! Enable coarsening via file criteria
+ PEAKANGLE      = 30.000000000000000E+000, ! Boundary angle for peak check method
+ ITER_PEAK      = 10,                
+/
+
+&REGMESH       
+ LREGMESH       = .F.,               
+ DX_REG         = 0.000000000000000E+000, 
+ DY_REG         = 0.000000000000000E+000, 
+ XMIN_REG       = 0.000000000000000E+000, 
+ XMAX_REG       = 0.000000000000000E+000, 
+ YMIN_REG       = 0.000000000000000E+000, 
+ YMAX_REG       = 0.000000000000000E+000, 
+ LLOGX          = .F.,               
+ LLOGY          = .F.,               
+ FAK_LOG        = 0.000000000000000E+000, 
+/
+
+&SORTING       
+ LSORT          = .F.,               ! Sort the final mesh 
+ ISORTSTYLE     = 1,                 ! Not implemented     
+ SEARCHACCUR    = 1E-003,            ! Accuracy for Bucketsearch
+/
+
+&DEBUG         
+ LINITOUT       = .F.,               ! Write initital mesh 
+ LITEROUT       = .T.,               ! Write after each iteration
+ LBATHYOUT      = .F.,               ! Write reference bathymetry
+ LTIMINGS       = .F.,               
+ LBATHYORIGOUT  = .F.,               ! Write reference bathymetry
+ LLOG           = .F.,               ! Write out logfile to debug
+ LCHECKDOUBLENODES = .T.,               ! Check hole node database on double nodes
+ LCHECKPOLYGONS = .F.,               ! Check if polygons in insel.dat, rand.dat,... self intersect or are empty
+ MINDIST        = 0.00001,           ! Minimum threshold for double nodes check
+ LSHAPIRO       = .F.,               ! Fix Shapiro violations
+ DDT            = 600.000000000000,  
+ DDTHETA        = 600.000000000000,  
+ DOFFSET        = 0.000000000000000E+000, 
+ DWAVEPERIOD    = 600.000000000000,  
+/
+
