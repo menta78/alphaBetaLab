@@ -101,9 +101,9 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
 triMeshSpecFromGr3File = abTriangularMesh.loadFromGr3File
 triMeshSpecFromMshFile = abTriangularMesh.loadFromMshFile
 
-def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, triMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+def abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridName, triMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
-  abEstimateAndSaveFiniteElementsEtopo1: 
+  abEstimateAndSaveTriangularEtopo1: 
   This method does:
   - build an instance of _abGrid from the input triMeshSpec object (that should represent 
     the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
