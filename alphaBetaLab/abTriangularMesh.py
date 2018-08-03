@@ -1,11 +1,12 @@
 from shapely import geometry as g
 
 
-class _abFeMeshSpec:
+class _abTriMeshSpec:
 
   def __init__(self):
     """
-    _abFeMeshSpec: class representing the logical structure of a finite elemets mesh
+    _abTriMeshSpec: class representing the logical structure of a triangular mesh
+    (used for example in a finite elemets numerical scheme)
     """
     # node index -> node coordinates
     self.nodes = {}
@@ -65,10 +66,10 @@ class _abFeMeshSpec:
 
 def loadFromGr3File(gr3FilePath):
   """
-  loadFromGr3File: loads an instance of _abFeMeshSpec from a gr3 file 
+  loadFromGr3File: loads an instance of _abTriMeshSpec from a gr3 file 
   (format used, for example in model schism).
   """
-  m = _abFeMeshSpec()
+  m = _abTriMeshSpec()
   fl = open(gr3FilePath)
   fl.readline()
 
@@ -131,10 +132,10 @@ def loadFromGr3File(gr3FilePath):
 
 def loadFromMshFile(mshFilePath):
   """
-  loadFromMshFile: loads an instance of _abFeMeshSpec from a msh file 
+  loadFromMshFile: loads an instance of _abTriMeshSpec from a msh file 
   (format used, for example in model ww3).
   """
-  m = _abFeMeshSpec()
+  m = _abTriMeshSpec()
   fl = open(mshFilePath)
   fl.readline()
   fl.readline()

@@ -11,8 +11,8 @@ from abOptionManager import getOption, printOpts
 import abEtopo1BathyLoader
 import abRectangularGridBuilder
 import abCoastalCellDetector
-import abFiniteElementsMesh
-from abFiniteElementsGridBuilder import abFiniteElementsGridBuilder
+import abTriangularMesh
+from abTriangularMeshGridBuilder import abTriangularMeshGridBuilder
 
 
 
@@ -96,22 +96,22 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
 
 
 ################################################################
-##### IMPLEMENTATION ON FINITE ELEMET MESHES ##################
+##### IMPLEMENTATION ON TRIANGULAR MESHES ##################
 ################################################################
-feMeshSpecFromGr3File = abFiniteElementsMesh.loadFromGr3File
-feMeshSpecFromMshFile = abFiniteElementsMesh.loadFromMshFile
+triMeshSpecFromGr3File = abTriangularMesh.loadFromGr3File
+triMeshSpecFromMshFile = abTriangularMesh.loadFromMshFile
 
-def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, feMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+def abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridName, triMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
   """
   abEstimateAndSaveFiniteElementsEtopo1: 
   This method does:
-  - build an instance of _abGrid from the input feMeshSpec object (that should represent 
+  - build an instance of _abGrid from the input triMeshSpec object (that should represent 
     the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
   - build an instance of highResolutionBathyMatrix from etopo1
   - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
   """
   
-  gridBld = abFiniteElementsGridBuilder(feMeshSpec, nParWorker = nParWorker)
+  gridBld = abTriangularMeshGridBuilder(triMeshSpec, nParWorker = nParWorker)
   grid = gridBld.buildGrid()
 
   llcrnr = getOption(abOptions, 'llcrnr', None)

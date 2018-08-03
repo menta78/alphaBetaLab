@@ -1,7 +1,7 @@
 import abGrid
 
 
-class abFiniteElementsGridBuilder:
+class abTriangularMeshGridBuilder:
 
   def __init__(self, feMeshSpec, nParWorker=4):
     self.feMeshSpec = feMeshSpec
