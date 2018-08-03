@@ -3,10 +3,10 @@ import os, shutil
 import numpy as np
 from shapely import geometry as g
 
-from abEstimateAndSave import feMeshSpecFromGr3File, abEstimateAndSaveFiniteElementsEtopo1
+from abEstimateAndSave import triMeshSpecFromGr3File, abEstimateAndSaveTriangularEtopo1
 
 
-class testAbEstimateAndSaveFiniteElements(unittest.TestCase):
+class testAbEstimateAndSaveTriangular(unittest.TestCase):
 
    
   def testEstimateAndSave0(self):
@@ -15,7 +15,7 @@ class testAbEstimateAndSaveFiniteElements(unittest.TestCase):
     etopoFilePath = os.path.join(mdldir, 'triangularMeshTest/etopo1_testGiamaica.nc')
     outdir = os.path.join(mdldir, 'triangularMeshTest/testOut/')
     
-    feMeshSpec = feMeshSpecFromGr3File(mshFilePath)
+    triMeshSpec = triMeshSpecFromGr3File(mshFilePath)
 
     dirs = np.linspace(0, 2*np.pi, 25)
     nfreq = 25
@@ -25,7 +25,7 @@ class testAbEstimateAndSaveFiniteElements(unittest.TestCase):
 
     nParWorker = 4
 
-    abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, 'testGiamaica', feMeshSpec, etopoFilePath, outdir, nParWorker, None)
+    abEstimateAndSaveTriangularEtopo1(dirs, freqs, 'testGiamaica', triMeshSpec, etopoFilePath, outdir, nParWorker, None)
  
     self.assertTrue(os.path.isfile(os.path.join(outdir, 'obstructions_local.testGiamaica.in')))
     self.assertTrue(os.path.isfile(os.path.join(outdir, 'obstructions_shadow.testGiamaica.in')))
