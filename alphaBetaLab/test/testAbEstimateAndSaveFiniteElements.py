@@ -11,9 +11,9 @@ class testAbEstimateAndSaveFiniteElements(unittest.TestCase):
    
   def testEstimateAndSave0(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
-    etopoFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/etopo1_testGiamaica.nc')
-    outdir = os.path.join(mdldir, 'finiteElementsMeshTest/testOut/')
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    etopoFilePath = os.path.join(mdldir, 'triangularMeshTest/etopo1_testGiamaica.nc')
+    outdir = os.path.join(mdldir, 'triangularMeshTest/testOut/')
     
     feMeshSpec = feMeshSpecFromGr3File(mshFilePath)
 

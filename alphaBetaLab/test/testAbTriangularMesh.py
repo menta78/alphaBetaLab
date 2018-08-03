@@ -3,7 +3,7 @@ import os
 import numpy as np
 from shapely import geometry as g
 
-import abFiniteElementsMesh
+import abTriangularMesh
 
 plotPolygons = False
 
@@ -13,8 +13,8 @@ class testAbFiniteElementsMesh(unittest.TestCase):
    
   def testLoadFromGr3File1(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
-    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     # some random checks
     self.assertEqual(708, len(feMeshSpec.connectionPolygons.keys()))
     self.assertEqual([253, 302, 400], feMeshSpec.connectionPolygons[200])
@@ -37,8 +37,8 @@ class testAbFiniteElementsMesh(unittest.TestCase):
    
   def testLoadFromGr3File2(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridSmallIsland.gr3')
-    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridSmallIsland.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     # some random checks
     self.assertEqual(507, len(feMeshSpec.connectionPolygons.keys()))
     self.assertEqual([262, 280, 263], feMeshSpec.connectionPolygons[200])
@@ -59,8 +59,8 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     
   def testGetCellPolygons_all(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
-    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     nodeIds, cellPly = feMeshSpec.getCellPolygons(excludeLandBoundary=False, 
                                                   excludeOpenBoundary=False)
     self.assertEqual(410, len(nodeIds))
@@ -77,8 +77,8 @@ class testAbFiniteElementsMesh(unittest.TestCase):
 
   def testGetCellPolygons_excludeLandBoundary(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
-    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     nodeIds, cellPly = feMeshSpec.getCellPolygons(excludeLandBoundary=True,
                                                   excludeOpenBoundary=False)
     self.assertEqual(362, len(nodeIds))
@@ -95,8 +95,8 @@ class testAbFiniteElementsMesh(unittest.TestCase):
 
   def testGetCellPolygons_excludeAllBoundary(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
-    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     nodeIds, cellPly = feMeshSpec.getCellPolygons(excludeLandBoundary=True,
                                                   excludeOpenBoundary=True)
     self.assertEqual(298, len(nodeIds))
@@ -113,8 +113,8 @@ class testAbFiniteElementsMesh(unittest.TestCase):
 
   def testGetCellPolygons_file2(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridSmallIsland.gr3')
-    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridSmallIsland.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     nodeIds, cellPly = feMeshSpec.getCellPolygons()
     self.assertEqual(252, len(nodeIds))
     self.assertEqual(252, len(cellPly))
@@ -130,8 +130,8 @@ class testAbFiniteElementsMesh(unittest.TestCase):
    
   def testLoadFromMshFile1(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/med.msh')
-    feMeshSpec = abFiniteElementsMesh.loadFromMshFile(mshFilePath)
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/med.msh')
+    feMeshSpec = abTriangularMesh.loadFromMshFile(mshFilePath)
     # some random checks
     self.assertEqual(24996, len(feMeshSpec.connectionPolygons.keys()))
     self.assertEqual([4293, 4292, 11180], feMeshSpec.connectionPolygons[6000])
@@ -139,7 +139,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertAlmostEqual((4.98622, 43.39583), feMeshSpec.nodes[350])
     self.assertEqual(16514, len(feMeshSpec.nodeBathy.keys()))
     self.assertAlmostEqual(0, feMeshSpec.nodeBathy[150])
-    self.assertAlmostEqual(1793.89160670, feMeshSpec.nodeBathy[11234])
+    self.assertAlmostEqual(-1793.89160670, feMeshSpec.nodeBathy[11234])
     self.assertEqual(0, len(feMeshSpec.openBoundaryNodes.keys()))
     self.assertEqual(5993, len(feMeshSpec.landBoundaryNodes.keys()))
     self.assertTrue(1 in feMeshSpec.landBoundaryNodes)

@@ -3,8 +3,8 @@ import os
 import numpy as np
 from shapely import geometry as g
 
-import abFiniteElementsMesh
-from abFiniteElementsGridBuilder import abFiniteElementsGridBuilder
+import abTriangularMesh
+from abTriangularMeshGridBuilder import abTriangularMeshGridBuilder
 
 
 class testAbFiniteElementsGridBuilder(unittest.TestCase):
@@ -12,12 +12,12 @@ class testAbFiniteElementsGridBuilder(unittest.TestCase):
    
   def testBuildGrid(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
-    mshFilePath = os.path.join(mdldir, 'finiteElementsMeshTest/hgridGiamaica.gr3')
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
     etopoFilePath = os.path.join(mdldir, 'etopo1_testGiamaica.nc')
-    feMeshSpec = abFiniteElementsMesh.loadFromGr3File(mshFilePath)
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     nodeIds, cellPly = feMeshSpec.getCellPolygons(excludeLandBoundary=True,
                                                   excludeOpenBoundary=False)
-    grdBuilder = abFiniteElementsGridBuilder(feMeshSpec)
+    grdBuilder = abTriangularMeshGridBuilder(feMeshSpec)
     grd = grdBuilder.buildGrid()
     self.assertFalse(grd.isRegular)
     self.assertEqual(362, len(grd.cellCoordinates))
