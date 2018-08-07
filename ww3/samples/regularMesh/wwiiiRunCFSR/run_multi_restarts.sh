@@ -21,7 +21,7 @@
   set -e
 
         # PATH TO THE EXE
-	exepath='/home/user/usr/ww3/v4.18UOST/exe'
+	exepath='/home/user/usr/ww3/v6.x/exe'
         # cdo command
         cdocmd='cdo'
         

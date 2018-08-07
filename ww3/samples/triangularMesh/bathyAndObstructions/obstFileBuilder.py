@@ -36,19 +36,19 @@ else:
 
 
 # function that generates the files for uost, invoking abEstimateAndSaveRegularEtopo1
-def doBuildObstacleFile():
+def doBuildObstacleFiles():
   from alphaBetaLab.abOptionManager import abOptions
-  from alphaBetaLab.abEstimateAndSave import feMeshSpecFromMshFile, abEstimateAndSaveFiniteElementsEtopo1
+  from alphaBetaLab.abEstimateAndSave import triMeshSpecFromMshFile, abEstimateAndSaveTriangularEtopo1
 
   opt = abOptions(timeStep=180)
-  feMeshSpec = feMeshSpecFromMshFile('med.msh')
-  abEstimateAndSaveFiniteElementsEtopo1(dirs, freqs, gridname, feMeshSpec, etopoFilePath, outputDestDir, nParWorker, opt)
+  triMeshSpec = triMeshSpecFromMshFile('med.msh')
+  abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridname, triMeshSpec, etopoFilePath, outputDestDir, nParWorker, opt)
 
 
 
 if __name__ == '__main__':
  #import pdb; pdb.set_trace()
-  doBuildObstacleFile()
+  doBuildObstacleFiles()
 
 
 

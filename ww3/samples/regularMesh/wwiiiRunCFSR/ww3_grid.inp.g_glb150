@@ -2,7 +2,7 @@ $ -------------------------------------------------------------------- $
 $ WAVEWATCH III Grid preprocessor input file                           $
 $ -------------------------------------------------------------------- $
 $
-  'Running g_glb150 simulation   '
+  g_glb150
 $
 $ Frequency increment factor and first frequency (Hz) ---------------- $
    1.1  0.04118  25  24  0.

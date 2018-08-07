@@ -31,7 +31,6 @@ elif platform.node() == 'user-VirtualBox':
   etopoFilePath = '/media/sf_DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
 else:
   etopoFilePath = '/DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
-etopoFilePath='ETOPO1_Bed_g_gmt4.grd'
 
 # low-left and up-right corners of the sub-portion of the domain, where alphaBetaLab is applied
 # if not sppecified, the system works on the whole domain
@@ -39,11 +38,11 @@ etopoFilePath='ETOPO1_Bed_g_gmt4.grd'
 
 
 # function that generates the files for uost, invoking abEstimateAndSaveRegularEtopo1
-def doBuildObstacleFile():
+def doBuildObstacleFiles():
   from alphaBetaLab.abOptionManager import abOptions
   from alphaBetaLab.abEstimateAndSave import abEstimateAndSaveRegularEtopo1, regularGridSpecWW3
 
-  opt = None
+  opt = abOption(minSizeKm=3)
   regularGridSpec = regularGridSpecWW3(
         xmin=-180, ymin=-70,
         dx=1.5, dy=1.5,
@@ -55,7 +54,7 @@ def doBuildObstacleFile():
 
 if __name__ == '__main__':
  #import pdb; pdb.set_trace()
-  doBuildObstacleFile()
+  doBuildObstacleFiles()
 
 
 
