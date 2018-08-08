@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -l nodes=4:ppn=32
+#PBS -l walltime=12:00:00
+#PBS -q low
+
+# this script is to launch ww3_multi in a parallel pbs environment. 
+# It is carved on the structure of the jrc hpc cluster, and should be modified to adapt it to other environments
+
+pth=/TEST/mentalo/ClimateRuns/WW3/CFSR_g_glb030/CFSR/Historical/Historical_CFSR_20000101_20100101
+ww3_multiCmd=/TEST/mentalo/usr/WW3/exe/ww3_multi
+mpibasedir=/TEST/mentalo/usr/mpich/3.2/
+mpirunCmd=$mpibasedir/bin/mpirun
+mpilib=$mpibasedir/lib
+intellib=/APPLICATIONS/intel/lib/:/APPLICATIONS/intel/compilers_and_libraries_2017.0.098/linux/compiler/lib/intel64_lin/
+
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$mpilib:$intellib
+cd $pth
+$mpirunCmd -n 128 $ww3_multiCmd > $pth/ww3_multi.out 2>&1
+
