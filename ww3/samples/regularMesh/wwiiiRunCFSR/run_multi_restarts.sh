@@ -22,7 +22,6 @@
 
         # PATH TO THE EXE
 	exepath='/home/user/usr/ww3/v6.x/exe'
-        exepath='/STORAGE/src1/git/EMC_ww3/model/exe'
         # cdo command
         cdocmd='cdo'
         
