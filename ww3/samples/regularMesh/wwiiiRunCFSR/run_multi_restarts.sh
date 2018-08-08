@@ -22,11 +22,12 @@
 
         # PATH TO THE EXE
 	exepath='/home/user/usr/ww3/v6.x/exe'
+        exepath='/STORAGE/src1/git/EMC_ww3/model/exe'
         # cdo command
         cdocmd='cdo'
         
         # n of parallel proc for MPI. If nParallelProc==1 runs without mpirun 
-        nParallelProc=1
+        nParallelProc=12
         # command for mpirun
         mpicmd='/usr/lib64/mpich-3.2/bin/mpiexec'
 
