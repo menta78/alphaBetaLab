@@ -17,7 +17,7 @@ outputDestDir = os.path.join(mdlDir, 'output')
 
 # msh filename, must be the same as in the ww3 grid file name
 mshfile = 'med.msh'
-gridname = 'mediterr'
+gridname = 'ww3'
 
 # number of cores for parallel computing
 nParWorker = 12
