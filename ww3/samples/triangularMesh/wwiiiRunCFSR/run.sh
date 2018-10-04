@@ -1,8 +1,8 @@
 #exepath=/STORAGE/usr/WaveWatchIII/v4.18_ww3SpaceResNumericalErr/exe
-exepath=/STORAGE/src1/git/EMC_ww3/model/exe/
+exepath=/STORAGE/src1/git/EMC_ww3/model/exe_triangularTest
 pycmd=/STORAGE/usr/anaconda2/bin/python2.7
 mpiruncmd=/usr/lib64/mpich-3.2/bin/mpirun
-nproc=12
+nproc=2
 
 rm -rf run
 mkdir run
