@@ -33,7 +33,8 @@ $   3600 è il massimo time step consentito dalla condizione CFL k-theta
 $   30 è il minimo time step per i source terms
 $   3600. 1700. 3600. 30.                              
 $   3600. 200. 1000. 15.                              
-   1200. 100. 900. 10.                    
+$  1200. 100. 900. 10.                    
+   600. 100. 200. 10.                    
 $
 $ FLAGTR informazioni su subgrid: 
 $       0: no subgrid information

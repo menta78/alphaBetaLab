@@ -1,15 +1,15 @@
 #exepath=/STORAGE/usr/WaveWatchIII/v4.18_ww3SpaceResNumericalErr/exe
-exepath=/STORAGE/src1/git/EMC_ww3/model/exe_triangularTest
-pycmd=/STORAGE/usr/anaconda2/bin/python2.7
-mpiruncmd=/usr/lib64/mpich-3.2/bin/mpirun
-nproc=2
+exepath=/home/lmentaschi/src/git/EMC_ww3/model/exe_uostMPI
+pycmd=/home/lmentaschi/usr/python/bin/python
+mpiruncmd=mpirun.mpich
+nproc=4
 
 rm -rf run
 mkdir run
 cd run
 ln -s ../* ./
 
-$exepath/ww3_grid
+$exepath/ww3_grid | tee ww3_grid.out
 
 $pycmd interpWindDataToMesh.py
 
