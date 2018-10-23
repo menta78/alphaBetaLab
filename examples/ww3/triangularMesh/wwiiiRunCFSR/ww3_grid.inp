@@ -42,6 +42,7 @@ $	1: al boundary tra le celle, tra un punto di griglia e l'altro
 $	2: al centro della cella
 $	4: come 2, con ghiaccio
 $  &MISC FLAGTR = 0 /
+   &UNST  EXPFSN = False, IMPFSN = True /
 END OF NAMELISTS
 $
 $ In this case, the mask is included in the bottom grid,
