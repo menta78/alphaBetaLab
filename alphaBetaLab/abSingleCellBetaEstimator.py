@@ -73,7 +73,11 @@ class abSingleCellBetaEstimator:
     normSlope = np.tan(normTheta) if not abutls.isClose(theta, 0, thetaTolerance) else np.nan
 
     cell = alphaMtx.polygon 
-    crds = list(cell.boundary.coords)
+    try:
+      crds = list(cell.boundary.coords)
+    except:
+      # skipping the computation for strange geometries without coordinate sequence
+      return 1
     cellxs = np.array([p[0] for p in crds])
     cellys = np.array([p[1] for p in crds])
 
