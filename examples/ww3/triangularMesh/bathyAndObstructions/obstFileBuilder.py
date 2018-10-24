@@ -1,54 +1,38 @@
 import numpy as np
-import os
-import time
-import platform
 
+# importing from alphaBetaLab the needed components
+from alphaBetaLab.abOptionManager import abOptions
+from alphaBetaLab.abEstimateAndSave import triMeshSpecFromMshFile, abEstimateAndSaveTriangularEtopo1
 
-# spectra grid: directions and frequencies
+# definition of the spectral grid
 dirs = np.linspace(0, 2*np.pi, 25)
 nfreq = 25
 minfrq = .04118
 frqfactor = 1.1
 freqs = [minfrq*(frqfactor**i) for i in range(1,nfreq + 1)]
 
-# output directory (the directory of this script + output)
-mdlDir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-outputDestDir = os.path.join(mdlDir, 'output')
-
-# msh filename, must be the same as in the ww3 grid file name
-mshfile = 'med.msh'
+# definition of the spatial mesh
 gridname = 'ww3'
+mshfile = 'med.msh'
+triMeshSpec = triMeshSpecFromMshFile(mshfile)
+
+# path of the etopo1 bathymetry
+etopoFilePath = '/home/lmentaschi/usr/WaveWatchIII/gridgen1.1/reference_data/etopo1.nc'
+
+# output directory
+outputDestDir = './output/'
 
 # number of cores for parallel computing
 nParWorker = 12
+nParWorker = 4
 
-# etopo file path (a different path if I launch from home or from the office)
-if platform.node() == 'pcmenta':
-  etopoFilePath = '/home/lmentaschi/usr/WaveWatchIII/gridgen1.1/reference_data/etopo1.nc'
-elif platform.node() == 'user-VirtualBox':
-  etopoFilePath = '/media/sf_DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
-else:
-  etopoFilePath = '/DATA/etopo/ETOPO1_Bed_g_gmt4.grd'
+# this option indicates that the computation should be skipped for cells smaller than 3 km
+minSizeKm = 3
+opt = abOptions(minSizeKm=minSizeKm)
 
-# low-left and up-right corners of the sub-portion of the domain, where alphaBetaLab is applied
-# if not sppecified, the system works on the whole domain
+# instruction to do the computation and save the output
+abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridname, triMeshSpec, etopoFilePath, outputDestDir, nParWorker)
 
-
-
-# function that generates the files for uost, invoking abEstimateAndSaveRegularEtopo1
-def doBuildObstacleFiles():
-  from alphaBetaLab.abOptionManager import abOptions
-  from alphaBetaLab.abEstimateAndSave import triMeshSpecFromMshFile, abEstimateAndSaveTriangularEtopo1
-
-  opt = abOptions(timeStep=180)
-  triMeshSpec = triMeshSpecFromMshFile('med.msh')
-  abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridname, triMeshSpec, etopoFilePath, outputDestDir, nParWorker, opt)
-
-
-
-if __name__ == '__main__':
- #import pdb; pdb.set_trace()
-  doBuildObstacleFiles()
 
 
 
