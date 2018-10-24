@@ -89,7 +89,11 @@ class abSingleCellAlphaEstimator:
     xs = alphaMtx.xs
     ys = alphaMtx.ys
     cell = lowResCell
-    crds = np.array(list(cell.boundary.coords))
+    try:
+      crds = np.array(list(cell.boundary.coords))
+    except:
+      # some geometry without coordinate sequence
+      return 1
     cellxs = np.array([c[0] for c in crds])
     cellys = np.array([c[1] for c in crds])
     cellminx, cellmaxx = min(cellxs), max(cellxs)
