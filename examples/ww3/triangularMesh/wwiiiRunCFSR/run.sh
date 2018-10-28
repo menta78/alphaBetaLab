@@ -1,5 +1,7 @@
 #exepath=/STORAGE/usr/WaveWatchIII/v4.18_ww3SpaceResNumericalErr/exe
 exepath=/home/lmentaschi/src/git/EMC_ww3/model/exe_uostMPI
+exepath=/home/lmentaschi/src/git/EMC_ww3/model/exe
+exepath=/home/lmentaschi/src/git/EMC_ww3_backup/model/exe_unstWorkingUOST
 pycmd=/home/lmentaschi/usr/python/bin/python
 mpiruncmd=mpirun.mpich
 nproc=4
