@@ -138,8 +138,11 @@ class abSingleCellAlphaEstimator:
             cellInts = g.Polygon(hrcell)
             hresCellIsInside = True
           elif cell.overlaps(hrcell):
-            cellInts = cell.intersection(hrcell)
-            if isClose(cellInts.area, hrcell.area):
+            try:
+              cellInts = cell.intersection(hrcell)
+            except:
+              cellInts = None
+            if (not cellInts is None) and isClose(cellInts.area, hrcell.area):
               hresCellIsInside = True
             else:
               hresCellIsInside = False
