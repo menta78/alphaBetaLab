@@ -61,6 +61,24 @@ class _abTriMeshSpec:
       cellPlys.append(approxCell)
       nodeIds.append(nid)
     return nodeIds, cellPlys
+
+  def createSchismWWMBndFile(self, schismWWMBndFilePath):
+    fl = open(schismWWMBndFilePath, 'w')
+    fl.write('schism WWM boundary TEST file\n')
+    fl.write('*\n')
+    nodeIds = self.nodes.keys()
+    for nid in nodeIds:
+      nodeIds
+      if nid in self.landBoundaryNodes:
+        bndtyp = -1
+      elif nid in self.openBoundaryNodes:
+        bndtyp = 2
+      else:
+        bndtyp = 0
+      ln = '  '.join([str(nid), str(bndtyp), str(bndtyp), str(bndtyp)]) + '\n'
+      fl.write(ln)
+    fl.write('')
+    fl.close()
  
 
 

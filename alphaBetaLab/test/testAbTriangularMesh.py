@@ -55,6 +55,23 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     bnd = np.unique(feMeshSpec.landBoundaryNodes.values())
     bnd.sort()
     self.assertTrue(np.logical_and([1, 2], bnd).all())
+
+   
+  def testLoadFromGr3File3(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridWestMed.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
+    # some random checks
+    self.assertEqual(1587, len(feMeshSpec.nodes.keys()))
+    self.assertEqual(11, len(feMeshSpec.openBoundaryNodes.keys()))
+    self.assertEqual(352, len(feMeshSpec.landBoundaryNodes.keys()))
+    schismWWMBndFilePath = os.path.join(mdldir, 'triangularMeshTest/schismWWMbnd.gr3')
+    feMeshSpec.createSchismWWMBndFile(schismWWMBndFilePath)
+    import pdb; pdb.set_trace()
+    try:
+      self.assertTrue(os.path.isfile(schismWWMBndFilePath))
+    finally:
+      os.remove(schismWWMBndFilePath)
     
     
   def testGetCellPolygons_all(self):
