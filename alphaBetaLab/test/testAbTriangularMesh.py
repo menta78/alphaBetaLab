@@ -11,7 +11,7 @@ plotPolygons = False
 class testAbFiniteElementsMesh(unittest.TestCase):
 
    
-  def testLoadFromGr3File1(self):
+  def _testLoadFromGr3File1(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
@@ -35,7 +35,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertEqual([1], bnd)
 
    
-  def testLoadFromGr3File2(self):
+  def _testLoadFromGr3File2(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridSmallIsland.gr3')
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
@@ -65,16 +65,18 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertEqual(1587, len(feMeshSpec.nodes.keys()))
     self.assertEqual(11, len(feMeshSpec.openBoundaryNodes.keys()))
     self.assertEqual(352, len(feMeshSpec.landBoundaryNodes.keys()))
+    self.assertEqual(5, len(feMeshSpec.landBoundaries.keys()))
+    self.assertEqual(abTriangularMesh.landBoundaryExteriorType, feMeshSpec.landBoundaries[1])
+    self.assertEqual(abTriangularMesh.landBoundaryIslandType, feMeshSpec.landBoundaries[5])
     schismWWMBndFilePath = os.path.join(mdldir, 'triangularMeshTest/schismWWMbnd.gr3')
     feMeshSpec.createSchismWWMBndFile(schismWWMBndFilePath)
-    import pdb; pdb.set_trace()
     try:
       self.assertTrue(os.path.isfile(schismWWMBndFilePath))
     finally:
       os.remove(schismWWMBndFilePath)
     
     
-  def testGetCellPolygons_all(self):
+  def _testGetCellPolygons_all(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
@@ -92,7 +94,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       pp.plotPolyList(cellPly, doshow=True, title='all')
     
 
-  def testGetCellPolygons_excludeLandBoundary(self):
+  def _testGetCellPolygons_excludeLandBoundary(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
@@ -110,7 +112,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       pp.plotPolyList(cellPly, doshow=True, title='exclude land boundary')
     
 
-  def testGetCellPolygons_excludeAllBoundary(self):
+  def _testGetCellPolygons_excludeAllBoundary(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
@@ -128,7 +130,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       pp.plotPolyList(cellPly, doshow=True, title='exclude all boundary')
     
 
-  def testGetCellPolygons_file2(self):
+  def _testGetCellPolygons_file2(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridSmallIsland.gr3')
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
@@ -145,7 +147,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       pp.plotPolyList(cellPly, doshow=True, title='exclude land boundary')
 
    
-  def testLoadFromMshFile1(self):
+  def _testLoadFromMshFile1(self):
     mdldir = os.path.dirname( os.path.abspath(__file__) )
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/med.msh')
     feMeshSpec = abTriangularMesh.loadFromMshFile(mshFilePath)

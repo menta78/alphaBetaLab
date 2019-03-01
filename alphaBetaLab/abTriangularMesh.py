@@ -1,5 +1,7 @@
 from shapely import geometry as g
 
+landBoundaryExteriorType = 0
+landBoundaryIslandType = 1
 
 class _abTriMeshSpec:
 
@@ -14,9 +16,11 @@ class _abTriMeshSpec:
     self.nodeBathy = {}
     # polygon index -> vertice nodes indices
     self.connectionPolygons = {}
-    # node indes -> land boundary id
+    # boundary index -> boundary type: 0=main boundary, 1=island
+    self.landBoundaries = {}
+    # node index -> land boundary id
     self.landBoundaryNodes = {}
-    # node indes -> open boundary id
+    # node index -> open boundary id
     self.openBoundaryNodes = {}
 
   def getCellPolygons(self, excludeLandBoundary=True, excludeOpenBoundary=False):
@@ -70,7 +74,12 @@ class _abTriMeshSpec:
     for nid in nodeIds:
       nodeIds
       if nid in self.landBoundaryNodes:
-        bndtyp = -1
+        bndId = self.landBoundaryNodes[nid]
+        bndTyp = self.landBoundaries[bndId]
+        if bndTyp == landBoundaryExteriorType:
+          bndtyp = 1
+        else:
+          bndtyp = -1
       elif nid in self.openBoundaryNodes:
         bndtyp = 2
       else:
@@ -139,6 +148,14 @@ def loadFromGr3File(gr3FilePath):
     line = fl.readline().strip('\n\t\r ')
     vlsstr = [s for s in line.split() if s]
     nNodes = int(vlsstr[0])
+
+    bndTyp = int(vlsstr[1])
+    if bndTyp == 20:
+      bndTyp = landBoundaryExteriorType
+    if bndTyp == 21:
+      bndTyp = landBoundaryIslandType
+
+    m.landBoundaries[ibnd + 1] = bndTyp
     for ind in range(nNodes):
       line = fl.readline().strip('\n\t\r ')
       nodeId = int(line)
