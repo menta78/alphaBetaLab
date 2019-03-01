@@ -203,16 +203,22 @@ def loadFromMshFile(mshFilePath):
     polyline = fl.readline().strip('\n\t\r ')
     vlsstr = [s for s in polyline.split() if s]
     connPolyId = int(vlsstr[0])
+    ntag = int(vlsstr[2])
+    elmtyp = int(vlsstr[1])
 
-    if len(vlsstr) == 6:
+    if elmtyp == 15: # 15: single point element
       # is a boundary node. Loading it as land boundary
       ibnd = connPolyId
       nodeId = int(vlsstr[-1])
+      bndType = int(vlsstr[3])
       m.landBoundaryNodes[nodeId] = ibnd
-    else:  
+      m.landBoundaries[ibnd] = bndType
+    elif elmtyp == 2: # 2: triangle 
       nodeIds = [int(s) for s in vlsstr[6:]]
       
       m.connectionPolygons[connPolyId] = nodeIds
+  
+  #AFAIK the open boundary is not included in the file
 
   return m
 
