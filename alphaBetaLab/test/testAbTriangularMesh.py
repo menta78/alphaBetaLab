@@ -65,6 +65,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertEqual(1587, len(feMeshSpec.nodes.keys()))
     self.assertEqual(11, len(feMeshSpec.openBoundaryNodes.keys()))
     self.assertEqual(352, len(feMeshSpec.landBoundaryNodes.keys()))
+    self.assertEqual(352, len(feMeshSpec.landBoundaryOrdered))
     self.assertEqual(5, len(feMeshSpec.landBoundaries.keys()))
     self.assertEqual(abTriangularMesh.landBoundaryExteriorType, feMeshSpec.landBoundaries[1])
     self.assertEqual(abTriangularMesh.landBoundaryIslandType, feMeshSpec.landBoundaries[5])
@@ -171,7 +172,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     feMeshSpec = abTriangularMesh.loadFromMshFile(mshFilePath)
     # some random checks
     self.assertEqual(24996, len(feMeshSpec.connectionPolygons.keys()))
-    self.assertEqual([4293, 4292, 11180], feMeshSpec.connectionPolygons[6000])
+    self.assertEqual([4293, 4292, 11180], feMeshSpec.connectionPolygons[7])
     self.assertEqual(16514, len(feMeshSpec.nodes.keys()))
     self.assertAlmostEqual((4.98622, 43.39583), feMeshSpec.nodes[350])
     self.assertEqual(16514, len(feMeshSpec.nodeBathy.keys()))
@@ -179,9 +180,65 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertAlmostEqual(-1793.89160670, feMeshSpec.nodeBathy[11234])
     self.assertEqual(0, len(feMeshSpec.openBoundaryNodes.keys()))
     self.assertEqual(5993, len(feMeshSpec.landBoundaryNodes.keys()))
+    self.assertEqual(5993, len(feMeshSpec.landBoundaryOrdered))
     self.assertTrue(1 in feMeshSpec.landBoundaryNodes)
     self.assertTrue(100 in feMeshSpec.landBoundaryNodes)
     self.assertFalse(6000 in feMeshSpec.landBoundaryNodes)
+    self.assertTrue(1 in feMeshSpec.landBoundaryOrdered)
+    self.assertTrue(100 in feMeshSpec.landBoundaryOrdered)
+    self.assertFalse(6000 in feMeshSpec.landBoundaryOrdered)
+
+
+  def testSaveMshFile1(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/med.msh')
+    feMeshSpec = abTriangularMesh.loadFromMshFile(mshFilePath)
+    mshTestFilePath = os.path.join(mdldir, 'triangularMeshTest/test_med_copy.msh')
+    feMeshSpec.saveAsMsh(mshTestFilePath)
+    try:
+      self.assertTrue(os.path.isfile(mshTestFilePath))
+      feMeshSpec = abTriangularMesh.loadFromMshFile(mshTestFilePath)
+      self.assertEqual(24996, len(feMeshSpec.connectionPolygons.keys()))
+      self.assertEqual([4293, 4292, 11180], feMeshSpec.connectionPolygons[7])
+      self.assertEqual(16514, len(feMeshSpec.nodes.keys()))
+      self.assertAlmostEqual((4.98622, 43.39583), feMeshSpec.nodes[350])
+      self.assertEqual(16514, len(feMeshSpec.nodeBathy.keys()))
+      self.assertAlmostEqual(0, feMeshSpec.nodeBathy[150])
+      self.assertAlmostEqual(-1793.8916, feMeshSpec.nodeBathy[11234], 4)
+      self.assertEqual(0, len(feMeshSpec.openBoundaryNodes.keys()))
+      self.assertEqual(5993, len(feMeshSpec.landBoundaryNodes.keys()))
+      self.assertTrue(1 in feMeshSpec.landBoundaryNodes)
+      self.assertTrue(100 in feMeshSpec.landBoundaryNodes)
+      self.assertFalse(6000 in feMeshSpec.landBoundaryNodes)
+    finally:
+      os.remove(mshTestFilePath)
+
+
+  def testSaveMshFile2(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridSmallIsland.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
+    mshTestFilePath = os.path.join(mdldir, 'triangularMeshTest/test_smallIsland_copy.msh')
+    feMeshSpec.saveAsMsh(mshTestFilePath)
+    try:
+      self.assertTrue(os.path.isfile(mshTestFilePath))
+      feMeshSpec = abTriangularMesh.loadFromMshFile(mshTestFilePath)
+      # some random checks
+      self.assertEqual(507, len(feMeshSpec.connectionPolygons.keys()))
+      self.assertEqual([262, 280, 263], feMeshSpec.connectionPolygons[200])
+      self.assertEqual(287, len(feMeshSpec.nodes.keys()))
+      self.assertAlmostEqual((155.9556547, -57.57893481), feMeshSpec.nodes[150])
+      self.assertEqual(287, len(feMeshSpec.nodeBathy.keys()))
+      self.assertAlmostEqual(-3368, feMeshSpec.nodeBathy[150])
+      self.assertEqual(0, len(feMeshSpec.openBoundaryNodes.keys()))
+      self.assertEqual(35, len(feMeshSpec.landBoundaryNodes.keys()))
+      self.assertFalse(100 in feMeshSpec.landBoundaryNodes)
+      self.assertTrue(27 in feMeshSpec.landBoundaryNodes)
+      self.assertTrue(1 in feMeshSpec.landBoundaryNodes)
+      self.assertTrue(2 in feMeshSpec.landBoundaryNodes)
+    finally:
+      os.remove(mshTestFilePath)
+    
     
 
 

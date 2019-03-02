@@ -20,6 +20,8 @@ class _abTriMeshSpec:
     self.landBoundaries = {}
     # node index -> land boundary id
     self.landBoundaryNodes = {}
+    # node index in the order they are loaded from the file
+    self.landBoundaryOrdered = []
     # node index -> open boundary id
     self.openBoundaryNodes = {}
 
@@ -87,6 +89,43 @@ class _abTriMeshSpec:
       ln = '  '.join([str(nid), str(bndtyp), str(bndtyp), str(bndtyp)]) + '\n'
       fl.write(ln)
     fl.write('')
+    fl.close()
+
+  def saveAsMsh(self, filePath):
+    fl = open(filePath, 'w')
+    fl.write('$MeshFormat\n2 0 8\n$EndMeshFormat\n$Nodes\n')
+    nodeIds = self.nodes.keys()
+    nds = len(nodeIds)
+    fl.write(str(nds).rjust(12) + '\n')
+    nodeIds.sort()
+    for nd in nodeIds:
+      lon, lat = self.nodes[nd]
+      dpt = self.nodeBathy[nd]
+      ln = str(nd).rjust(10) + '{a:5.10}'.format(a=lon).rjust(22)\
+                  + '{a:5.10}'.format(a=lat).rjust(22) + '{a:5.10}'.format(a=dpt).rjust(22) + '\n'
+      fl.write(ln)
+    fl.write('$EndNodes\n$Elements\n')
+    bndNodeIds = self.landBoundaryOrdered
+    connPolyIds = sorted(self.connectionPolygons.keys())
+    elmCnt = len(bndNodeIds) + len(connPolyIds)
+    fl.write(str(elmCnt).rjust(12) + '\n')
+    elmTypStr = '15'.rjust(10)
+    ntagStr = '2'.rjust(10)
+    for bndNodeId, ibnd in zip(bndNodeIds, range(1,len(bndNodeIds)+1)):
+      bndId = self.landBoundaryNodes[bndNodeId]
+      bndTyp = self.landBoundaries[bndId]
+      ln = str(ibnd).rjust(10) + elmTypStr + ntagStr + str(bndTyp).rjust(10)\
+                           + '0'.rjust(10) + str(bndNodeId).rjust(10) + '\n' 
+      fl.write(ln)
+    mxBnd = len(bndNodeIds)
+    elmTypStr = '2'.rjust(10)
+    ntagStr = '3'.rjust(10)
+    for connPolyId, elmId in zip(connPolyIds, range(mxBnd+1, mxBnd+len(connPolyIds)+1)):
+      ln = str(elmId).rjust(8) + elmTypStr + ntagStr + '0'.rjust(8)\
+             + str(connPolyId).rjust(8) + '0'.rjust(8)\
+             + ''.join([str(nd).rjust(8) for nd in self.connectionPolygons[connPolyId]]) + '\n'
+      fl.write(ln)
+    fl.write('$EndElements')
     fl.close()
  
 
@@ -160,6 +199,7 @@ def loadFromGr3File(gr3FilePath):
       line = fl.readline().strip('\n\t\r ')
       nodeId = int(line)
       m.landBoundaryNodes[nodeId] = ibnd + 1
+      m.landBoundaryOrdered.append(nodeId)
 
   return m
  
@@ -202,20 +242,21 @@ def loadFromMshFile(mshFilePath):
   for ipl in range(connPlysCount):
     polyline = fl.readline().strip('\n\t\r ')
     vlsstr = [s for s in polyline.split() if s]
-    connPolyId = int(vlsstr[0])
+    elementId = int(vlsstr[0])
     ntag = int(vlsstr[2])
     elmtyp = int(vlsstr[1])
 
     if elmtyp == 15: # 15: single point element
       # is a boundary node. Loading it as land boundary
-      ibnd = connPolyId
+      ibnd = elementId
       nodeId = int(vlsstr[-1])
       bndType = int(vlsstr[3])
       m.landBoundaryNodes[nodeId] = ibnd
       m.landBoundaries[ibnd] = bndType
+      m.landBoundaryOrdered.append(nodeId)
     elif elmtyp == 2: # 2: triangle 
       nodeIds = [int(s) for s in vlsstr[6:]]
-      
+      connPolyId = int(vlsstr[4])
       m.connectionPolygons[connPolyId] = nodeIds
   
   #AFAIK the open boundary is not included in the file
