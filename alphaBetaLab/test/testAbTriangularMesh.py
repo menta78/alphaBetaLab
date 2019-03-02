@@ -68,12 +68,30 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertEqual(5, len(feMeshSpec.landBoundaries.keys()))
     self.assertEqual(abTriangularMesh.landBoundaryExteriorType, feMeshSpec.landBoundaries[1])
     self.assertEqual(abTriangularMesh.landBoundaryIslandType, feMeshSpec.landBoundaries[5])
+
+
+
+  def testCreateSchismWWMBndFile(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridWestMed.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     schismWWMBndFilePath = os.path.join(mdldir, 'triangularMeshTest/schismWWMbnd.gr3')
     feMeshSpec.createSchismWWMBndFile(schismWWMBndFilePath)
     try:
       self.assertTrue(os.path.isfile(schismWWMBndFilePath))
+      dt = np.loadtxt(schismWWMBndFilePath, skiprows=2)
+      # some random check
+      self.assertEqual(1587, dt.shape[0])
+      self.assertEqual(4, dt.shape[1])
+      self.assertEqual(100, dt[99, 0])
+      self.assertEqual(0, dt[99, 1])
+      self.assertEqual(2, dt[1, 0])
+      self.assertEqual(1, dt[2, 1])
+      self.assertEqual(992, dt[991, 0])
+      self.assertEqual(-1, dt[991, 1])
     finally:
       os.remove(schismWWMBndFilePath)
+    
     
     
   def testGetCellPolygons_all(self):
