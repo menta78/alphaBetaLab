@@ -204,7 +204,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       self.assertAlmostEqual((4.98622, 43.39583), feMeshSpec.nodes[350])
       self.assertEqual(16514, len(feMeshSpec.nodeBathy.keys()))
       self.assertAlmostEqual(0, feMeshSpec.nodeBathy[150])
-      self.assertAlmostEqual(-1793.8916, feMeshSpec.nodeBathy[11234], 4)
+      self.assertAlmostEqual(1793.8916, feMeshSpec.nodeBathy[11234], 4)
       self.assertEqual(0, len(feMeshSpec.openBoundaryNodes.keys()))
       self.assertEqual(5993, len(feMeshSpec.landBoundaryNodes.keys()))
       self.assertTrue(1 in feMeshSpec.landBoundaryNodes)
@@ -219,7 +219,7 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridSmallIsland.gr3')
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     mshTestFilePath = os.path.join(mdldir, 'triangularMeshTest/test_smallIsland_copy.msh')
-    feMeshSpec.saveAsMsh(mshTestFilePath)
+    feMeshSpec.saveAsMsh(mshTestFilePath, bathyFactor=-1)
     try:
       self.assertTrue(os.path.isfile(mshTestFilePath))
       feMeshSpec = abTriangularMesh.loadFromMshFile(mshTestFilePath)
@@ -229,13 +229,27 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       self.assertEqual(287, len(feMeshSpec.nodes.keys()))
       self.assertAlmostEqual((155.9556547, -57.57893481), feMeshSpec.nodes[150])
       self.assertEqual(287, len(feMeshSpec.nodeBathy.keys()))
-      self.assertAlmostEqual(-3368, feMeshSpec.nodeBathy[150])
+      self.assertAlmostEqual(3368, feMeshSpec.nodeBathy[150])
       self.assertEqual(0, len(feMeshSpec.openBoundaryNodes.keys()))
       self.assertEqual(35, len(feMeshSpec.landBoundaryNodes.keys()))
       self.assertFalse(100 in feMeshSpec.landBoundaryNodes)
       self.assertTrue(27 in feMeshSpec.landBoundaryNodes)
       self.assertTrue(1 in feMeshSpec.landBoundaryNodes)
       self.assertTrue(2 in feMeshSpec.landBoundaryNodes)
+    finally:
+      os.remove(mshTestFilePath)
+
+
+  def testSaveMshFileBathyFactor(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridSmallIsland.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
+    mshTestFilePath = os.path.join(mdldir, 'triangularMeshTest/test_smallIsland_copy.msh')
+    feMeshSpec.saveAsMsh(mshTestFilePath, bathyFactor=1)
+    try:
+      self.assertTrue(os.path.isfile(mshTestFilePath))
+      feMeshSpec = abTriangularMesh.loadFromMshFile(mshTestFilePath)
+      self.assertAlmostEqual(-3368, feMeshSpec.nodeBathy[150])
     finally:
       os.remove(mshTestFilePath)
     

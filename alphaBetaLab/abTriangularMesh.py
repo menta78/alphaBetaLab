@@ -91,7 +91,7 @@ class _abTriMeshSpec:
     fl.write('')
     fl.close()
 
-  def saveAsMsh(self, filePath):
+  def saveAsMsh(self, filePath, bathyFactor=-1):
     fl = open(filePath, 'w')
     fl.write('$MeshFormat\n2 0 8\n$EndMeshFormat\n$Nodes\n')
     nodeIds = self.nodes.keys()
@@ -100,7 +100,7 @@ class _abTriMeshSpec:
     nodeIds.sort()
     for nd in nodeIds:
       lon, lat = self.nodes[nd]
-      dpt = self.nodeBathy[nd]
+      dpt = self.nodeBathy[nd]*bathyFactor
       ln = str(nd).rjust(10) + '{a:5.10}'.format(a=lon).rjust(22)\
                   + '{a:5.10}'.format(a=lat).rjust(22) + '{a:5.10}'.format(a=dpt).rjust(22) + '\n'
       fl.write(ln)
