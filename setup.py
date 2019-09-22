@@ -10,7 +10,7 @@ setup(
         "numpy >= 1.8.2",
         "shapely >= 1.5.9",
         "basemap",
-        "pyproj"
+        "pyproj <= 5.2"
     ],
 )
  
