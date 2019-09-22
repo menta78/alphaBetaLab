@@ -2,7 +2,6 @@ import sys
 import traceback
 import numpy as np
 from shapely import geometry as g
-from itertools import izip, imap
 import multiprocessing as mp
 
 import abCellSize
@@ -122,7 +121,7 @@ class abLongBreakWaterLocAlphaAdjustAllCells:
     newAlphas, newBetas = [], []
     ncell = len(obstrCells)
 
-    adjAlphaGenerator = imap(_elabOneCell, izip(obstrCells, self.alphas, self.betas, range(len(obstrCells))))
+    adjAlphaGenerator = map(_elabOneCell, zip(obstrCells, self.alphas, self.betas, range(len(obstrCells))))
     for cell, adjAlpha, adjBeta, icell in adjAlphaGenerator:
       newAlphas.append(adjAlpha)
       newBetas.append(adjBeta)
@@ -144,7 +143,7 @@ class abLongBreakWaterLocAlphaAdjustAllCells:
     ncell = len(obstrCells)
 
     p = mp.Pool(self.nParallelWorker)
-    adjAlphaGenerator = p.imap(_elabOneCell, izip(obstrCells, self.alphas, self.betas, range(len(obstrCells))))
+    adjAlphaGenerator = p.imap(_elabOneCell, zip(obstrCells, self.alphas, self.betas, range(len(obstrCells))))
     for cell, adjAlpha, adjBeta, icell in adjAlphaGenerator:
       newAlphas.append(adjAlpha)
       newBetas.append(adjBeta)

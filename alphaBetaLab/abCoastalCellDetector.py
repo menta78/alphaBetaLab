@@ -1,6 +1,5 @@
 from mpl_toolkits import basemap
 from shapely import geometry as g
-from itertools import izip
 from abOptionManager import getOption
 
 
@@ -32,7 +31,7 @@ class abCoastalCellDetector:
     for pl in cstPls:
       xs = pl[0]
       ys = pl[1]
-      pts = [c for c in izip(xs, ys)]
+      pts = [c for c in zip(xs, ys)]
       gpl = g.Polygon(pts)
       cstGPls.append(gpl)
       cstPlBnds.append(gpl.boundary)

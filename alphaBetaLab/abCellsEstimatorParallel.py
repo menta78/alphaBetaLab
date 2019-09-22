@@ -1,5 +1,4 @@
 import multiprocessing as mp
-from itertools import izip
 
 import abCellsEstimator
 from abOptionManager import getOption
@@ -66,7 +65,7 @@ class abCellsEstimatorParallel:
     p = self._initParEnv()
 
     i = 0
-    for singleCellLocAlphaBetaOutput in p.imap(parallelFuncLocal, izip(cellEst.grid.cellCoordinates, allGeoCoords, cellEst.grid.cells)):
+    for singleCellLocAlphaBetaOutput in p.imap(parallelFuncLocal, zip(cellEst.grid.cellCoordinates, allGeoCoords, cellEst.grid.cells)):
       cellEst.updateLocAlphaBetaOutput(alphaBetaOutput, singleCellLocAlphaBetaOutput)
       i += 1
       if i % self._progressSkippedSteps == 0:
@@ -106,7 +105,7 @@ class abCellsEstimatorParallel:
     """
     p = self._initParEnv()
     i = 0
-    for singleCellShdAlphaBetaOutput in p.imap(parallelFuncShadow, izip(cellEst.grid.cellCoordinates, allGeoCoords, cellEst.grid.cells)):
+    for singleCellShdAlphaBetaOutput in p.imap(parallelFuncShadow, zip(cellEst.grid.cellCoordinates, allGeoCoords, cellEst.grid.cells)):
       cellEst.updateShdAlphaBetaOutput(alphaBetaOutput, singleCellShdAlphaBetaOutput)
       i += 1
       if i % self._progressSkippedSteps == 0:

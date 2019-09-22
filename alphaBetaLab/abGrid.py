@@ -1,6 +1,5 @@
 import numpy as np
 import shapely.geometry as gm
-from itertools import izip, imap
 import sys
 import multiprocessing as mp
 
@@ -100,9 +99,9 @@ class _abGrid:
       print('    initializing parallel environment ..')
       pl = mp.Pool(self.nParWorker)
       print('      ... done')
-      neighCellsGen = pl.imap(_buildNeighCacheParallelJob, izip(cls, clsCrdss, maxDiams, range(lc)))
+      neighCellsGen = pl.imap(_buildNeighCacheParallelJob, zip(cls, clsCrdss, maxDiams, range(lc)))
     else:
-      neighCellsGen = imap(_buildNeighCacheParallelJob, izip(cls, clsCrdss, maxDiams, range(lc)))
+      neighCellsGen = map(_buildNeighCacheParallelJob, zip(cls, clsCrdss, maxDiams, range(lc)))
           
     for clCrds, cneighs_ in neighCellsGen:
       if ic % max(1, (lc // 1000)) == 0:
@@ -145,9 +144,9 @@ class _abGrid:
       print('    initializing parallel environment ..')
       pl = mp.Pool(self.nParWorker)
       print('      ... done')
-      isLandOrCoastalCellGen = pl.imap(_cellIsOnLandOrCoastal, izip(cells, cellBnd, cellSfc, range(ncell)))
+      isLandOrCoastalCellGen = pl.imap(_cellIsOnLandOrCoastal, zip(cells, cellBnd, cellSfc, range(ncell)))
     else:
-      isLandOrCoastalCellGen = imap(_cellIsOnLandOrCoastal, izip(cells, cellBnd, cellSfc, range(ncell)))
+      isLandOrCoastalCellGen = map(_cellIsOnLandOrCoastal, zip(cells, cellBnd, cellSfc, range(ncell)))
 
     seaCells = []
     seaCellCrd = []
@@ -189,7 +188,7 @@ def _buildNeighCacheParallelJob(tpl):
   cl, clCrds, clMaxD, ic = tpl
   cneighs = []
   inc = ic + 1
-  for ncl, nclCrd1, nclCrds, nclMaxD in izip(cls[inc:], clsCrd1s[inc:], clsCrdss[inc:], maxDiams[inc:]):
+  for ncl, nclCrd1, nclCrds, nclMaxD in zip(cls[inc:], clsCrd1s[inc:], clsCrdss[inc:], maxDiams[inc:]):
     if _isNeigh(cl, clCrds[0], clMaxD, ncl, nclCrds[0], nclMaxD):
       cneighs.append(nclCrds)
   return clCrds, cneighs

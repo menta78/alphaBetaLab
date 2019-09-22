@@ -1,4 +1,3 @@
-from itertools import izip, imap
 import numpy as np
 import matplotlib
 from matplotlib.mlab import griddata
@@ -71,7 +70,7 @@ class abBathyDataGridder:
     xymap = {}
     nx = int(np.floor((maxx - minx)/dx))
     ny = int(np.floor((maxy - miny)/dy))
-    for xi, yi, zi in izip(x, y, z):
+    for xi, yi, zi in zip(x, y, z):
       xy = (xi, yi)
       if not (xy in xymap):
         ix = int(np.floor((xi - minx) / dx))
@@ -189,7 +188,7 @@ class abBathyDataGridder:
     self._print('interpolating and gethering the results ...')
     global btDtGridder
     btDtGridder = self
-    intpPatches = imap(_intpOnePatch, patchGenerator)
+    intpPatches = map(_intpOnePatch, patchGenerator)
     for pgrdx, pgrdy, pgrdz, iix, iiy in intpPatches:
       perc = float(iix*npatchy + iiy)/ntot*100
       self._progress(perc)
@@ -227,7 +226,7 @@ class abBathyDataGridder:
     if self.nParallelWorker > 1:
       intpPatches = p.imap(_intpOnePatch, patchGenerator)
     else:
-      intpPatches = imap(_intpOnePatch, patchGenerator)
+      intpPatches = map(_intpOnePatch, patchGenerator)
     for pgrdx, pgrdy, pgrdz, iix, iiy in intpPatches:
       perc = float(iix*npatchy + iiy)/ntot*100
       self._progress(perc)
@@ -258,9 +257,9 @@ class abBathyDataGridder:
     p = mp.Pool(self.nParallelWorker)
     grdzflatten = grdz.flatten()
     if self.nParallelWorker > 1:
-      inLandIxIy = p.imap(_computePointInLand, izip(ixcs, iycs, grdzflatten))
+      inLandIxIy = p.imap(_computePointInLand, zip(ixcs, iycs, grdzflatten))
     else:
-      inLandIxIy = imap(_computePointInLand, izip(ixcs, iycs, grdzflatten))
+      inLandIxIy = map(_computePointInLand, zip(ixcs, iycs, grdzflatten))
     ntot = len(grdzflatten)
     nx = grdz.shape[1]
     landxindxs, landyindxs = [], []
