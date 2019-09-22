@@ -1,3 +1,6 @@
+"""
+Temporary fix for basemap.
+"""
 import sys, os
 
 if not 'PROJ_LIB' in os.environ:

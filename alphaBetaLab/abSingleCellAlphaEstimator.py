@@ -205,12 +205,12 @@ class abSingleCellAlphaEstimator:
 
     def pruneAndSort():
       projsToX_ = [p for p in projsToX if p.start < cellmaxx]
-      projsToX_.sort(lambda p1, p2: int(np.sign(p1.start - p2.start)))
+      projsToX_.sort(key=lambda p1: p1.start)
       for p in projsToX_:
         p.canReshapeSup = p.canReshapeSup and not (lesser(p.start, cellmaxx) and greater(p.end, cellmaxx))
         p.end = min(p.end, cellmaxx)
       projsToY_ = [p for p in projsToY if p.start < cellmaxy]
-      projsToY_.sort(lambda p1, p2: int(np.sign(p1.start - p2.start)))
+      projsToY_.sort(key=lambda p1: p1.start)
       for p in projsToY_:
         p.canReshapeSup = p.canReshapeSup and not (lesser(p.start, cellmaxy) and greater(p.end, cellmaxy))
         p.end = min(p.end, cellmaxy)

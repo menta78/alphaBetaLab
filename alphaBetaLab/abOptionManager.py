@@ -7,7 +7,7 @@ class abOptions:
 _opts = {}
 def printOpts():
   print('OPTIONS:')
-  optNms = _opts.keys()
+  optNms = list(_opts.keys())
   optNms.sort()
   for opt in optNms:
     print(' ' + opt + ': ' + str(_opts[opt]))
