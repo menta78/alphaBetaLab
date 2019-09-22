@@ -1,6 +1,5 @@
 import os
 import numpy as np
-from matplotlib.mlab import griddata
 import itertools
 
 def loadBathy():
@@ -19,6 +18,7 @@ def loadBathy():
     lat = float(vls[1])
     dpt = float(vls[2])
     rslt.append([lon, lat, dpt])
+  fl.close()
   return np.array(rslt)
 
 def loadCoastline():
@@ -36,6 +36,7 @@ def loadCoastline():
     lon = float(vls[1])
     lat = float(vls[2])
     rslt.append([lon, lat])
+  fl.close()
   return np.array(rslt)
 
 def loadIslands():

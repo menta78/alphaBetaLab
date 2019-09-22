@@ -29,7 +29,7 @@ class _abTriMeshSpec:
     """
     getCellPolygons: returns an approximate cental median cell for each non-land-boundary node
     """
-    plIds = self.connectionPolygons.keys()
+    plIds = list(self.connectionPolygons.keys())
     plIds.sort()
     centroidsByNode = {}
     for plId in plIds:
@@ -44,7 +44,7 @@ class _abTriMeshSpec:
     
     cellPlys = []
     nodeIds = []
-    nodeIds0 = centroidsByNode.keys()
+    nodeIds0 = list(centroidsByNode.keys())
     nodeIds0.sort()
     npts = [g.Point(self.nodes[nid]) for nid in nodeIds0]
     for nid, npt in zip(nodeIds0, npts):
@@ -94,7 +94,7 @@ class _abTriMeshSpec:
   def saveAsMsh(self, filePath, bathyFactor=-1):
     fl = open(filePath, 'w')
     fl.write('$MeshFormat\n2 0 8\n$EndMeshFormat\n$Nodes\n')
-    nodeIds = self.nodes.keys()
+    nodeIds = list(self.nodes.keys())
     nds = len(nodeIds)
     fl.write(str(nds).rjust(12) + '\n')
     nodeIds.sort()
@@ -201,6 +201,7 @@ def loadFromGr3File(gr3FilePath):
       m.landBoundaryNodes[nodeId] = ibnd + 1
       m.landBoundaryOrdered.append(nodeId)
 
+  fl.close()
   return m
  
 
@@ -261,6 +262,7 @@ def loadFromMshFile(mshFilePath):
   
   #AFAIK the open boundary is not included in the file
 
+  fl.close()
   return m
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib
-from matplotlib.mlab import griddata
+#from matplotlib.mlab import griddata
+from scipy.interpolate import griddata
 import multiprocessing as mp
 from warnings import warn
 from shapely import geometry as g
@@ -85,7 +86,7 @@ class abBathyDataGridder:
     
     self._print('  gathering reduced points')
     redx, redy, redz = [], [], []
-    ptsiter = ptsmap.itervalues()
+    ptsiter = ptsmap.values()
     for cellpts in ptsiter:
       cellpts = np.array(cellpts)
       clxs = cellpts[:,0]
@@ -310,7 +311,9 @@ def _intpOnePatch(patch):
     msg += 'Try with a bigger value of gridder.nxInterpSteps, gridder.nyInterpSteps'
     raise abException(msg)
   pts = np.array([predx, predy]).T
-  pgrdz = griddata(predx, predy, predz, pgrdx, pgrdy)
+  pgrdxMtx, pgrdyMtx = np.meshgrid(pgrdx, pgrdy)
+  pgrdzFlt = griddata((predx, predy), predz, (pgrdxMtx.flatten(), pgrdyMtx.flatten()))
+  pgrdz = pgrdzFlt.reshape(pgrdxMtx.shape)
   return pgrdx, pgrdy, pgrdz, ix, iy
     
 

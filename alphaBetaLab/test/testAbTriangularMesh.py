@@ -25,13 +25,13 @@ class testAbFiniteElementsMesh(unittest.TestCase):
     self.assertEqual(64, len(feMeshSpec.openBoundaryNodes.keys()))
     self.assertFalse(5 in feMeshSpec.openBoundaryNodes)
     self.assertTrue(22 in feMeshSpec.openBoundaryNodes)
-    bnd = np.unique(feMeshSpec.openBoundaryNodes.values())
+    bnd = np.unique(list(feMeshSpec.openBoundaryNodes.values()))
     self.assertEqual([1], bnd)
     self.assertEqual(1, feMeshSpec.openBoundaryNodes[22])
     self.assertEqual(48, len(feMeshSpec.landBoundaryNodes.keys()))
     self.assertFalse(3 in feMeshSpec.landBoundaryNodes)
     self.assertTrue(25 in feMeshSpec.landBoundaryNodes)
-    bnd = np.unique(feMeshSpec.landBoundaryNodes.values())
+    bnd = np.unique(list(feMeshSpec.landBoundaryNodes.values()))
     self.assertEqual([1], bnd)
 
    

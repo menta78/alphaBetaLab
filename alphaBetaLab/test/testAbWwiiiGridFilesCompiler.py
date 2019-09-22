@@ -10,8 +10,8 @@ class testAbWwiiiGridFilesCompiler(unittest.TestCase):
   def testCompileWwiiiGridFiles(self):
     currdir = os.path.dirname(os.path.abspath(__file__))
     grdBathyFlPath = os.path.join(currdir, 'bathyForWwiiiFilesCompilation.pkl')
-    fl = open(grdBathyFlPath)
-    grdx, grdy, grdz = pickle.load(fl)
+    fl = open(grdBathyFlPath, 'rb')
+    grdx, grdy, grdz = pickle.load(fl, encoding='bytes')
     fl.close()
     testdir = os.path.join(currdir, 'testgrid')
     try:

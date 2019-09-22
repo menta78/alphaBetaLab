@@ -5,7 +5,7 @@ import pickle
 import abBathyDataGridder
 from abUtils import *
 
-import loadBathy_testGridder
+from test import loadBathy_testGridder
 
 class testAbBathyDataGridder(unittest.TestCase):
 
@@ -283,15 +283,15 @@ class testAbBathyDataGridder(unittest.TestCase):
       grdx, grdy, grdz = grdr.doGrid(minx, maxx, dx, miny, maxy, dy)
     except abException as e:
       excRaised = True
-      print(e.message)
+      print(e)
     self.assertTrue(excRaised)
       
   def testGridLaSpeziaFineWithCoastLine(self):
     xyz = loadBathy_testGridder.loadBathy()
     cstFlDir = os.path.dirname(os.path.abspath(__file__))
     cstFlPth = os.path.join(cstFlDir, 'testGridder_coast.pckl')
-    fl = open(cstFlPth)
-    cstln = pickle.load(fl)
+    fl = open(cstFlPth, 'rb')
+    cstln = pickle.load(fl, encoding='bytes')
     fl.close()
     xs, ys, zs = xyz[:,0], xyz[:,1], xyz[:,2]
     minx, maxx, dx = 9.7, 10.4, .0005
@@ -310,8 +310,8 @@ class testAbBathyDataGridder(unittest.TestCase):
     xyz = loadBathy_testGridder.loadBathy()
     cstFlDir = os.path.dirname(os.path.abspath(__file__))
     cstFlPth = os.path.join(cstFlDir, 'testGridder_coast.pckl')
-    fl = open(cstFlPth)
-    cstln = pickle.load(fl)
+    fl = open(cstFlPth, 'rb')
+    cstln = pickle.load(fl, encoding='bytes')
     fl.close()
     xs, ys, zs = xyz[:,0], xyz[:,1], xyz[:,2]
     minx, maxx, dx = 9.7, 10.4, .0005
@@ -330,8 +330,8 @@ class testAbBathyDataGridder(unittest.TestCase):
     xyz = loadBathy_testGridder.loadBathy()
     cstFlDir = os.path.dirname(os.path.abspath(__file__))
     cstFlPth = os.path.join(cstFlDir, 'testGridder_coast.pckl')
-    fl = open(cstFlPth)
-    cstln = pickle.load(fl)
+    fl = open(cstFlPth, 'rb')
+    cstln = pickle.load(fl, encoding='bytes')
     fl.close()
     xs, ys, zs = xyz[:,0], xyz[:,1], xyz[:,2]
     minx, maxx, dx = 9.7, 10.4, .0005
