@@ -7,7 +7,7 @@ from warnings import warn
 from shapely import geometry as g
 import sys
 
-from abUtils import *
+from .abUtils import *
 
 
 class abBathyDataGridder:

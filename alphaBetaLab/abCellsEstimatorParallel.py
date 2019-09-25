@@ -1,7 +1,7 @@
 import multiprocessing as mp
 
-import abCellsEstimator
-from abOptionManager import getOption
+from . import abCellsEstimator
+from .abOptionManager import getOption
 
 """
 parallelFuncLocal: needs to be a global function

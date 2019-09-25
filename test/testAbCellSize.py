@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from shapely import geometry as g
 from shapely import affinity as a
-from abCellSize import abCellSize, _computeAvgDir
+from alphaBetaLab.abCellSize import abCellSize, _computeAvgDir
 
 class testAbCellSize(unittest.TestCase):
 

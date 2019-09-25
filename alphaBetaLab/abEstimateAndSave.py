@@ -2,17 +2,17 @@ import os
 import numpy as np
 import time
 
-import abHighResAlphaMatrix
-import abCellsEstimator
-import abCellsEstimatorParallel
-import abWwiiiObstrFileSaver
-import abWwiiiPropSchObstrFileSaver
-from abOptionManager import getOption, printOpts
-import abEtopo1BathyLoader
-import abRectangularGridBuilder
-import abCoastalCellDetector
-import abTriangularMesh
-from abTriangularMeshGridBuilder import abTriangularMeshGridBuilder
+from . import abHighResAlphaMatrix
+from . import abCellsEstimator
+from . import abCellsEstimatorParallel
+from . import abWwiiiObstrFileSaver
+from . import abWwiiiPropSchObstrFileSaver
+from .abOptionManager import getOption, printOpts
+from . import abEtopo1BathyLoader
+from . import abRectangularGridBuilder
+from . import abCoastalCellDetector
+from . import abTriangularMesh
+from .abTriangularMeshGridBuilder import abTriangularMeshGridBuilder
 
 
 

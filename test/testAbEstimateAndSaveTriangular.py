@@ -3,7 +3,7 @@ import os, shutil
 import numpy as np
 from shapely import geometry as g
 
-from abEstimateAndSave import triMeshSpecFromGr3File, abEstimateAndSaveTriangularEtopo1
+from alphaBetaLab.abEstimateAndSave import triMeshSpecFromGr3File, abEstimateAndSaveTriangularEtopo1
 
 
 class testAbEstimateAndSaveTriangular(unittest.TestCase):

@@ -1,7 +1,7 @@
 import unittest
 from shapely import geometry as g
 
-import abCoastalCellDetector
+from alphaBetaLab import abCoastalCellDetector
 
 class testAbCoastalCellDetector(unittest.TestCase):
    

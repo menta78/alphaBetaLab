@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
 
-from abRectangularGridBuilder import abRectangularGridBuilder as grdBld
-import abUpstreamPolyEstimator as upe
+from alphaBetaLab.abRectangularGridBuilder import abRectangularGridBuilder as grdBld
+from alphaBetaLab import abUpstreamPolyEstimator as upe
 
 class testAbUpstreamPolyEstimator(unittest.TestCase):
 

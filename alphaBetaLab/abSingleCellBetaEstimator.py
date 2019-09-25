@@ -1,10 +1,10 @@
 import numpy as np
 from shapely import geometry as g
 
-import abUtils as abutls
-from abFirstOctantTransformation import abFirstOctantTransformation
-from abSingleCellAlphaEstimator import abSingleCellAlphaEstimator
-import abAlphaBetaRecalibrator
+from . import abUtils as abutls
+from .abFirstOctantTransformation import abFirstOctantTransformation
+from .abSingleCellAlphaEstimator import abSingleCellAlphaEstimator
+from . import abAlphaBetaRecalibrator
 
 debugPlots = False
 thetaTolerance = .0001

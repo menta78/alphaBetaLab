@@ -3,8 +3,8 @@ import shapely.geometry as gm
 import sys
 import multiprocessing as mp
 
-from abUtils import *
-import abCoastalCellDetector
+from .abUtils import *
+from . import abCoastalCellDetector
 
 
 def getSeaGrid(cells, cellCoordinates, highResAlphaMtx, coastalCellDetector, 

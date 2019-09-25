@@ -4,8 +4,8 @@ import numpy as np
 from shapely import geometry as g
 import multiprocessing as mp
 
-import abCellSize
-import abUtils
+from . import abCellSize
+from . import abUtils
 
 
 

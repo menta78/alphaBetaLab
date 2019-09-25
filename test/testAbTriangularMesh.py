@@ -3,7 +3,7 @@ import os
 import numpy as np
 from shapely import geometry as g
 
-import abTriangularMesh
+from alphaBetaLab import abTriangularMesh
 
 plotPolygons = False
 

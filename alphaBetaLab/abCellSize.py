@@ -2,7 +2,7 @@ import numpy as np
 from shapely import affinity as aff
 from shapely import geometry as g
 
-from abUtils import *
+from .abUtils import *
 
 
 def _computeAvgDir(cell):

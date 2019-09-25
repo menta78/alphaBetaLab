@@ -1,13 +1,13 @@
 import unittest
 import numpy as np
 
-from abHighResAlphaMatrix import abHighResAlphaMatrix as alphaMtx
-from abFirstOctantTransformation import *
+from alphaBetaLab.abHighResAlphaMatrix import abHighResAlphaMatrix as alphaMtx
+from alphaBetaLab.abFirstOctantTransformation import *
 
 plotResults = False
 if plotResults:
   from matplotlib import pyplot as plt
-  from abHighResAlphaMatrixPlot import plotHiResAlphaMtx as plot
+  from alphaBetaLab.abHighResAlphaMatrixPlot.plot import plotHiResAlphaMtx as plot
 
 class testAbFirstOctantTransformation(unittest.TestCase):
 

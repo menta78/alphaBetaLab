@@ -3,8 +3,8 @@ import os
 import numpy as np
 from shapely import geometry as g
 
-import abTriangularMesh
-from abTriangularMeshGridBuilder import abTriangularMeshGridBuilder
+from alphaBetaLab import abTriangularMesh
+from alphaBetaLab.abTriangularMeshGridBuilder import abTriangularMeshGridBuilder
 
 
 class testAbFiniteElementsGridBuilder(unittest.TestCase):

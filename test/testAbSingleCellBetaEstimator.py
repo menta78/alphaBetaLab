@@ -3,10 +3,10 @@ import math
 import unittest
 from shapely import geometry as g
 
-import abSingleCellAlphaEstimator
-import abSingleCellBetaEstimator
-from abSingleCellBetaEstimator import abSingleCellBetaEstimator as be
-from abHighResAlphaMatrix import abHighResAlphaMatrix as alphaMtx
+from alphaBetaLab import abSingleCellAlphaEstimator
+from alphaBetaLab import abSingleCellBetaEstimator
+from alphaBetaLab.abSingleCellBetaEstimator import abSingleCellBetaEstimator as be
+from alphaBetaLab.abHighResAlphaMatrix import abHighResAlphaMatrix as alphaMtx
 
 debugPlots = False
 abSingleCellAlphaEstimator.debugPlots = False

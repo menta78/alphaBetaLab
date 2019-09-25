@@ -1,7 +1,7 @@
 import numpy as np
 from shapely import geometry as g
 
-from abUtils import *
+from .abUtils import *
 
 dxtol = .0001
 dytol = .0001

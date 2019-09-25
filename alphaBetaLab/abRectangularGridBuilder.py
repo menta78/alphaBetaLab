@@ -1,6 +1,6 @@
 import numpy as np
 import shapely.geometry as gm
-import abGrid
+from . import abGrid
 
 class abRectangularGridBuilder:
    

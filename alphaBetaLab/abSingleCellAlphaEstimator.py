@@ -1,9 +1,9 @@
 import numpy as np
 from shapely import geometry as g
-from abUtils import *
+from .abUtils import *
 
-from abFirstOctantTransformation import abFirstOctantTransformation
-import abAlphaBetaRecalibrator
+from .abFirstOctantTransformation import abFirstOctantTransformation
+from . import abAlphaBetaRecalibrator
 
 debugPlots = False
 debugPlotShow = False

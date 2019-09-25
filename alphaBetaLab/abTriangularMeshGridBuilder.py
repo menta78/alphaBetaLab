@@ -1,4 +1,4 @@
-import abGrid
+from . import abGrid
 
 
 class abTriangularMeshGridBuilder:

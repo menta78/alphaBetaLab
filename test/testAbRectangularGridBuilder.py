@@ -1,7 +1,7 @@
 import unittest
 import shapely.geometry as gm
 
-from abRectangularGridBuilder import abRectangularGridBuilder
+from alphaBetaLab.abRectangularGridBuilder import abRectangularGridBuilder
 
 class testAbRectangularGridBuilder(unittest.TestCase):
 

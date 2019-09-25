@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-from abUtils import *
+from .abUtils import *
 
 try:
   from scipy.interpolate import RegularGridInterpolator

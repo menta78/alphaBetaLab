@@ -2,10 +2,10 @@ import unittest
 import numpy as np
 import os
 import pickle
-import abBathyDataGridder
-from abUtils import *
+from alphaBetaLab import abBathyDataGridder
+from alphaBetaLab.abUtils import *
 
-from test import loadBathy_testGridder
+from . import loadBathy_testGridder
 
 class testAbBathyDataGridder(unittest.TestCase):
 

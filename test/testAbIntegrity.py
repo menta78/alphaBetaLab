@@ -2,13 +2,13 @@ import unittest
 import os
 import shutil
 
-from abHighResAlphaMatrix import *
-from abEstimateAndSave import _abEstimateAndSave
-import abCellsEstimator
+from alphaBetaLab.abHighResAlphaMatrix import *
+from alphaBetaLab.abEstimateAndSave import _abEstimateAndSave
+from alphaBetaLab import abCellsEstimator
 from test.wwiiiSyntheticGridManager.wwiiiSyntheticGridManager import *
-from abRectangularGridBuilder import abRectangularGridBuilder
-from abHighResAlphaMatrix import abHighResAlphaMatrix as hiResAMtx
-from abOptionManager import abOptions
+from alphaBetaLab.abRectangularGridBuilder import abRectangularGridBuilder
+from alphaBetaLab.abHighResAlphaMatrix import abHighResAlphaMatrix as hiResAMtx
+from alphaBetaLab.abOptionManager import abOptions
 
 
 

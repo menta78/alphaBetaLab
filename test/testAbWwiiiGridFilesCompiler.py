@@ -3,7 +3,7 @@ import os
 import shutil
 import pickle
 
-import abWwiiiGridFilesCompiler
+from alphaBetaLab import abWwiiiGridFilesCompiler
 
 class testAbWwiiiGridFilesCompiler(unittest.TestCase):
 

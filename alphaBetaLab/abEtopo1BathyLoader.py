@@ -1,7 +1,7 @@
 import numpy as np
 import netCDF4
 
-from abUtils import abException
+from .abUtils import abException
 
 def loadBathy(etFilePath, llcrnr = None, urcrnr = None):
   """

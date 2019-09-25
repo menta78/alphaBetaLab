@@ -1,13 +1,12 @@
 import unittest
 import numpy as np
 
-from abRectangularGridBuilder import abRectangularGridBuilder as grdBld
-from abHighResAlphaMatrix import abHighResAlphaMatrix as hiResAMtx
-import abCellsEstimator as abClEstMod
-from abCellsEstimator import abCellsEstimator
-from abCellsEstimatorParallel import abCellsEstimatorParallel
-import abSingleCellAlphaEstimator, abSingleCellBetaEstimator
-from abOptionManager import abOptions
+from alphaBetaLab.abRectangularGridBuilder import abRectangularGridBuilder as grdBld
+from alphaBetaLab.abHighResAlphaMatrix import abHighResAlphaMatrix as hiResAMtx
+from alphaBetaLab import abCellsEstimator as abClEstMod
+from alphaBetaLab.abCellsEstimator import abCellsEstimator
+from alphaBetaLab import abSingleCellAlphaEstimator, abSingleCellBetaEstimator
+from alphaBetaLab.abOptionManager import abOptions
 
 #abSingleCellAlphaEstimator.debugPlots = True
 #abSingleCellAlphaEstimator.debugPlotSave = True
@@ -31,7 +30,7 @@ class testAbCellsEstimator(unittest.TestCase):
     abSingleCellBetaEstimator.defaultKShape = 1
     abClEstMod.defaultShadowAlphaAlleviationParam = 1
 
-    rectGridBld = grdBld(minX = 1, minY = 10, dx = 1, dy = 1, nx = 3, ny = 2, minXYIsCentroid=False)
+    rectGridBld = grdBld(minX = 1, minY = 10, dx = 1, dy = 1, nx = 3, ny = 2, nParWorker = 4, minXYIsCentroid=False)
     hiresxs = np.arange(0, 4, .1)
     hiresys = np.arange(9, 13, .1)
     alphas = np.ones([len(hiresys), len(hiresxs)])
@@ -46,9 +45,8 @@ class testAbCellsEstimator(unittest.TestCase):
     dirs = [0., np.pi/2., np.pi, 3.*np.pi/2.]
     freqs = [.1, .2, .3]
     cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, None)
-    cellEstP = abCellsEstimatorParallel(cellEst, 4, None)
     
-    loccrd, locgeocrd, localpha, locbeta, sizes = cellEstP.computeLocalAlphaBeta()
+    loccrd, locgeocrd, localpha, locbeta, sizes = cellEst.computeLocalAlphaBeta()
     self.assertEqual(2, len(loccrd))
     self.assertTrue((np.array([1, 0]) == loccrd[0]).all())
     self.assertTrue((np.array([1, 1]) == loccrd[1]).all())
@@ -68,7 +66,7 @@ class testAbCellsEstimator(unittest.TestCase):
     b00 = b0[0]
     b01 = b0[-1]
     self.assertTrue((b00 == b01).all())
-    self.assertTrue(np.allclose(b00, np.array([ .75,  .9 ,  .7 ,  .91]), rtol=.05))
+    self.assertTrue(np.allclose(b00, np.array([ .75,  .9 ,  .7 ,  .91]), rtol = .05))
     self.assertTrue(np.allclose(locbeta[0], locbeta[1]))
 
   def testShadow(self):
@@ -76,7 +74,10 @@ class testAbCellsEstimator(unittest.TestCase):
     abSingleCellBetaEstimator.defaultKShape = 1
     abClEstMod.defaultShadowAlphaAlleviationParam = 1
 
-    rectGridBld = grdBld(minX = 1, minY = 10, dx = 1, dy = 1, nx = 3, ny = 2, minXYIsCentroid=False)
+    rectGridBld = grdBld(minX = 1, minY = 10, dx = 1, dy = 1, nx = 3, ny = 2, minXYIsCentroid = False)
+    hiResAlphaMtx = self.getMockHiResAlphaMtxAndCstCellDet()
+    coastalCellDetector = self.getMockHiResAlphaMtxAndCstCellDet()
+    grd = rectGridBld.buildGrid(hiResAlphaMtx, coastalCellDetector)
     hiresxs = np.arange(0, 4, .1)
     hiresys = np.arange(9, 13, .1)
     alphas = np.ones([len(hiresys), len(hiresxs)])
@@ -85,15 +86,13 @@ class testAbCellsEstimator(unittest.TestCase):
     xyobstr = np.meshgrid(xobstr, yobstr)
     alphas[xyobstr[1], xyobstr[0]] = 0
     hrmtx = hiResAMtx(hiresxs, hiresys, alphas)
-    coastalCellDetector = self.getMockHiResAlphaMtxAndCstCellDet()
-    grd = rectGridBld.buildGrid(hrmtx, coastalCellDetector)
   
     dirs = [0., np.pi/2., np.pi, 3.*np.pi/2.]
     freqs = [.1, .2, .3]
-    cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, abOptions(shadRecalibFactor = 1))
-    cellEstP = abCellsEstimatorParallel(cellEst, 4, abOptions(shadRecalibFactor = 1))
-    cellEstP.computeLocalAlphaBeta()
-    shdcrd, shdgeocrd, shdalpha, shdbeta, sizes = cellEstP.computeShadowAlphaBeta()
+    cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, abOptions(shadRecalibFactor=1))
+    
+    cellEst.computeLocalAlphaBeta()
+    shdcrd, shdgeocrd, shdalpha, shdbeta, sizes = cellEst.computeShadowAlphaBeta()
     self.assertEqual(6, len(shdcrd))
     self.assertTrue((np.array([0, 0]) == shdcrd[0]).all())
     self.assertTrue((np.array([0, 1]) == shdcrd[1]).all())
@@ -144,7 +143,7 @@ class testAbCellsEstimator(unittest.TestCase):
      np.array([[ 0.75,  1.  ,  1.  ,  1.  ],
                [ 0.75,  1.  ,  1.  ,  1.  ],\
                [ 0.75,  1.  ,  1.  ,  1.  ]])])
-    self.assertTrue(np.allclose(expshdbeta, np.array(shdbeta), rtol=.05))
+    self.assertTrue(np.allclose(expshdbeta, np.array(shdbeta), rtol = .05))
 
 
 

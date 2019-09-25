@@ -1,7 +1,7 @@
 import numpy as np
 from shapely import geometry as g, affinity as a
 
-from abHighResAlphaMatrix import abHighResAlphaMatrix as hrmtx
+from .abHighResAlphaMatrix import abHighResAlphaMatrix as hrmtx
 
 class abFirstOctantTransformation:
 

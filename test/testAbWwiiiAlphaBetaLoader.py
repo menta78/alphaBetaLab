@@ -1,6 +1,6 @@
 import unittest
 import os
-import abWwiiiAlphaBetaLoader
+from alphaBetaLab import abWwiiiAlphaBetaLoader
 
 class testAbWwiiiAlphaBetaLoader(unittest.TestCase):
   
