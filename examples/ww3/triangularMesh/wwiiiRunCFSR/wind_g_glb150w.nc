@@ -1,1 +1,0 @@
-../../regularMesh/windData/wind_g_glb150w.nc
