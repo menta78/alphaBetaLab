@@ -86,11 +86,13 @@ class _abGrid:
       return mxdd
 
     print('    building neighbor cells cache (can take some time) ...')
-    global cls, clsCrd1s, clsCrdss, maxDiams
+    global cls, clsCrd1s, clsCrdss, maxDiams, nclCrd0, nclCrd1
     cls = [c for c in self.cells]
     clsCrd1s = self.cellCoordinates
     clsCrdss = self.cellBnd
-    maxDiams = [getMaxDiam(c) for c in clsCrdss]
+    maxDiams = np.array([getMaxDiam(c) for c in clsCrdss])
+    nclCrd0 = np.array([c[0][0] for c in clsCrdss])
+    nclCrd1 = np.array([c[0][1] for c in clsCrdss])
     cch = {}
     lc = len(cls)
     ic = 0
@@ -173,24 +175,31 @@ def _cellIsOnLandOrCoastal(tpl):
   onLand = cellAlphaMtx.onLand()
   isCoastal = cstClDet.isCoastalCell(cell, boundary, surface) if not onLand else False
   return onLand or isCoastal, icell
-  
-
-def _isNeigh(cl, clCrd, clMaxD, ncl, nclCrd, nclMaxD):
-  # excluding from complex computation very far cells
-  frstPtDist = np.sqrt((nclCrd[0] - clCrd[0])**2 + (nclCrd[1] - clCrd[1])**2)
-  if frstPtDist < (clMaxD + nclMaxD):
-    return lesserClose(cl.distance(ncl), 0.)
-  else:
-    return False
 
 
 def _buildNeighCacheParallelJob(tpl):
   cl, clCrds, clMaxD, ic = tpl
   cneighs = []
+
   inc = ic + 1
-  for ncl, nclCrd1, nclCrds, nclMaxD in zip(cls[inc:], clsCrd1s[inc:], clsCrdss[inc:], maxDiams[inc:]):
-    if _isNeigh(cl, clCrds[0], clMaxD, ncl, nclCrds[0], nclMaxD):
+
+  maxDiams_ = maxDiams[inc:]
+  nclCrd0_ = nclCrd0[inc:]
+  nclCrd1_ = nclCrd1[inc:]
+  frstPtDx_ = np.abs(nclCrd0_ - clCrds[0][0])
+  gt180cnd = frstPtDx_ > 180
+  frstPtDx_[gt180cnd] = np.abs(frstPtDx_[gt180cnd] - 360.)
+  frstPtDy_ = nclCrd1_ - clCrds[0][1]
+  frstPtDist_ = np.sqrt(frstPtDx_**2 + frstPtDy_**2)
+  iiCloseCells = np.where(frstPtDist_ < clMaxD + maxDiams_)[0]
+
+  for iiClsCell in iiCloseCells:
+    ii_ = inc + iiClsCell
+    ncl = cls[ii_]
+    nclCrds = clsCrdss[ii_]
+    if lesserClose(cl.distance(ncl), 0):
       cneighs.append(nclCrds)
+    
   return clCrds, cneighs
     
 

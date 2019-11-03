@@ -71,7 +71,7 @@ class testAbRectangularGridBuilder(unittest.TestCase):
     self.assertEqual(nx*ny - 3, len(cells))
     
 
-  def _testGetNeighborsSerial(self):
+  def testGetNeighborsSerial(self):
     minx = 100.
     miny = 45.
     dx = .5
@@ -106,7 +106,7 @@ class testAbRectangularGridBuilder(unittest.TestCase):
       self.assertTrue( cell.distance(nc) < .000000001 )
 
 
-  def _testGetNeighborsParallel(self):
+  def testGetNeighborsParallel(self):
     minx = 100.
     miny = 45.
     dx = .5
