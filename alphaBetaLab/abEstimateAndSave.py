@@ -9,6 +9,7 @@ from . import abWwiiiObstrFileSaver
 from . import abWwiiiPropSchObstrFileSaver
 from .abOptionManager import getOption, printOpts
 from . import abEtopo1BathyLoader
+from . import abGebcoBathyLoader
 from . import abRectangularGridBuilder
 from . import abCoastalCellDetector
 from . import abTriangularMesh
@@ -75,7 +76,45 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
   zlim = -.1
   print('loading etopo1 bathymetry ...')
   x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
-  alphamtx = np.ones(z.shape)
+  alphamtx = np.ones(z.shape, dtype=bool)
+  alphamtx[z > zlim] = 0
+  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
+
+  # creating the detector of the cells located along the coasts of big coastal bodies.
+  # These bodies are resolved correctly by the model, and do not need subscale modelling
+  coastalCellDetector = abCoastalCellDetector.abCoastalCellDetector(abOptions)
+
+  # creating the grid object (where each cell is represented as a polygon)
+  grid = regGridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
+
+  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
+
+def abEstimateAndSaveRegularGebco(dirs, freqs, gridName, regularGridSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+  """
+  abEstimateAndSaveRegularGebco:
+  This method does:
+
+  - build an instance of _abGrid from the input regularGridSpec object (that represents 
+    the logical structure of a latlon mesh, and can be generated with the regularGridSpecWW3 function)
+  - build an instance of highResolutionBathyMatrix from gebco
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
+  """
+  
+  # instatiating the builder of abGrid object for regular grids
+  r = regularGridSpec
+  xmin, ymin = r.xmin, r.ymin
+  dx, dy = r.dx, r.dy
+  nx, ny = r.nx, r.ny
+  mask = r.mask
+  regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, mask, nParWorker = nParWorker)
+
+  # building the high resolution matrix of alpha based on etopo1
+  llcrnr = getOption(abOptions, 'llcrnr', None)
+  urcrnr = getOption(abOptions, 'urcrnr', None)
+  zlim = -.1
+  print('loading gebco bathymetry ...')
+  x, y, z = abGebcoBathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
+  alphamtx = np.ones(z.shape, dtype=bool)
   alphamtx[z > zlim] = 0
   highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
 
@@ -119,6 +158,31 @@ def abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridName, triMeshSpec, etopo1
   zlim = -.1
   print('loading etopo1 bathymetry ...')
   x, y, z = abEtopo1BathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
+  alphamtx = np.ones(z.shape)
+  alphamtx[z > zlim] = 0
+  highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
+
+
+  _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
+
+def abEstimateAndSaveTriangularGebco(dirs, freqs, gridName, triMeshSpec, etopo1FilePath, outputDirectory, nParWorker, abOptions = None):
+  """
+  abEstimateAndSaveTriangularGebco: 
+  This method does:
+  - build an instance of _abGrid from the input triMeshSpec object (that should represent 
+    the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
+  - build an instance of highResolutionBathyMatrix from gebco
+  - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
+  """
+  
+  gridBld = abTriangularMeshGridBuilder(triMeshSpec, nParWorker = nParWorker)
+  grid = gridBld.buildGrid()
+
+  llcrnr = getOption(abOptions, 'llcrnr', None)
+  urcrnr = getOption(abOptions, 'urcrnr', None)
+  zlim = -.1
+  print('loading gebco bathymetry ...')
+  x, y, z = abGebcoBathyLoader.loadBathy(etopo1FilePath, llcrnr, urcrnr)
   alphamtx = np.ones(z.shape)
   alphamtx[z > zlim] = 0
   highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
