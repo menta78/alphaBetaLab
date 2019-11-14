@@ -79,7 +79,10 @@ class testIntegrity(unittest.TestCase):
        expvals = loadVals(expShdFl)
        self.assertTrue(np.all(abs(expvals-outvals) < .05 ))
      finally:
-       shutil.rmtree(self.tempOutDir)
+       try:
+         shutil.rmtree(self.tempOutDir)
+       except:
+         pass
 
     
 
