@@ -23,7 +23,7 @@ regularGridSpec = regularGridSpecWW3(
 
 # path of the etopo1 bathymetry
 etopoFilePath = '/home/lmentaschi/usr/WaveWatchIII/gridgen1.1/reference_data/etopo1.nc'
-gebcoFilePath = '/DATA/JEODPP/eos/projects/CRITECH/BATHYMETRY/GLOBAL/GEBCO_2019_15_arc_seconds/GEBCO_2019.nc'
+#gebcoFilePath = '/DATA/JEODPP/eos/projects/CRITECH/BATHYMETRY/GLOBAL/GEBCO_2019_15_arc_seconds/GEBCO_2019.nc'
 
 # output directory
 outputDestDir = './output/'
@@ -34,6 +34,6 @@ nParWorker = 12
 
 # instruction to do the computation and save the output
 # No options are given. The algorithm is launched on the whole domain with the default parameters
-#abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker)
-abEstimateAndSaveRegularGebco(dirs, freqs, gridname, regularGridSpec, gebcoFilePath, outputDestDir, nParWorker)
+abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker)
+#abEstimateAndSaveRegularGebco(dirs, freqs, gridname, regularGridSpec, gebcoFilePath, outputDestDir, nParWorker) # a global mesh with gebco is slow: takes 16 times more memory and time
 
