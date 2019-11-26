@@ -23,14 +23,19 @@ def loadBathy(gbcFilePath, llcrnr = None, urcrnr = None):
   else:
     raise abException('abGebcoBathyLoader: lat coordinate not found in file')
 
-  z = ds.variables['elevation'][:]
-
   if not llcrnr is None:
-    cndLon = np.logical_and(lon >= llcrnr[0], lon <= urcrnr[0])
-    cndLat = np.logical_and(lat >= llcrnr[1], lat <= urcrnr[1]) 
+    lon_ = np.array(lon)
+    urcrnr_ = np.array(urcrnr)
+    if llcrnr[0] > urcrnr_[0]: # the rectange starts W of 180degE and finishes E of 180degE
+      lon_[lon_ < 0] = lon_[lon_ < 0] + 360
+      urcrnr_[0] = urcrnr_[0] + 360
+    cndLon = np.logical_and(lon_ >= llcrnr[0], lon_ <= urcrnr_[0])
+    cndLat = np.logical_and(lat >= llcrnr[1], lat <= urcrnr_[1]) 
     lon = lon[cndLon]
     lat = lat[cndLat]
-    z = z[np.ix_(cndLat, cndLon)]
+    z = ds.variables['elevation'][cndLat, cndLon]
+  else:
+    z = ds.variables['elevation'][:]
 
   return lon, lat, z 
 

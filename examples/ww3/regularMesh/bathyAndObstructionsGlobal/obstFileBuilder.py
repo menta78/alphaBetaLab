@@ -2,7 +2,7 @@ import numpy as np
 
 # importing from alphaBetaLab the needed components
 from alphaBetaLab.abOptionManager import abOptions
-from alphaBetaLab.abEstimateAndSave import abEstimateAndSaveRegularEtopo1, regularGridSpecWW3
+from alphaBetaLab.abEstimateAndSave import abEstimateAndSaveRegularEtopo1, abEstimateAndSaveRegularGebco, regularGridSpecWW3
 
 # definition of the spectral grid
 dirs = np.linspace(0, 2*np.pi, 25)
@@ -23,15 +23,17 @@ regularGridSpec = regularGridSpecWW3(
 
 # path of the etopo1 bathymetry
 etopoFilePath = '/home/lmentaschi/usr/WaveWatchIII/gridgen1.1/reference_data/etopo1.nc'
+gebcoFilePath = '/DATA/JEODPP/eos/projects/CRITECH/BATHYMETRY/GLOBAL/GEBCO_2019_15_arc_seconds/GEBCO_2019.nc'
 
 # output directory
 outputDestDir = './output/'
 
 # number of cores for parallel computing
 nParWorker = 12
-nParWorker = 4
+#nParWorker = 4
 
 # instruction to do the computation and save the output
 # No options are given. The algorithm is launched on the whole domain with the default parameters
-abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker)
+#abEstimateAndSaveRegularEtopo1(dirs, freqs, gridname, regularGridSpec, etopoFilePath, outputDestDir, nParWorker)
+abEstimateAndSaveRegularGebco(dirs, freqs, gridname, regularGridSpec, gebcoFilePath, outputDestDir, nParWorker)
 
