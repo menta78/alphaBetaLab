@@ -98,6 +98,8 @@ def abEstimateAndSaveRegularGebco(dirs, freqs, gridName, regularGridSpec, etopo1
     the logical structure of a latlon mesh, and can be generated with the regularGridSpecWW3 function)
   - build an instance of highResolutionBathyMatrix from gebco
   - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
+
+  Use with care in large applications: GEBCO 2019 with alphaBetaLab takes 16 times more memory and time with respect to ETOPO1.
   """
   
   # instatiating the builder of abGrid object for regular grids
@@ -173,6 +175,8 @@ def abEstimateAndSaveTriangularGebco(dirs, freqs, gridName, triMeshSpec, etopo1F
     the logical structure of a triangular mesh, and should be loaded, for example, from a gmesh file)
   - build an instance of highResolutionBathyMatrix from gebco
   - invoke _abEstimateAndSave like abEstimateAndSaveRegularEtopo1 does
+
+  Use with care in large applications: GEBCO 2019 with alphaBetaLab takes 16 times more memory and time with respect to ETOPO1.
   """
   
   gridBld = abTriangularMeshGridBuilder(triMeshSpec, nParWorker = nParWorker)
