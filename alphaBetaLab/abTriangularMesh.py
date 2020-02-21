@@ -1,3 +1,4 @@
+import numpy as np
 from shapely import geometry as g
 
 landBoundaryExteriorType = 0
@@ -35,6 +36,7 @@ class _abTriMeshSpec:
     for plId in plIds:
       vrtxsNodes = self.connectionPolygons[plId]
       vrtxs = [self.nodes[nid] for nid in vrtxsNodes]
+      vrtxs = adjustCrossDatelineVertices(vrtxs)
       connPoly = g.Polygon(vrtxs)
       centroid = connPoly.centroid.coords[:][0]
       for nid in vrtxsNodes:
@@ -265,5 +267,38 @@ def loadFromMshFile(mshFilePath):
   fl.close()
   return m
 
+
+def adjustCrossDatelineVertices(vertices):
+  """
+  THIS WORKS ONLY WITH TRIANGLES
+  Kevin Martin's fix to close the mesh at the
+  dateline: understand whether an element has a single node
+  isolated on the other side, and bring it
+  back. This approach does nothing with the element
+  that contains the pole.
+  """
+  x = np.array([v[0] for v in vertices])
+  y = np.array([v[1] for v in vertices])
+  if   ( (x[1]-x[0])>180 and (x[2]-x[0])>180 ):
+    # In this case, x0 is 'isolated' to the East of the dateline; we "bring it back" towards the West
+    x[0] = x[0] + 360
+  elif ( (x[0]-x[1])>180 and (x[2]-x[1])>180 ):
+    # In this case, x1 is 'isolated' to the East of the dateline; we "bring it back" towards the West
+    x[1] = x[1] + 360
+  elif ( (x[0]-x[2])>180 and (x[1]-x[2])>180 ):
+    # In this case, x2 is 'isolated' to the East of the dateline; we "bring it back" towards the West
+    x[2] = x[2] + 360
+  elif ( (x[0]-x[1])>180 and (x[0]-x[2])>180 ):
+    # In this case, x0 is 'isolated' to the West of the dateline; we "bring it back" towards the East
+    x[0] = x[0] - 360
+  elif ( (x[1]-x[0])>180 and (x[1]-x[2])>180 ):
+    # In this case, x1 is 'isolated' to the West of the dateline; we "bring it back" towards the East
+    x[1] = x[1] - 360
+  elif ( (x[2]-x[0])>180 and (x[2]-x[1])>180 ):
+    # In this case, x2 is 'isolated' to the West of the dateline; we "bring it back" towards the East
+    x[2] = x[2] - 360
+
+  vertices = [vrtx for vrtx in zip(x, y)]
+  return vertices
 
 

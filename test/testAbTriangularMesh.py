@@ -8,7 +8,7 @@ from alphaBetaLab import abTriangularMesh
 plotPolygons = False
 
 
-class testAbFiniteElementsMesh(unittest.TestCase):
+class testAbTriangularMesh(unittest.TestCase):
 
    
   def testLoadFromGr3File1(self):
@@ -252,7 +252,73 @@ class testAbFiniteElementsMesh(unittest.TestCase):
       self.assertAlmostEqual(-3368, feMeshSpec.nodeBathy[150])
     finally:
       os.remove(mshTestFilePath)
-    
+
+
+  def testAdjustCrossDatelineVertices(self):
+    x = [0, 1, .5]
+    y = [10, 10, 11]
+    vertices = [vrtx for vrtx in zip(x, y)]
+    vertices = abTriangularMesh.adjustCrossDatelineVertices(vertices)
+    for xexp, yexp, xyfnd in zip(x, y, vertices):
+      self.assertEqual(xexp, xyfnd[0])
+      self.assertEqual(yexp, xyfnd[1])
+
+    x = [-179, 179, 180]
+    y = [10, 10, 11]
+    xexps = [181, 179, 180]
+    vertices = [vrtx for vrtx in zip(x, y)]
+    vertices = abTriangularMesh.adjustCrossDatelineVertices(vertices)
+    for xexp, yexp, xyfnd in zip(xexps, y, vertices):
+      self.assertEqual(xexp, xyfnd[0])
+      self.assertEqual(yexp, xyfnd[1])
+
+    x = [179, -179, 180]
+    y = [10, 10, 11]
+    xexps = [179, 181, 180]
+    vertices = [vrtx for vrtx in zip(x, y)]
+    vertices = abTriangularMesh.adjustCrossDatelineVertices(vertices)
+    for xexp, yexp, xyfnd in zip(xexps, y, vertices):
+      self.assertEqual(xexp, xyfnd[0])
+      self.assertEqual(yexp, xyfnd[1])
+
+    x = [179, 180, -179]
+    y = [10, 11, 10]
+    xexps = [179, 180, 181]
+    vertices = [vrtx for vrtx in zip(x, y)]
+    vertices = abTriangularMesh.adjustCrossDatelineVertices(vertices)
+    for xexp, yexp, xyfnd in zip(xexps, y, vertices):
+      self.assertEqual(xexp, xyfnd[0])
+      self.assertEqual(yexp, xyfnd[1])
+
+    x = [179, -179, -180]
+    y = [10, 10, 11]
+    xexps = [-181, -179, -180]
+    vertices = [vrtx for vrtx in zip(x, y)]
+    vertices = abTriangularMesh.adjustCrossDatelineVertices(vertices)
+    for xexp, yexp, xyfnd in zip(xexps, y, vertices):
+      self.assertEqual(xexp, xyfnd[0])
+      self.assertEqual(yexp, xyfnd[1])
+
+    x = [-179, 179, -180]
+    y = [10, 10, 11]
+    xexps = [-179, -181, -180]
+    vertices = [vrtx for vrtx in zip(x, y)]
+    vertices = abTriangularMesh.adjustCrossDatelineVertices(vertices)
+    for xexp, yexp, xyfnd in zip(xexps, y, vertices):
+      self.assertEqual(xexp, xyfnd[0])
+      self.assertEqual(yexp, xyfnd[1])
+
+    x = [-179, -180, 179]
+    y = [10, 11, 10]
+    xexps = [-179, -180, -181]
+    vertices = [vrtx for vrtx in zip(x, y)]
+    vertices = abTriangularMesh.adjustCrossDatelineVertices(vertices)
+    for xexp, yexp, xyfnd in zip(xexps, y, vertices):
+      self.assertEqual(xexp, xyfnd[0])
+      self.assertEqual(yexp, xyfnd[1])
+
+
+      
     
 
 
