@@ -109,9 +109,9 @@ class _abGrid:
       # this buffer increases with latitude
       latabs = np.abs(lats)
       buffDeg = np.ones(lats.shape)
-      buffDeg[latabs <= 50] = 2
-      buffDeg[np.logical_and(70 <= latabs, latabs <= 50)] = 3
-      buffDeg[latabs > 70] = 5
+      buffDeg[latabs <= 50] = 3
+      buffDeg[np.logical_and(70 <= latabs, latabs <= 50)] = 4
+      buffDeg[latabs > 70] = 6
 
       minlon, maxlon = np.min(lons), np.max(lons)
 

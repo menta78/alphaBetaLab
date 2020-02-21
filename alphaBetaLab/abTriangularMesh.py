@@ -30,6 +30,7 @@ class _abTriMeshSpec:
     """
     getCellPolygons: returns an approximate cental median cell for each non-land-boundary node
     """
+    print('        building the triangular mesh polygons (may take a while ...)')
     plIds = list(self.connectionPolygons.keys())
     plIds.sort()
     centroidsByNode = {}
@@ -51,17 +52,12 @@ class _abTriMeshSpec:
     npts = [g.Point(self.nodes[nid]) for nid in nodeIds0]
     for nid, npt in zip(nodeIds0, npts):
       ccc = centroidsByNode[nid]
-      if nid in self.landBoundaryNodes:
-        if excludeLandBoundary:
-          continue
-        else:
-          ccc.append(self.nodes[nid])
-      if nid in self.openBoundaryNodes:
-        if excludeOpenBoundary:
-          continue
-        else:
-          ccc.append(self.nodes[nid])
+      if (nid in self.landBoundaryNodes) and excludeLandBoundary:
+        continue
+      if (nid in self.openBoundaryNodes) and excludeOpenBoundary:
+        continue
       ccc.append(self.nodes[nid])
+      ccc = adjustCrossDatelineVertices(ccc)
       vrtxs = g.LineString(ccc)
       approxCell = vrtxs.convex_hull
       if not isinstance(vrtxs.convex_hull, g.Polygon):
@@ -269,36 +265,28 @@ def loadFromMshFile(mshFilePath):
 
 
 def adjustCrossDatelineVertices(vertices):
-  """
-  THIS WORKS ONLY WITH TRIANGLES
-  Kevin Martin's fix to close the mesh at the
-  dateline: understand whether an element has a single node
-  isolated on the other side, and bring it
-  back. This approach does nothing with the element
-  that contains the pole.
-  """
-  x = np.array([v[0] for v in vertices])
-  y = np.array([v[1] for v in vertices])
-  if   ( (x[1]-x[0])>180 and (x[2]-x[0])>180 ):
-    # In this case, x0 is 'isolated' to the East of the dateline; we "bring it back" towards the West
-    x[0] = x[0] + 360
-  elif ( (x[0]-x[1])>180 and (x[2]-x[1])>180 ):
-    # In this case, x1 is 'isolated' to the East of the dateline; we "bring it back" towards the West
-    x[1] = x[1] + 360
-  elif ( (x[0]-x[2])>180 and (x[1]-x[2])>180 ):
-    # In this case, x2 is 'isolated' to the East of the dateline; we "bring it back" towards the West
-    x[2] = x[2] + 360
-  elif ( (x[0]-x[1])>180 and (x[0]-x[2])>180 ):
-    # In this case, x0 is 'isolated' to the West of the dateline; we "bring it back" towards the East
-    x[0] = x[0] - 360
-  elif ( (x[1]-x[0])>180 and (x[1]-x[2])>180 ):
-    # In this case, x1 is 'isolated' to the West of the dateline; we "bring it back" towards the East
-    x[1] = x[1] - 360
-  elif ( (x[2]-x[0])>180 and (x[2]-x[1])>180 ):
-    # In this case, x2 is 'isolated' to the West of the dateline; we "bring it back" towards the East
-    x[2] = x[2] - 360
+  xs = np.array([v[0] for v in vertices])
+  ys = np.array([v[1] for v in vertices])
 
-  vertices = [vrtx for vrtx in zip(x, y)]
+  dff = np.abs(xs - xs[0])
+  ratioCloseToFirstPt = np.sum(dff <= 180)/len(xs)
+  if np.abs(ratioCloseToFirstPt - 1) < .0000001:
+    # the polygon does not cross the dateline.
+    return vertices
+  if ratioCloseToFirstPt > .5:
+    x0 = xs[0]
+  else:
+    ii = np.where(dff >= 180)[0][0]
+    x0 = xs[ii]
+  for ix in range(len(xs)):
+    x = xs[ix]
+    if x - x0 > 180:
+      x = x - 360
+    elif x - x0 < -180:
+      x = x + 360
+    xs[ix] = x
+
+  vertices = [vrtx for vrtx in zip(xs, ys)]
   return vertices
 
 
