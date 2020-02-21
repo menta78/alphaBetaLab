@@ -24,8 +24,6 @@ class abHighResAlphaMatrix:
     self.polygon = None
     self.polygonCrds = []
     self.dx = np.mean(xs[1:] - xs[:-1]) if len(xs) > 1 else None
-    if self.dx < 0:
-      raise abException('abHighResAlphaMatrix: xs must be in ascendent order')
     self.dy = np.mean(ys[1:] - ys[:-1]) if len(xs) > 1 else None
     if self.dx is None or self.dy is None:
       self.xs = np.array([])
@@ -33,6 +31,8 @@ class abHighResAlphaMatrix:
       self.alphas = np.array([])
 
   def wrapAroundDateline(self, bufferSizeDeg=5):
+    if self.dx < 0:
+      raise abException('abHighResAlphaMatrix.wrapAroundDateline: xs must be in ascendent order')
     xbuffRight = max(self.xs) + self.dx + np.arange(0, bufferSizeDeg, self.dx)
     nbuffRight = len(xbuffRight)
     alphabuffRight = self.alphas[:, :nbuffRight]
