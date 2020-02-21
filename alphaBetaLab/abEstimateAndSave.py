@@ -68,7 +68,8 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
   dx, dy = r.dx, r.dy
   nx, ny = r.nx, r.ny
   mask = r.mask
-  regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, mask, nParWorker = nParWorker)
+  regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, 
+         mask, nParWorker = nParWorker)
 
   # building the high resolution matrix of alpha based on etopo1
   llcrnr = getOption(abOptions, 'llcrnr', None)
@@ -86,6 +87,8 @@ def abEstimateAndSaveRegularEtopo1(dirs, freqs, gridName, regularGridSpec, etopo
 
   # creating the grid object (where each cell is represented as a polygon)
   grid = regGridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
+  if grid.wrapAroundDateline:
+    highResolutionBathyMatrix.wrapAroundDateline()
 
   _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
 
@@ -108,7 +111,8 @@ def abEstimateAndSaveRegularGebco(dirs, freqs, gridName, regularGridSpec, etopo1
   dx, dy = r.dx, r.dy
   nx, ny = r.nx, r.ny
   mask = r.mask
-  regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, mask, nParWorker = nParWorker)
+  regGridBld = abRectangularGridBuilder.abRectangularGridBuilder(xmin, ymin, dx, dy, nx, ny, 
+         mask, nParWorker = nParWorker)
 
   # building the high resolution matrix of alpha based on etopo1
   llcrnr = getOption(abOptions, 'llcrnr', None)
@@ -126,6 +130,8 @@ def abEstimateAndSaveRegularGebco(dirs, freqs, gridName, regularGridSpec, etopo1
 
   # creating the grid object (where each cell is represented as a polygon)
   grid = regGridBld.buildGrid(highResolutionBathyMatrix, coastalCellDetector)
+  if grid.wrapAroundDateline:
+    highResolutionBathyMatrix.wrapAroundDateline()
 
   _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
 
@@ -163,7 +169,8 @@ def abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridName, triMeshSpec, etopo1
   alphamtx = np.ones(z.shape)
   alphamtx[z > zlim] = 0
   highResolutionBathyMatrix = abHighResAlphaMatrix.abHighResAlphaMatrix(x, y, alphamtx)
-
+  if grid.wrapAroundDateline:
+    highResolutionBathyMatrix.wrapAroundDateline()
 
   _abEstimateAndSave(dirs, freqs, gridName, grid, highResolutionBathyMatrix, outputDirectory, nParWorker, abOptions)
 

@@ -4,7 +4,7 @@ from . import abGrid
 
 class abRectangularGridBuilder:
    
-  def __init__(self, minX=0, minY=0, dx=0, dy=0, nx=0, ny=0, wrapAroundDateline=False, mask=None, minXYIsCentroid=True, nParWorker=4):
+  def __init__(self, minX=0, minY=0, dx=0, dy=0, nx=0, ny=0, mask=None, minXYIsCentroid=True, nParWorker=4):
     """
     abRegularGridBuilder: object building a abGrid instance for 
     a regular grid.
@@ -15,7 +15,6 @@ class abRectangularGridBuilder:
     self.dy = dy
     self.nx = nx
     self.ny = ny
-    self.wrapAroundDateline = wrapAroundDateline
     self.mask = mask if (not mask is None) else np.ones((ny, nx))
     self.minXYIsCentroid = minXYIsCentroid
     self.nParWorker = nParWorker
@@ -46,10 +45,9 @@ class abRectangularGridBuilder:
 
     if not coastalCellDetector is None: 
       grd = abGrid.getSeaGrid(cells, crds, hiResAlphaMtx, coastalCellDetector, 
-        self.wrapAroundDateline, nParWorker=self.nParWorker)
+               nParWorker=self.nParWorker)
     else:
-      grd = abGrid.getLandSeaGrid(cells, crds, self.wrapAroundDateline,
-        nParWorker=self.nParWorker)
+      grd = abGrid.getLandSeaGrid(cells, crds, nParWorker=self.nParWorker)
 
     grd.isRegular = True
     grd.minX = minX

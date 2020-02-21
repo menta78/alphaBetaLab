@@ -8,25 +8,25 @@ from . import abCoastalCellDetector
 
 
 def getSeaGrid(cells, cellCoordinates, highResAlphaMtx, coastalCellDetector, 
-               wrapAroundDateline, centroids=None, nParWorker=4):
+               centroids=None, nParWorker=4):
   """
   getSeaGrid: builds an abGrid object without land/coastal cells.
   """
-  grd = _abGrid(cells, cellCoordinates, wrapAroundDateline, centroids=centroids, nParWorker=nParWorker)
+  grd = _abGrid(cells, cellCoordinates, centroids=centroids, nParWorker=nParWorker)
   seaGrid = grd.removeLandAndCoastalCells(highResAlphaMtx, coastalCellDetector)
   return seaGrid
 
 
-def getLandSeaGrid(cells, cellCoordinates, wrapAroundDateline, centroids=None, nParWorker=4):
+def getLandSeaGrid(cells, cellCoordinates, centroids=None, nParWorker=4):
   """
   getLandSeaGrid: builds an abGrid object with all the cells, on land and sea.
   """
-  return _abGrid(cells, cellCoordinates, wrapAroundDateline, centroids=centroids, nParWorker=nParWorker)
+  return _abGrid(cells, cellCoordinates, centroids=centroids, nParWorker=nParWorker)
 
 
 class _abGrid:
 
-  def __init__(self, cells, cellCoordinates, wrapAroundDateline, centroids=None, nParWorker = 4):
+  def __init__(self, cells, cellCoordinates, centroids=None, nParWorker = 4):
     """
     abGrid: object representing a grid as a collection of polygons, each representing a cell.
     The represented grid can be unstructured.
@@ -36,8 +36,6 @@ class _abGrid:
        It can also be a n-length list of 2-length tuples. cellCoordinates contains
        the x,y indexes of the cells. For unstructured grid the x index has a meaningful
        value, the y index is always 0.
-    wrapAroundDateline: should be true if the mesh crosses the meridian -180 180 (or 0 360, depending on the reference system).
-       Should be true if the mesh is global
     """
     self.cells = cells
     self.cellCoordinates = [tuple(l) for l in cellCoordinates]
@@ -50,8 +48,15 @@ class _abGrid:
     self.cellBnd = [tuple(c.boundary.coords[:]) for c in cells]
     self._neigCache = None
     self.nParWorker = nParWorker
-    self.wrapAroundDateline = wrapAroundDateline
+    self.wrapAroundDateline = self._autoDetectNeedsWrapAroundDateline()
 
+  def _autoDetectNeedsWrapAroundDateline(self, bufferDegThreshold=5):
+    cntrX = np.array([c[0] for c in self.centroids])
+    minCentroid, maxCentroid = np.min(cntrX), np.max(cntrX)
+    if np.abs(np.abs(maxCentroid - minCentroid) - 360) <= bufferDegThreshold:
+      return True
+    else:
+      return False
 
   def getGeoCoords(self):
     """
@@ -215,7 +220,7 @@ class _abGrid:
       pl.close()
       del pl
 
-    newMesh = _abGrid(seaCells, seaCellCrd, self.wrapAroundDateline, nParWorker = self.nParWorker)
+    newMesh = _abGrid(seaCells, seaCellCrd, nParWorker = self.nParWorker)
     return newMesh
 
     
