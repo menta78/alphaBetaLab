@@ -8,34 +8,36 @@ from . import abCoastalCellDetector
 
 
 def getSeaGrid(cells, cellCoordinates, highResAlphaMtx, coastalCellDetector, 
-               centroids=None, nParWorker=4):
+               wrapAroundDateline, centroids=None, nParWorker=4):
   """
   getSeaGrid: builds an abGrid object without land/coastal cells.
   """
-  grd = _abGrid(cells, cellCoordinates, centroids=centroids, nParWorker=nParWorker)
+  grd = _abGrid(cells, cellCoordinates, wrapAroundDateline, centroids=centroids, nParWorker=nParWorker)
   seaGrid = grd.removeLandAndCoastalCells(highResAlphaMtx, coastalCellDetector)
   return seaGrid
 
 
-def getLandSeaGrid(cells, cellCoordinates, centroids=None, nParWorker=4):
+def getLandSeaGrid(cells, cellCoordinates, wrapAroundDateline, centroids=None, nParWorker=4):
   """
   getLandSeaGrid: builds an abGrid object with all the cells, on land and sea.
   """
-  return _abGrid(cells, cellCoordinates, centroids=centroids, nParWorker=nParWorker)
+  return _abGrid(cells, cellCoordinates, wrapAroundDateline, centroids=centroids, nParWorker=nParWorker)
 
 
 class _abGrid:
 
-  def __init__(self, cells, cellCoordinates, centroids=None, nParWorker = 4):
+  def __init__(self, cells, cellCoordinates, wrapAroundDateline, centroids=None, nParWorker = 4):
     """
     abGrid: object representing a grid as a collection of polygons, each representing a cell.
     The represented grid can be unstructured.
     Arguments:
-    cells must be a shapely MultiPolygon
-    cellCoordinates should be an array with n rows, with n the count of the cells, and 2 cols.
+    cells: must be a shapely MultiPolygon
+    cellCoordinates: should be an array with n rows, with n the count of the cells, and 2 cols.
        It can also be a n-length list of 2-length tuples. cellCoordinates contains
        the x,y indexes of the cells. For unstructured grid the x index has a meaningful
        value, the y index is always 0.
+    wrapAroundDateline: should be true if the mesh crosses the meridian -180 180 (or 0 360, depending on the reference system).
+       Should be true if the mesh is global
     """
     self.cells = cells
     self.cellCoordinates = [tuple(l) for l in cellCoordinates]
@@ -48,6 +50,7 @@ class _abGrid:
     self.cellBnd = [tuple(c.boundary.coords[:]) for c in cells]
     self._neigCache = None
     self.nParWorker = nParWorker
+    self.wrapAroundDateline = wrapAroundDateline
 
 
   def getGeoCoords(self):
@@ -85,16 +88,67 @@ class _abGrid:
       mxdd = np.sqrt((maxx - minx)**2 + (maxy - miny)**2)
       return mxdd
 
+    def wrapCellsAround(cls, clsCrd1s, clsCrdss):
+      """
+      builds a buffer of cells beyond the datelines, to let
+      closing a global mesh (or a mesh passing the dateline)
+        cls: list of cell polygons
+        clsCrd1s: ordinate coordinates of the cell. 
+                  E.g. the third cell of the first raw of cells has coords (0,2)
+        clsCrdss: lonlat coordinates of the cell vertices.
+      """
+      lons = np.array([c[0][0] for c in clsCrdss])
+      lats = np.array([c[0][1] for c in clsCrdss])
+
+      # creating a longitudinal buffer where the cells will be wrapped.
+      # this buffer increases with latitude
+      latabs = np.abs(lats)
+      buffDeg = np.ones(lats.shape)
+      buffDeg[latabs <= 50] = 2
+      buffDeg[np.logical_and(70 <= latabs, latabs <= 50)] = 3
+      buffDeg[latabs > 70] = 5
+
+      minlon, maxlon = np.min(lons), np.max(lons)
+
+      ncell = len(cls)
+      assert(ncell == len(self.centroids))
+      for icell in range(ncell):
+        cntr = self.centroids[icell]
+        if (cntr[0] < minlon+buffDeg[icell]):
+          # this cell is close to the east side of the dateline.
+          # copying it to the west side
+          clcrd = clsCrdss[icell]
+          clcrdX = np.array([v[0] for v in clcrd])
+          clcrdX = clcrdX + 360
+          clcrdY = np.array([v[1] for v in clcrd])
+          clcrdNew = tuple(v for v in zip(clcrdX, clcrdY))
+          clsCrdss.append(clcrdNew)
+          clsCrd1s.append(clsCrd1s[icell])
+          cls.append(gm.Polygon(clcrdNew))
+        elif (cntr[0] > maxlon-buffDeg[icell]):
+          # this cell is close to the west side of the dateline.
+          # copying it to the east side
+          clcrd = clsCrdss[icell]
+          clcrdX = np.array([v[0] for v in clcrd])
+          clcrdX = clcrdX - 360
+          clcrdY = np.array([v[1] for v in clcrd])
+          clcrdNew = tuple(v for v in zip(clcrdX, clcrdY))
+          clsCrdss.append(clcrdNew)
+          clsCrd1s.append(clsCrd1s[icell])
+          cls.append(gm.Polygon(clcrdNew))
+
     print('    building neighbor cells cache (can take some time) ...')
     global cls, clsCrd1s, clsCrdss, maxDiams, nclCrd0, nclCrd1
     cls = [c for c in self.cells]
     clsCrd1s = self.cellCoordinates
     clsCrdss = self.cellBnd
+    lc = len(cls) # this ensures that the loop to build the neighborhood finishes with the real cells
+    if self.wrapAroundDateline:
+      wrapCellsAround(cls, clsCrd1s, clsCrdss)
     maxDiams = np.array([getMaxDiam(c) for c in clsCrdss])
     nclCrd0 = np.array([c[0][0] for c in clsCrdss])
     nclCrd1 = np.array([c[0][1] for c in clsCrdss])
     cch = {}
-    lc = len(cls)
     ic = 0
 
     if self.nParWorker > 1:
@@ -161,7 +215,7 @@ class _abGrid:
       pl.close()
       del pl
 
-    newMesh = _abGrid(seaCells, seaCellCrd, nParWorker = self.nParWorker)
+    newMesh = _abGrid(seaCells, seaCellCrd, self.wrapAroundDateline, nParWorker = self.nParWorker)
     return newMesh
 
     
