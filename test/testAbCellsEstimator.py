@@ -24,8 +24,39 @@ class testAbCellsEstimator(unittest.TestCase):
       def isCoastalCell(self, cell, boundary = None, surface = -1):
         return False
     return _mockClass()
+
+  def testCreate(self):
+    abSingleCellAlphaEstimator.defaultKShape = 1
+    abSingleCellBetaEstimator.defaultKShape = 1
+    abClEstMod.defaultShadowAlphaAlleviationParam = 1
+
+    rectGridBld = grdBld(minX = 1, minY = 10, dx = 1, dy = 1, nx = 3, ny = 2, nParWorker = 4, minXYIsCentroid=False)
+    hiresxs = np.arange(0, 4, .1)
+    hiresys = np.arange(9, 13, .1)
+    alphas = np.ones([len(hiresys), len(hiresxs)])
+    xobstr = np.array([25])
+    yobstr = np.arange(0, len(hiresys), 2)
+    xyobstr = np.meshgrid(xobstr, yobstr)
+    alphas[xyobstr[1], xyobstr[0]] = 0
+    hrmtx = hiResAMtx(hiresxs, hiresys, alphas)
+    coastalCellDetector = self.getMockHiResAlphaMtxAndCstCellDet()
+    grd = rectGridBld.buildGrid(hrmtx, coastalCellDetector)
+    
+    dirs = [0., np.pi/2., np.pi, 3.*np.pi/2.]
+    freqs = [.1, .2, .3]
+
+    cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, None)
+    self.assertEqual(0, cellEst.minSizeKm)
+
+    opts = abOptions(timeStep=450)
+    cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, opts)
+    self.assertAlmostEqual(3.5093664, cellEst.minSizeKm, 5)
+
+    opts = abOptions(minSizeKm=10)
+    cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, opts)
+    self.assertAlmostEqual(10, cellEst.minSizeKm, 5)
   
-  def testLocal(self):
+  def _testLocal(self):
     abSingleCellAlphaEstimator.defaultKShape = 1
     abSingleCellBetaEstimator.defaultKShape = 1
     abClEstMod.defaultShadowAlphaAlleviationParam = 1
@@ -69,7 +100,7 @@ class testAbCellsEstimator(unittest.TestCase):
     self.assertTrue(np.allclose(b00, np.array([ .75,  .9 ,  .7 ,  .91]), rtol = .05))
     self.assertTrue(np.allclose(locbeta[0], locbeta[1]))
 
-  def testShadow(self):
+  def _testShadow(self):
     abSingleCellAlphaEstimator.defaultKShape = 1
     abSingleCellBetaEstimator.defaultKShape = 1
     abClEstMod.defaultShadowAlphaAlleviationParam = 1
