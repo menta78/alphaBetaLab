@@ -1,11 +1,14 @@
 import sys
 import time
-from itertools import izip
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
-from mpl_toolkits import basemap as bm
+import mpl_toolkits.axes_grid1.inset_locator as il
+from matplotlib.projections import get_projection_class
+from matplotlib import gridspec
 import matplotlib.transforms
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 
 from .. import abWwiiiAlphaBetaLoader
 
@@ -57,8 +60,8 @@ class abAlphaBetaSingleCellPlotter:
 class abAlphaBetaMeshPlotter:
 
 
-  def __init__(self, coords, geoCoords, alphaList, betaList, mesh, dirs, lonlims = None, latlims = None, 
-               cstLineRes = 'i', verbose = True, mp = None):
+  def __init__(self, coords, geoCoords, alphaList, betaList, mesh, dirs, lonlims=None, latlims=None, 
+               cstLineRes='i', polarDiagLatSize=.05, margin=1, verbose=True):
     """
     abAlphaBetaMeshPlotter: class to plot a mesh, and on each cell a polar plot of alpha and beta.
     It works only for alpha/beta changing with the sole direction, not with frequency.
@@ -76,10 +79,9 @@ class abAlphaBetaMeshPlotter:
     self.mesh = mesh
     self.lonlims = lonlims
     self.latlims = latlims
-    self.mp = mp
     self.figsize = [14, 8]
     self.figdpi = 80
-    self.polarDiagLatSize = .05
+    self.polarDiagLatSize = polarDiagLatSize
     self.dirs = dirs
     self.cstLineRes = cstLineRes
     self.dirmeasure = 'rad'
@@ -90,7 +92,7 @@ class abAlphaBetaMeshPlotter:
    #self.landColor = 'palegreen'
     self.landColor = 'lightgray'
     self.seaColor = 'lightblue'
-    self.margin = 1 #if a cell has the centroid closer that 1 deg from the plot boundary, it is not plot
+    self.margin = margin #if a cell has the centroid closer that 1 deg from the plot boundary, it is not plot
     self.nPlottedCells = None #if != None, only the first cells are plotted. Useful for debug
     self.verbose = verbose
 
@@ -111,30 +113,23 @@ class abAlphaBetaMeshPlotter:
     else:
       latlims = self.latlims
     return lonlims, latlims
-
-  def _getBaseMap(self, lonlims, latlims):
-    if self.mp is None:
-      self._print('generating basemap ...')
-      mp = bm.Basemap(llcrnrlon = lonlims[0], llcrnrlat = latlims[0], urcrnrlon = lonlims[1], urcrnrlat = latlims[1], resolution = self.cstLineRes)
-      self.mp = mp
-    else:
-      mp = self.mp
-    return mp
     
 
   def plotMap(self, ax, lonlims = None, latlims = None):
     if lonlims is None:
       lonlims, latlims = self._getLonLatLims()
 
-    mp = self._getBaseMap(lonlims, latlims)
-    mp.drawcoastlines(linewidth = .5, ax = ax)
-    mp.fillcontinents(color = self.landColor, ax = ax)
-    mp.drawmapboundary(fill_color = self.seaColor, ax = ax)
+    ax.coastlines(resolution='10m')
+    lnd = cfeature.NaturalEarthFeature('physical', 'land', '10m', facecolor='lightgray')
+    lndmsk = ax.add_feature(lnd)
+    lndmsk.set_zorder(1)
 
 
   def plot(self, ax = None, plotMap = True, lonlims = None, latlims = None):
     if ax is None:
       fig = plt.figure(figsize = self.figsize, dpi = self.figdpi)
+      ax = plt.axes(projection=ccrs.PlateCarree())
+
       mainAx = fig.gca()
       axCreated = True
     else:
@@ -165,17 +160,15 @@ class abAlphaBetaMeshPlotter:
       mainAx.set_position(pos)
       fig.canvas.draw()
 
-    mp = self._getBaseMap(lonlims, latlims)
+    mainAx.set_xlim(lonlims)
+    mainAx.set_ylim(latlims)
     fig.canvas.draw()
-    maPos = mainAx.get_position().get_points().flatten()
-    xratio = (maPos[2] - maPos[0])/(lonlims[1] - lonlims[0])
-    yratio = (maPos[3] - maPos[1])/(latlims[1] - latlims[0])
 
     icl = 0
     ncl = len(self.coords)
     axs = []
     self._print('plotting ' + str(ncl) + ' cells ...')
-    for crd, geocrd, a, b in izip(self.coords, self.geoCoords, self.alphaList, self.betaList):
+    for crd, geocrd, a, b in zip(self.coords, self.geoCoords, self.alphaList, self.betaList):
       if (not nPlottedCells is None) and (icl >= nPlottedCells):
         break
       ix, iy = crd[0], crd[1]
@@ -186,15 +179,16 @@ class abAlphaBetaMeshPlotter:
       sys.stdout.write('\r{p:2.2f} % '.format(p = float(icl)/ncl*100.))
       sys.stdout.flush()
 
-      mpx, mpy = mp(lon, lat)
-      figX = maPos[0] + (mpx - lonlims[0])*xratio
-      figY = maPos[1] + (mpy - latlims[0])*yratio
+      xy0 = mainAx.transData.transform((lon, lat))
       axDiagLatSize = self.polarDiagLatSize
       axDiagLonSize = self.polarDiagLatSize*self.figsize[1]/self.figsize[0]
-      ax = plt.axes([figX - axDiagLonSize/2., figY - axDiagLatSize/2., axDiagLonSize, axDiagLatSize], polar = True)  
+      bbox = [lon-axDiagLonSize/2., lat-axDiagLatSize/2., axDiagLonSize, axDiagLatSize]
+     #bbox = [lon, lat, axDiagLonSize, axDiagLatSize]
+      ax = il.inset_axes(mainAx, '100%', '100%', bbox_to_anchor=bbox, bbox_transform=mainAx.transData, 
+            borderpad=0, axes_class=get_projection_class("polar"))
       ax.plot(0, 0, marker = '.', color = 'k')
       crdii = (crd[0] - 1, crd[1] - 1)
-      if mesh.cellMap.has_key(crdii):
+      if crdii in mesh.cellMap:
         cellPoly = mesh.cellMap[(crd[0] - 1, crd[1] - 1)]
         abPlotter.plotCell(cellPoly, mainAx, color = self.cellColor)
         abPlotter.plot(a, b, ax = ax)
@@ -206,18 +200,14 @@ class abAlphaBetaMeshPlotter:
 
 
   def plotLegend(self, ax, lon, lat, figLegendSize = .2, fontsize = 10):
-    lonlims, latlims = self._getLonLatLims()
-    mp = self._getBaseMap(lonlims, latlims)
     ax.figure.canvas.draw()
-    maPos = ax.get_position().get_points().flatten()
-    xratio = (maPos[2] - maPos[0])/(lonlims[1] - lonlims[0])
-    yratio = (maPos[3] - maPos[1])/(latlims[1] - latlims[0])
-    mpx, mpy = mp(lon, lat)
-    figX = maPos[0] + (mpx - lonlims[0])*xratio
-    figY = maPos[1] + (mpy - latlims[0])*yratio
+
+    xy0 = mainAx.transData.transform((lon, lat))
     axDiagLatSize = figLegendSize
     axDiagLonSize = figLegendSize*self.figsize[1]/self.figsize[0]
-    lgndax = plt.axes([figX - axDiagLonSize/2., figY - axDiagLatSize/2., axDiagLonSize, axDiagLatSize], polar = True)  
+    bbox = [lon-axDiagLonSize/2., lat-axDiagLatSize/2., axDiagLonSize, axDiagLatSize]
+    lgndax = il.inset_axes(mainAx, '100%', '100%', bbox_to_anchor=bbox, bbox_transform=mainAx.transData, 
+            borderpad=0, axes_class=get_projection_class("polar"))
     
     abPlotter = abAlphaBetaSingleCellPlotter(directions = self.dirs, dirmeasure = self.dirmeasure, 
                                    alphaColor = self.alphaColor, betaColor = self.betaColor)
@@ -237,10 +227,20 @@ class abAlphaBetaMeshPlotter:
 
 
 
-def plotLocalShadowFigure(abLocalFileName, abShadowFileName, mesh, dirs, nfreq, pltlonlims, pltlatlims, figsize = [7, 8], ifreq = 0, **kwargs):
+def plotLocalShadowFigure(abLocalFileName, abShadowFileName, mesh, dirs, nfreq, pltlonlims, pltlatlims, figsize=[7, 8], ifreq=0, axes=None, **kwargs):
   """
-  DOES NOT WORK PROPERLY
+  Plot both local and shadow alphas and betas, on 2 different axes
   """
+  if axes is None:
+    fig = plt.figure(figsize=figsize)
+    gs = gridspec.GridSpec(2, 1)
+    ax0 = plt.subplot(gs[0, 0], projection=ccrs.PlateCarree())
+    ax1 = plt.subplot(gs[1, 0], projection=ccrs.PlateCarree())
+    axes = [ax0, ax1]
+    plt.tight_layout()
+  else:
+    fig = axes[0].gcf()
+
   ldr = abWwiiiAlphaBetaLoader.abWwiiiAlphaBetaLoader(nfreq)
 
   ab = ldr.load(abLocalFileName)
@@ -248,22 +248,18 @@ def plotLocalShadowFigure(abLocalFileName, abShadowFileName, mesh, dirs, nfreq, 
   betaListLoc = [b[ifreq, :] for b in ab.betaList] 
 
   plotter = abAlphaBetaMeshPlotter(ab.coords, ab.geoCoords, alphaListLoc, betaListLoc, mesh, dirs, lonlims = pltlonlims, latlims = pltlatlims, **kwargs)
-  fig, axes = plt.subplots(nrows=2, ncols=1, figsize=figsize, tight_layout=True, sharex=True)
-
-  plotter.plotMap(axes[0])
-  plotter.plotMap(axes[1])
  
   fig.canvas.draw()
-  plotter.plot(ax = axes[0], plotMap = False)
+  plotter.plot(ax = axes[0])
 
   ab = ldr.load(abShadowFileName)
   alphaListShd = [a[ifreq, :] for a in ab.alphaList] 
   betaListShd = [b[ifreq, :] for b in ab.betaList] 
 
-  mp = plotter.mp
   plotter = abAlphaBetaMeshPlotter(ab.coords, ab.geoCoords, alphaListShd, betaListShd, mesh, dirs, lonlims = pltlonlims, latlims = pltlatlims, **kwargs)
-  plotter.mp = mp
-  plotter.plot(ax = axes[1], plotMap = False)
+  plotter.plot(ax = axes[1])
+  plt.tight_layout()
+  return fig, axes
   
   
 
