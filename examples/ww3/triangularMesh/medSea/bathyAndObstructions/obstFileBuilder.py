@@ -31,7 +31,7 @@ minSizeKm = 3
 opt = abOptions(minSizeKm=minSizeKm)
 
 # instruction to do the computation and save the output
-abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridname, triMeshSpec, etopoFilePath, outputDestDir, nParWorker)
+abEstimateAndSaveTriangularEtopo1(dirs, freqs, gridname, triMeshSpec, etopoFilePath, outputDestDir, nParWorker, abOptions=opt)
 
 
 
