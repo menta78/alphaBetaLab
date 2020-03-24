@@ -28,7 +28,6 @@ class abAlphaBetaSingleCellPlotter:
     y = [p[1] for p in bnd]
     ax.plot(x, y, color = color, linewidth = linewidth)
 
-
   def plot(self, alphaByDir, betaByDir, ax = None, axesPosition = (0, 0, 1, 1)):
     assert len(alphaByDir.shape) == 1, 'abAlphaBetaPlotter: only direction-varying alpha and beta are supported'
 
@@ -58,7 +57,6 @@ class abAlphaBetaSingleCellPlotter:
 
 
 class abAlphaBetaMeshPlotter:
-
 
   def __init__(self, coords, geoCoords, alphaList, betaList, mesh, dirs, lonlims=None, latlims=None, 
                cstLineRes='i', polarDiagLatSize=.05, margin=1, verbose=True):
@@ -123,6 +121,7 @@ class abAlphaBetaMeshPlotter:
     lnd = cfeature.NaturalEarthFeature('physical', 'land', '10m', facecolor='lightgray')
     lndmsk = ax.add_feature(lnd)
     lndmsk.set_zorder(1)
+    return lndmsk
 
 
   def plot(self, ax = None, plotMap = True, lonlims = None, latlims = None):
@@ -149,7 +148,10 @@ class abAlphaBetaMeshPlotter:
     else:
       self.lonlims, self.latlims = lonlims, latlims
 
-    if plotMap: self.plotMap(mainAx, lonlims, latlims)
+    if plotMap: 
+      lndmsk = self.plotMap(mainAx, lonlims, latlims)
+    else:
+      lndmsk = None
 
     if axCreated: 
       mainAx.set_position(self.mainAxesPosition)
@@ -173,40 +175,43 @@ class abAlphaBetaMeshPlotter:
         break
       ix, iy = crd[0], crd[1]
       lon, lat = geocrd[0], geocrd[1]
-      if not ( (lonlims[0] + mrgn <= lon <= lonlims[1] - mrgn) and (latlims[0] + mrgn <= lat <= latlims[1] - mrgn) ):
+      plotPie = ( (lonlims[0] + mrgn <= lon <= lonlims[1] - mrgn) and (latlims[0] + mrgn <= lat <= latlims[1] - mrgn) )
+      plotPolygon = ( (lonlims[0] - 3 <= lon <= lonlims[1] + 3) and (latlims[0] - 3 <= lat <= latlims[1] + 3) )
+      if (not plotPie) and (not plotPolygon):
         continue
 
       sys.stdout.write('\r{p:2.2f} % '.format(p = float(icl)/ncl*100.))
       sys.stdout.flush()
 
-      xy0 = mainAx.transData.transform((lon, lat))
-      axDiagLatSize = self.polarDiagLatSize
-      axDiagLonSize = self.polarDiagLatSize*self.figsize[1]/self.figsize[0]
-      bbox = [lon-axDiagLonSize/2., lat-axDiagLatSize/2., axDiagLonSize, axDiagLatSize]
-     #bbox = [lon, lat, axDiagLonSize, axDiagLatSize]
-      ax = il.inset_axes(mainAx, '100%', '100%', bbox_to_anchor=bbox, bbox_transform=mainAx.transData, 
-            borderpad=0, axes_class=get_projection_class("polar"))
-      ax.plot(0, 0, marker = '.', color = 'k')
       crdii = (crd[0] - 1, crd[1] - 1)
       if crdii in mesh.cellMap:
         cellPoly = mesh.cellMap[(crd[0] - 1, crd[1] - 1)]
-        abPlotter.plotCell(cellPoly, mainAx, color = self.cellColor)
-        abPlotter.plot(a, b, ax = ax)
+        if plotPolygon:
+          abPlotter.plotCell(cellPoly, mainAx, color = self.cellColor)
+        if plotPie:
+          xy0 = mainAx.transData.transform((lon, lat))
+          axDiagLatSize = self.polarDiagLatSize
+          axDiagLonSize = self.polarDiagLatSize*self.figsize[1]/self.figsize[0]
+          bbox = [lon-axDiagLonSize/2., lat-axDiagLatSize/2., axDiagLonSize, axDiagLatSize]
+          ax = il.inset_axes(mainAx, '100%', '100%', bbox_to_anchor=bbox, bbox_transform=mainAx.transData, 
+                borderpad=0, axes_class=get_projection_class("polar"))
+          ax.plot(0, 0, marker = '.', color = 'k')
+          abPlotter.plot(a, b, ax = ax)
       icl += 1
       axs.append(ax)
 
     plt.axes(mainAx)
-    return fig, mainAx, axs
+    return fig, mainAx, axs, lndmsk
 
 
-  def plotLegend(self, ax, lon, lat, figLegendSize = .2, fontsize = 10):
+  def plotLegend(self, ax, lon, lat, figLegendSize=.2, fontsize=10):
     ax.figure.canvas.draw()
 
-    xy0 = mainAx.transData.transform((lon, lat))
+    xy0 = ax.transData.transform((lon, lat))
     axDiagLatSize = figLegendSize
     axDiagLonSize = figLegendSize*self.figsize[1]/self.figsize[0]
     bbox = [lon-axDiagLonSize/2., lat-axDiagLatSize/2., axDiagLonSize, axDiagLatSize]
-    lgndax = il.inset_axes(mainAx, '100%', '100%', bbox_to_anchor=bbox, bbox_transform=mainAx.transData, 
+    lgndax = il.inset_axes(ax, '100%', '100%', bbox_to_anchor=bbox, bbox_transform=ax.transData, 
             borderpad=0, axes_class=get_projection_class("polar"))
     
     abPlotter = abAlphaBetaSingleCellPlotter(directions = self.dirs, dirmeasure = self.dirmeasure, 
@@ -250,16 +255,16 @@ def plotLocalShadowFigure(abLocalFileName, abShadowFileName, mesh, dirs, nfreq, 
   plotter = abAlphaBetaMeshPlotter(ab.coords, ab.geoCoords, alphaListLoc, betaListLoc, mesh, dirs, lonlims = pltlonlims, latlims = pltlatlims, **kwargs)
  
   fig.canvas.draw()
-  plotter.plot(ax = axes[0])
+  _, _, _, lndmskLocal = plotter.plot(ax = axes[0])
 
   ab = ldr.load(abShadowFileName)
   alphaListShd = [a[ifreq, :] for a in ab.alphaList] 
   betaListShd = [b[ifreq, :] for b in ab.betaList] 
 
   plotter = abAlphaBetaMeshPlotter(ab.coords, ab.geoCoords, alphaListShd, betaListShd, mesh, dirs, lonlims = pltlonlims, latlims = pltlatlims, **kwargs)
-  plotter.plot(ax = axes[1])
+  _, _, _, lndmskShadow = plotter.plot(ax = axes[1])
   plt.tight_layout()
-  return fig, axes
+  return fig, axes, (lndmskLocal, lndmskShadow)
   
   
 
