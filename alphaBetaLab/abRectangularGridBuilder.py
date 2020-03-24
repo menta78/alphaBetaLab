@@ -1,6 +1,7 @@
 import numpy as np
 import shapely.geometry as gm
 from . import abGrid
+from . import abUtils
 
 class abRectangularGridBuilder:
    
@@ -50,6 +51,7 @@ class abRectangularGridBuilder:
       grd = abGrid.getLandSeaGrid(cells, crds, nParWorker=self.nParWorker)
 
     grd.isRegular = True
+    grd.meshType = abUtils.MESHTYPE_REGULAR
     grd.minX = minX
     grd.minY = minY
     grd.dx = self.dx

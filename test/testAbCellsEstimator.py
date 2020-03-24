@@ -5,7 +5,7 @@ from alphaBetaLab.abRectangularGridBuilder import abRectangularGridBuilder as gr
 from alphaBetaLab.abHighResAlphaMatrix import abHighResAlphaMatrix as hiResAMtx
 from alphaBetaLab import abCellsEstimator as abClEstMod
 from alphaBetaLab.abCellsEstimator import abCellsEstimator
-from alphaBetaLab import abSingleCellAlphaEstimator, abSingleCellBetaEstimator
+from alphaBetaLab import abSingleCellAlphaEstimator, abSingleCellBetaEstimator, abUtils
 from alphaBetaLab.abOptionManager import abOptions
 
 #abSingleCellAlphaEstimator.debugPlots = True
@@ -47,6 +47,8 @@ class testAbCellsEstimator(unittest.TestCase):
 
     cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, None)
     self.assertEqual(0, cellEst.minSizeKm)
+    self.assertEqual(1, cellEst.locRecalibFactor)
+    self.assertEqual(1.2, cellEst.shadRecalibFactor)
 
     opts = abOptions(timeStep=450)
     cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, opts)
@@ -55,8 +57,20 @@ class testAbCellsEstimator(unittest.TestCase):
     opts = abOptions(minSizeKm=10)
     cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, opts)
     self.assertAlmostEqual(10, cellEst.minSizeKm, 5)
+
+    opts = abOptions(locRecalibFactor=1.1, shadRecalibFactor=1.3)
+    cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, opts)
+    self.assertEqual(1.1, cellEst.locRecalibFactor)
+    self.assertEqual(1.3, cellEst.shadRecalibFactor)
+
+    grd.meshType = abUtils.MESHTYPE_TRIANGULAR
+    cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, None)
+    self.assertAlmostEqual(1.1547, cellEst.locRecalibFactor, 4)
+    self.assertAlmostEqual(1.38564, cellEst.shadRecalibFactor, 4)
+    
+
   
-  def _testLocal(self):
+  def testLocal(self):
     abSingleCellAlphaEstimator.defaultKShape = 1
     abSingleCellBetaEstimator.defaultKShape = 1
     abClEstMod.defaultShadowAlphaAlleviationParam = 1
@@ -100,7 +114,7 @@ class testAbCellsEstimator(unittest.TestCase):
     self.assertTrue(np.allclose(b00, np.array([ .75,  .9 ,  .7 ,  .91]), rtol = .05))
     self.assertTrue(np.allclose(locbeta[0], locbeta[1]))
 
-  def _testShadow(self):
+  def testShadow(self):
     abSingleCellAlphaEstimator.defaultKShape = 1
     abSingleCellBetaEstimator.defaultKShape = 1
     abClEstMod.defaultShadowAlphaAlleviationParam = 1

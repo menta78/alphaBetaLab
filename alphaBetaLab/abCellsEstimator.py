@@ -7,7 +7,7 @@ from . import abSingleCellAlphaEstimator as aEst
 from . import abSingleCellBetaEstimator as bEst
 from . import abUpstreamPolyEstimator as upe
 from . import abCellSize as csEst
-from . import abUtils
+from . import abUtils, abAlphaBetaRecalibrator
 from . import abLongBreakWaterLocAlphaAdjust as bwAdj
 #import cProfile
 from .abOptionManager import getOption
@@ -42,8 +42,9 @@ class abCellsEstimator:
     self.computationDirs = getOption(options, 'computationDirs', 
                                   np.linspace(0, 2*np.pi, 9)[:-1])
     self.betaMaxSubSections = getOption(options, 'betaMaxSubSections', 10)
-    self.locRecalibFactor = getOption(options, 'locRecalibFactor', 1.)
-    self.shadRecalibFactor = getOption(options, 'shadRecalibFactor', 1.2)
+    defLocRecalibFactor, defShdRecalibFactor = abAlphaBetaRecalibrator.getDefaultFactors(self.grid.meshType)
+    self.locRecalibFactor = getOption(options, 'locRecalibFactor', defLocRecalibFactor)
+    self.shadRecalibFactor = getOption(options, 'shadRecalibFactor', defShdRecalibFactor)
     self.longBreakWaterAdjust = getOption(options, 'longBreakWaterAdjust', False)
     self.highResCoastalPolygons = getOption(options, 'highResCoastalPolygons', [])
 

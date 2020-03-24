@@ -1,5 +1,5 @@
 from . import abGrid
-
+from . import abUtils
 
 class abTriangularMeshGridBuilder:
 
@@ -15,6 +15,7 @@ class abTriangularMeshGridBuilder:
     centroids = [fem.nodes[nid] for nid in nodeIds]
     grd = abGrid.getLandSeaGrid(cells, cellcrds, centroids=centroids, nParWorker=self.nParWorker)
     grd.isRegular = False
+    grd.meshType = abUtils.MESHTYPE_TRIANGULAR
 
     return grd
 

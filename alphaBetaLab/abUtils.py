@@ -3,6 +3,9 @@ import numpy as np
 radiusEarth = 6371000 #m
 defaultTolerance = 0.000000001
 
+MESHTYPE_REGULAR = 'regular'
+MESHTYPE_TRIANGULAR = 'triangular'
+
 class abException(Exception):
   pass
 
@@ -28,4 +31,5 @@ def angleDiff(angle1, angle2):
   while diff < -np.pi:
     diff += 2*np.pi
   return diff
+
 
