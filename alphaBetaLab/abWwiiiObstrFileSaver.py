@@ -26,7 +26,7 @@ class abWwiiiObstrFileSaver:
     for icrd, crd, alpha, beta, size in zip(range(len(coords)), coords, alphaList, betaList, sizesKm):
       if geoCoords != None:
         [lon, lat] = geoCoords[icrd]
-        fl.write('$ ilon ilat of the cell. lon: ' + str(lon) + ', ' + str(lat) + '\n')
+        fl.write('$ ilon ilat of the cell. lon: ' + str(lon) + ', lat: ' + str(lat) + '\n')
       ln = '   '.join(str(c + 1) for c in crd) + '\n'
       fl.write(ln)
       fl.write('$ sizes of the cell in km\n')
