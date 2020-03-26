@@ -12,6 +12,8 @@ from . import abLongBreakWaterLocAlphaAdjust as bwAdj
 #import cProfile
 from .abOptionManager import getOption
 
+np.seterr(divide='ignore')
+
 defaultVerbose = True
 defaultShadowAlphaAlleviationParam = .83
 defaultAlleviationMaxBlockedNeighborCount = 1
@@ -37,7 +39,7 @@ class abCellsEstimator:
     self.totallyBlockedCells = None
     self.localAlphasReady = False
     self.postMortemDebug = False
-    self.minAvgAlpha, self.minAvgBeta = .1, .2
+   #self.minAvgAlpha, self.minAvgBeta = .1, .2
     self.verbose = getOption(options, 'verbose', True)
     self.computationDirs = getOption(options, 'computationDirs', 
                                   np.linspace(0, 2*np.pi, 9)[:-1])
@@ -108,7 +110,8 @@ class abCellsEstimator:
           lbeta = [fqbeta for f in self.freqs]
         meanAlpha = np.mean(lalpha)
         meanBeta = np.mean(lbeta)
-        if (meanAlpha < 1.) and (meanAlpha > self.minAvgAlpha and meanBeta > self.minAvgBeta):
+       #if (meanAlpha < 1.) and (meanAlpha > self.minAvgAlpha and meanBeta > self.minAvgBeta):
+        if (meanAlpha < .999):
           return True, lalpha, lbeta, cellSizes, totallyBlocked, crd, geoCrd, cell
         else:
           # This cell is on land. The resolved component of the model should take care of this
@@ -190,7 +193,7 @@ class abCellsEstimator:
     try:
       cellNeighbors = self.grid.getNeighbors(cell)
       if not len(cellNeighbors):
-        self._print('cell ' + str(crd) + ' has no neighbors. Skipping')
+        self._print(' cell ' + str(crd) + ' has no neighbors. Skipping')
         return False, None, None, None, None, None
         
       neighTotPoly = cell

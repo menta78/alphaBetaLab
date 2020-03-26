@@ -1,6 +1,7 @@
+import numpy as np
+from shapely import geometry as g
 from . import abFixBasemap
 from mpl_toolkits import basemap
-from shapely import geometry as g
 from .abOptionManager import getOption
 
 
@@ -41,7 +42,7 @@ class abCoastalCellDetector:
     self.cstPlBnds = cstPlBnds
     self.cstPlSfc = cstPlSfc
     
-  def isCoastalCell(self, cellPolygon, cellPolygonBoundary = None, cellSurface = -1):
+  def isCoastalCell(self, cellPolygon, cellPolygonBoundary=None, cellSurface=-1, cellCentroid=None):
     cstPlBnds = self.cstPlBnds
     cstGPls = self.cstGPls    
     cstPlSfc = self.cstPlSfc
@@ -51,17 +52,23 @@ class abCoastalCellDetector:
 
     cellPolygonBoundary = cellPolygon.boundary if cellPolygonBoundary is None else g.LineString(cellPolygonBoundary)
     cellSurface = cellPolygon.area if cellSurface == -1 else cellSurface
+    cellCentroid = cellPolygon.centroid if cellCentroid is None else cellCentroid
+    cellRadius = np.sqrt(cellSurface/np.pi) # approximating as a circle
     surfThreshold = cellSurface*coveredSurfaceThresholdRatio
     surfThresholdSmallBodies = cellSurface*coveredSurfaceThresholdRatioSmallBodies
 
     result = False
+    distFromClosestLargeLand = np.inf
     intsSurf = 0
     npl = len(cstPlBnds)
     for ipl in range(npl):
       plbnd = cstPlBnds[ipl]
       plsfc = cstPlSfc[ipl]
+      pl = cstGPls[ipl]
+      if plsfc >= cellSurface*smallBodiesSizeRatio:
+        actDist = pl.distance(cellCentroid)
+        distFromClosestLargeLand = np.min([distFromClosestLargeLand, actDist])
       if cellPolygonBoundary.intersects(plbnd):
-        pl = cstGPls[ipl]
         ints = cellPolygon.intersection(pl)
         intsSurf += ints.area
         if cellSurface >= plsfc/2.:
@@ -69,11 +76,12 @@ class abCoastalCellDetector:
           continue
         elif (cellSurface >= plsfc/smallBodiesSizeRatio):
           # high max land fraction of the cell, if it intersects a small body
-          return intsSurf >= surfThresholdSmallBodies
+          if intsSurf >= surfThresholdSmallBodies:
+            return True
         elif (cellSurface < plsfc) and (intsSurf >= surfThreshold):
           # low max land fraction of the cell, if it intersects a large body
           return True
-    return result
+    return distFromClosestLargeLand <= cellRadius
 
       
     
