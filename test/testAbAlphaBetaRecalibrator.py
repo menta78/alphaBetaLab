@@ -12,8 +12,8 @@ class testAbAlphaBetaRecalibrator(unittest.TestCase):
     self.assertEqual(1., locRecFct)
     self.assertEqual(1.2, shdRecFct)
     locRecFct, shdRecFct = abAlphaBetaRecalibrator.getDefaultFactors(abUtils.MESHTYPE_TRIANGULAR)
-    self.assertAlmostEqual(1.1547, locRecFct, 4)
-    self.assertAlmostEqual(1.38564, shdRecFct, 4)
+    self.assertAlmostEqual(1.8, locRecFct, 4)
+    self.assertAlmostEqual(1.2*1.8, shdRecFct, 4)
 
   def testRecalibrator(self):
     rclb = abAlphaBetaRecalibrator.abAlphaBetaRecalibrator(obstFactor=1.2)
