@@ -6,7 +6,7 @@ def getDefaultFactors(meshType):
   locRecFct = 1.
   shdRecFct = 1.2
   if meshType == abUtils.MESHTYPE_TRIANGULAR:
-    fct = 1.8
+    fct = 2.0
     locRecFct = locRecFct*fct
     shdRecFct = shdRecFct*fct
   return locRecFct, shdRecFct
