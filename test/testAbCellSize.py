@@ -18,6 +18,10 @@ class testAbCellSize(unittest.TestCase):
     avgDir = _computeAvgDir(cell)
     self.assertAlmostEqual(np.pi/6, avgDir)
 
+    cell = a.rotate(cell0, -np.pi/6, use_radians=True)
+    avgDir = _computeAvgDir(cell)
+    self.assertAlmostEqual(np.pi/2-np.pi/6, avgDir)
+
     cell = a.rotate(cell0, np.pi/3, use_radians=True)
     avgDir = _computeAvgDir(cell)
     self.assertAlmostEqual(np.pi/3, avgDir)
@@ -25,6 +29,24 @@ class testAbCellSize(unittest.TestCase):
     cell = a.rotate(cell0, np.pi/2, use_radians=True)
     avgDir = _computeAvgDir(cell)
     self.assertAlmostEqual(0, avgDir)
+
+
+  def testComputeAvgDir_romboidCell(self):
+    crds = [[0, -2], [1, 0], [0, 2], [-1, 0], [0, -2]]
+    cell0 = g.Polygon(crds)
+    angle0 = np.arctan2(2,1)
+
+    cell = cell0
+    avgDir = _computeAvgDir(cell)
+    self.assertAlmostEqual(angle0, avgDir)
+
+    cell = a.rotate(cell0, np.pi/6, use_radians=True)
+    avgDir = _computeAvgDir(cell)
+    self.assertAlmostEqual(angle0 + np.pi/6 - np.pi/2, avgDir)
+
+    cell = a.rotate(cell0, -np.pi/6, use_radians=True)
+    avgDir = _computeAvgDir(cell)
+    self.assertAlmostEqual(angle0-np.pi/6, avgDir)
 
 
   def test1(self):

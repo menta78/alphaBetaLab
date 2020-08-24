@@ -7,29 +7,17 @@ from .abUtils import *
 
 def _computeAvgDir(cell):
   """
-  _computeAvgDir: computes the average direction of the polygon
+  _computeAvgDir: computes the average direction of the minimum rectangle enclosing the polygon
   modulo np.pi/2
-  """
-  crds = np.array(list(cell.boundary.coords))
-  xs = np.array([c[0] for c in crds])
-  ys = np.array([c[1] for c in crds])
-
-  xbari = np.mean(xs)
-  ybari = np.mean(ys)
-
-  distX = xs[:-1] - xbari
-  distY = ys[:-1] - ybari
-
-  for i, xd, yd in zip(range(len(distX)), distX, distY):
-    if not isClose(xd, 0):
-      distX[i] = xd*np.sign(xd)
-      distY[i] = yd*np.sign(xd)
-    else:
-      distY[i] = np.abs(yds)
+  works well for rectangular cells, not ideal for other cells, but for now can do
   
-  cosAvgDir = np.mean(distY)
-  sinAvgDir = np.mean(distX)
-  avgDir = np.arctan2(cosAvgDir, sinAvgDir)
+  """
+  rect = cell.minimum_rotated_rectangle
+  crds = np.array(list(cell.boundary.coords[:]))
+  xs = np.array([c[0] for c in crds[:2]])
+  ys = np.array([c[1] for c in crds[:2]])
+
+  avgDir = np.arctan2(ys[1]-ys[0], xs[1]-xs[0])
   return avgDir % (np.pi/2.)
 
 
