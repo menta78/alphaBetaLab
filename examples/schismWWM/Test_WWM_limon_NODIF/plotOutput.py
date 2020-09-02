@@ -37,7 +37,7 @@ def plotMapAtTime(ncfilepath, timeIndex):
  #hs[hs > mx - .1] = mx - .1
   hs[hs > 100] = np.nan
   mx = np.nanmax(hs)
-  mx = .22
+  mx = 4
   cnd =  ~np.isnan(hs)
   levels = np.arange(0., mx, .005)
  #levels = np.arange(0., 10, .02)
@@ -62,6 +62,7 @@ def plotMapAtTime(ncfilepath, timeIndex):
 if __name__ == '__main__':
   ncfilepath = 'outputs/schout_0000_1.nc'
   timeIndex = 719
+  timeIndex = 2
   import pdb; pdb.set_trace()
   plotMapAtTime(ncfilepath, timeIndex)
 

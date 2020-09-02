@@ -16,12 +16,13 @@
   ibc = 1 !Baroclinic option
   ibtp = 0 
 
-  rnday = 0.0416666666666667 !total run time in days (1hr)
-  dt = 1. !Time step in sec
+! rnday = 0.25 !total run time in days
+  rnday = 0.002
+  dt = 5 !Time step in sec
 
 ! Grid for WWM (USE_WWM)
-  msc2 = 3 !same as msc in .nml ... for consitency check between SCHISM and WWM
-  mdc2 = 40     !same as mdc in .nml
+  msc2 = 36     !same as msc in .nml ... for consitency check between SCHISM and WWM
+  mdc2 = 36     !same as mdc in .nml
 
 ! Define # of tracers in tracer modules (if enabled)
   ntracer_gen = 2 !user defined module (USE_GEN)
@@ -30,8 +31,8 @@
   eco_class = 27 !EcoSim (USE_ECO): must be between [25,60]
 
 ! Global output controls
-  nspool = 5 !output step spool
-  ihfskip = 3600 !stack spool; every ihfskip steps will be put into 1_*, 2_*, etc...
+  nspool = 10 !output step spool
+  ihfskip = 1080 !stack spool; every ihfskip steps will be put into 1_*, 2_*, etc...
 /
 
 &OPT
@@ -39,11 +40,11 @@
 ! Optional parameters 
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! Starting time
-  start_year = 2000 !int
-  start_month = 2 !int
-  start_day = 1 !int
-  start_hour = 0 !double
-  utc_start = 8 !double
+  start_year = 1994 !int
+  start_month = 10 !int
+  start_day = 12 !int
+  start_hour = 17 !double
+  utc_start = 0 !double
 
 !-----------------------------------------------------------------------
 ! Coordinate option: 1: Cartesian; 2: lon/lat (hgrid.gr3=hgrid.ll in this case,
@@ -71,7 +72,7 @@
 ! Main ramp option
 !-----------------------------------------------------------------------
   nramp = 0 !ramp-up option (1: on; 0: off)
-  dramp = 1. !needed if nramp=1; ramp-up period in days
+  dramp = 0.021 !needed if nramp=1; ramp-up period in days
 
   nrampbc = 0 !ramp-up flag for baroclinic force
   drampbc = 1. !not used if nrampbc=0
@@ -119,7 +120,7 @@
 !-----------------------------------------------------------------------
 ! Implicitness factor (0.5<thetai<=1).
 !-----------------------------------------------------------------------
-  thetai = 0.6 
+  thetai = 0.6
 
 !-----------------------------------------------------------------------
 ! If WWM is used, set coupling/decoupling flag. Not used if USE_WWM is distabled in Makefile
@@ -138,10 +139,15 @@
   iwbl = 0 !wave boundary layer formulation (used only if USE_WMM and 
            !icou_elfe_wwm/=0 and nchi=1. If icou_elfe_wwm=0, set iwbl=0): 
            !1-modified Grant-Madsen formulation; 2-Soulsby (1997)
-  hmin_radstress = 0 !min. total water depth used only in radiation stress calculation [m]
+  hmin_radstress = 0. !min. total water depth used only in radiation stress calculation [m]
   nrampwafo = 0       !ramp-up option for the wave forces (1: on; 0: off)
-  drampwafo = 1.      !needed if nrampwafo=1; ramp-up period in days
+  drampwafo = 0.125      !needed if nrampwafo=1; ramp-up period in days
   turbinj = 0.15      !% of depth-induced wave breaking energy injected in turbulence (default: 0.15 (15%), as proposed by Feddersen, 2012)
+!  fwvor = 1              ! 1: on; 0: off --> wave-induced force (if RADFLAG='VOR')
+!  fwvor_advxy_stokes = 1 !  --> Stokes drift advection (xy), Coriolis
+!  fwvor_advz_stokes = 1  !  --> Stokes drift advection (z) , Coriolis
+!  fwvor_gradpress = 1    !  --> Pressure term
+!  fwvor_breaking = 1     !  --> Wave breaking
 
 !-----------------------------------------------------------------------
 ! Bed deformation option (0: off; 1: vertical deformation only; 2: 3D bed deformation). 
@@ -154,8 +160,8 @@
 !-----------------------------------------------------------------------
 ! Reference latitude for beta-plane approximation when ncor=1 (not used if ics=2)
 !-----------------------------------------------------------------------
-  slam0 = -124  !lon - not really used
-  sfea0 = 45 !lat
+  slam0 = -124 !lon - not really used
+  sfea0 = 45. !lat
 
 !-----------------------------------------------------------------------
 ! Baroclinicity calculation in off/nearshore. The 'below-bottom' gradient
@@ -199,7 +205,7 @@
 !           and may remove this constant in the future.
 !           If iwbl/=0, nchi must =1.
 !-----------------------------------------------------------------------
-  nchi = 0 
+  nchi = 0
 
 !-----------------------------------------------------------------------
 ! Coriolis. If ncor=-1, specify "rlatitude" (in degrees); if ncor=0,
@@ -209,7 +215,6 @@
 ! Coriolis is calculated from local latitude, and 'sfea0' is not used.
 !-----------------------------------------------------------------------
   ncor = 0 !should usually be 1 if ics=2
-  rlatitude = 46 !if ncor=-1
   coricoef = 0 !if ncor=0
 
 !-----------------------------------------------------------------------
@@ -305,7 +310,7 @@
 !-----------------------------------------------------------------------
   ihhat = 1 
   inunfl = 0
-  h0 = 0.001     !min. water depth for wetting/drying [m]
+  h0 = 0.01     !min. water depth for wetting/drying [m]
   shorewafo = 0 !Matters only if USE_WWM
 
 !-----------------------------------------------------------------------
@@ -327,8 +332,8 @@
 ! actual step is calculated adaptively based on local gradient.
 !-----------------------------------------------------------------------
   nadv = 1
-  dtb_max = 0.2 !in sec
-  dtb_min = 0.2
+  dtb_max = 5 !in sec
+  dtb_min = 1
 
 !-----------------------------------------------------------------------
 ! If inter_mom=0, linear interpolation is used for velocity at foot of char. line.
@@ -373,16 +378,17 @@
 ! If WWM is enabled and icou_elfe_wwm>0 and iwind_form=-2, stress is overwritten by WWM.
 ! In all cases, if USE_ICE the stress in ice-covered portion is calculated by ICE routine.
 !-----------------------------------------------------------------------
-  nws = 0 
-!  wtiminc = 150. !time step for atmos. forcing
-!  nrampwind = 1 !ramp-up option for atmos. forcing
-!  drampwind = 2. !needed if nrampwind/=0; ramp-up period in days
-!  iwindoff = 0 !needed only if nws/=0; '1': needs windfactor.gr3
-!  iwind_form = -1 !needed if nws/=0
-  !If impose_net_flux/=0 and nws=2, read in net _surface_ heat flux as var 'dlwrf' 
+  nws = 1 
+  wtiminc = 8640000. !time step for atmos. forcing
+  nrampwind = 0 !ramp-up option for atmos. forcing
+  drampwind = 2. !needed if nrampwind/=0; ramp-up period in days
+  iwindoff = 0 !needed only if nws/=0; '1': needs windfactor.gr3
+  iwind_form = -2 !needed if nws/=0
+  !If impose_net_flux/=0 and nws=2, read in net _surface_ heat flux as var 'dlwrf'
   !(Downward Long Wave) in sflux_rad (solar radiation is still used separately),
   !and if PREC_EVAP is on, also read in net P-E as 'prate' (Surface Precipitation Rate) in sflux_prc.
   impose_net_flux = 0
+
 
 !-----------------------------------------------------------------------
 ! Heat and salt exchange. isconsv=1 needs ihconsv=1; ihconsv=1 needs nws=2.
@@ -394,9 +400,10 @@
 !-----------------------------------------------------------------------
 ! Turbulence closure.
 !-----------------------------------------------------------------------
-  itur = 0 
-  dfv0 = 0 !needed if itur=0
-  dfh0 = 1.e-4 !needed if itur=0
+  itur = 3 
+  mid = 'KE' !needed if itur=3,5. Use KE if itur=5 
+  stab = 'KC' !needed if itur=3 or 5. Use 'GA' if turb_met='MY'; otherwise use 'KC'. 
+  xlsc0 = 0.1 !needed if itur=3 or 5. Scale for surface & bottom mixing length (>0)
 
 !-----------------------------------------------------------------------
 ! Sponge layer for elevation and vel.
@@ -443,7 +450,7 @@
 ! conservative method is used without extrapolation beyond bottom; 
 ! otherwise constant extrapolation below bottom is used.
 !-----------------------------------------------------------------------
-  h_bcc1 = 100. !h_bcc1
+  h_bcc1 = 1.e6 !h_bcc1
 
 !-----------------------------------------------------------------------
 ! Dimensioning parameters for inter-subdomain btrack. 
@@ -571,9 +578,9 @@
   iof_hydro(14) = 0 !wind velocity vector [m/s]
   iof_hydro(15) = 0 !wind stress vector [m^2/s/s]
   iof_hydro(16) = 0 !depth-averaged vel vector [m/s]
-  iof_hydro(17) = 1 !vertical velocity [m/s]
-  iof_hydro(18) = 1 !water temperature [C]
-  iof_hydro(19) = 1 !water salinity [PSU]
+  iof_hydro(17) = 0 !vertical velocity [m/s]
+  iof_hydro(18) = 0 !water temperature [C]
+  iof_hydro(19) = 0 !water salinity [PSU]
   iof_hydro(20) = 0 !water density [kg/m^3]
   iof_hydro(21) = 0 !eddy diffusivity [m^2/s]
   iof_hydro(22) = 0 !eddy viscosity [m^2/s]
@@ -593,30 +600,30 @@
   iof_wwm(1)  = 1 !sig. height (m)
   iof_wwm(2)  = 1 !Mean average period (sec) - TM01
   iof_wwm(3)  = 1 !Zero down crossing period for comparison with buoy (s) - TM02
-  iof_wwm(4)  = 1 !Average period of wave runup/overtopping - TM10
-  iof_wwm(5)  = 1 !Mean wave number (1/m)
-  iof_wwm(6)  = 1 !Mean wave length (m)
+  iof_wwm(4)  = 0 !Average period of wave runup/overtopping - TM10
+  iof_wwm(5)  = 0 !Mean wave number (1/m)
+  iof_wwm(6)  = 0 !Mean wave length (m)
   iof_wwm(7)  = 1 !Mean average energy transport direction (degr) - MWD in NDBC?
   iof_wwm(8) = 1 !Mean directional spreading (degr)
   iof_wwm(9) = 1 !Discrete peak period (sec) - Tp
   iof_wwm(10) = 1 !Continuous peak period based on higher order moments (sec)
   iof_wwm(11) = 1 !Peak phase vel. (m/s)
-  iof_wwm(12) = 1 !Peak n-factor
-  iof_wwm(13) = 1 !Peak group vel. (m/s)
-  iof_wwm(14) = 1 !Peak wave number
-  iof_wwm(15) = 1 !Peak wave length
+  iof_wwm(12) = 0 !Peak n-factor
+  iof_wwm(13) = 0 !Peak group vel. (m/s)
+  iof_wwm(14) = 0 !Peak wave number
+  iof_wwm(15) = 0 !Peak wave length
   iof_wwm(16) = 1 !Peak (dominant) direction (degr)
-  iof_wwm(17) = 1 !Peak directional spreading
-  iof_wwm(18) = 1 !Discrete peak direction (radian?)
-  iof_wwm(19) = 1 !Orbital vel. (m/s)
-  iof_wwm(20) = 1 !RMS Orbital vel. (m/s)
-  iof_wwm(21) = 1 !Bottom excursion period (sec?)
-  iof_wwm(22) = 1 !Bottom wave period (sec)
-  iof_wwm(23) = 1 !Uresell number based on peak period
+  iof_wwm(17) = 0 !Peak directional spreading
+  iof_wwm(18) = 0 !Discrete peak direction (radian?)
+  iof_wwm(19) = 0 !Orbital vel. (m/s)
+  iof_wwm(20) = 0 !RMS Orbital vel. (m/s)
+  iof_wwm(21) = 0 !Bottom excursion period (sec?)
+  iof_wwm(22) = 0 !Bottom wave period (sec)
+  iof_wwm(23) = 0 !Uresell number based on peak period
   iof_wwm(24) = 0 !Friction velocity (m/s?)
-  iof_wwm(25) = 1 !Charnock coefficient
-  iof_wwm(26) = 1 !Rougness length
-  iof_wwm(27) = 1 !WWM_energy vector
+  iof_wwm(25) = 0 !Charnock coefficient
+  iof_wwm(26) = 0 !Rougness length
+  iof_wwm(27) = 0 !WWM_energy vector
   iof_wwm(28) = 0 !Wave force vector (m.s-2) computed by wwm @side centers and whole levels
 
 /

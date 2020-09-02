@@ -17,24 +17,31 @@
 ! Pre-processing option. Useful for checking grid violations.
 !-----------------------------------------------------------------------
   ipre = 0 !Pre-processor flag (1: on; 0: off)
+!-----------------------------------------------------------------------
+! 2D model flag (0: 3D; 1: 2D)
+! For 2D model, the following modules cannot be used:
+! USE_ECO, USE_SED, PREC_EVAP, USE_GOTM, USE_NAPZD
+!-----------------------------------------------------------------------
+  izonal5 = 0
 
 !-----------------------------------------------------------------------
-! Williamson test #5 (zonal flow over an isolated mount); if
-! on, ics must =2
+! Implicitness factor for Coriolis for 2D model (not used in 3D)
 !-----------------------------------------------------------------------
-  izonal5 = 0 !"0" - no test; otherwise on
-
-
-
+!  theta2 = 0.5 !between 0 and 1
 
 !-----------------------------------------------------------------------
 ! If WWM is used, set coupling/decoupling flag. Not used if WWM is not used
 !-----------------------------------------------------------------------
   icou_elfe_wwm = 1 !flag (1: coupled; 0: decoupled)
-  nstep_wwm = 1 !call WWM every this many time steps
+  nstep_wwm = 1 
   iwbl = 0
-  msc2 = 3
-  mdc2 = 40
+  msc2 = 36
+  mdc2 = 36
+  hmin_radstress = 0.
+  shorewafo = 0
+  nrampwafo = 1
+  drampwafo = 1.
+  turbinj = 0.15
 
 !-----------------------------------------------------------------------
 ! Non-hydrostatic model switch (0: hydrostatic model; 1: non-hydrostatic model)
@@ -157,7 +164,12 @@
 !  min. vel for invoking btrack and for abnormal exit in quicksearch
 !-----------------------------------------------------------------------
   velmin_btrack = 1.e-4
-  btrack_nudge = 1.013e-3 !0.0001
+
+!-----------------------------------------------------------------------
+! Following scaling parameter can be used to add more noise in initial
+! nudging in btrack for some academic cases to avoid underflow.
+!-----------------------------------------------------------------------
+  btrack_nudge = 1.013e-3
 
 !-----------------------------------------------------------------------
 ! Wetting and drying. If ihhat=1, \hat{H} is made non-negative to enhance
@@ -168,7 +180,7 @@
 !-----------------------------------------------------------------------
   ihhat = 1
   inunfl = 0
-  h0 = 0.001 !min. water depth for wetting/drying
+  h0 = 0.01 !min. water depth for wetting/drying
 
 !-----------------------------------------------------------------------
 ! Implicitness factor (0.5<thetai<=1).
@@ -178,10 +190,10 @@
 !-----------------------------------------------------------------------
 ! Run time and ramp option
 !-----------------------------------------------------------------------
-  rnday = 0.0416666666666667 !total run time in days (3600s)
+  rnday = 0.25 !total run time in days 
   nramp = 0 !ramp-up option (1: on; 0: off)
   dramp = 0.1 !needed if nramp=1; ramp-up period in days
-  dt = 1. !0.05 !Time step in sec
+  dt = 5 !Time step in sec
 
 !-----------------------------------------------------------------------
 ! Solver option. JCG is used presently.
@@ -200,8 +212,8 @@
 ! the max. step used in 5tth-order R-K (depth=2).
 !-----------------------------------------------------------------------
   nadv = 1
-  dtb_max = 0.2 !0.05
-  dtb_min = 0.2 !0.05
+  dtb_max = 5.
+  dtb_min = 1.
 
 !-----------------------------------------------------------------------
 ! Interpolation methods in ELM for ST and velocity. If inter_st=1, split linear
@@ -235,11 +247,12 @@
 ! read in from sflux_ files.
 ! If nws>0, 'iwindoff' can be used to scale wind speed (with windfactor.gr3).
 !-----------------------------------------------------------------------
-  nws = 0 
+  nws = 1 
   wtiminc = 8640000. !needed if nws/=0; time step for atmos. forcing
-  nrampwind = 1 !ramp-up option for atmos. forcing
+  nrampwind = 0 !ramp-up option for atmos. forcing
   drampwind = 0.5 !needed of nrampwind/=0; ramp-up period in days
   iwindoff = 0 !needed only if nws/=0
+  iwind_form = -2
 
 !-----------------------------------------------------------------------
 ! Heat and salt exchange. isconsv=1 needs ihconsv=1; ihconsv=1 needs nws=2.
@@ -251,11 +264,11 @@
 !-----------------------------------------------------------------------
 ! Turbulence closure.
 !-----------------------------------------------------------------------
-  itur = 0  
-  dfv0 = 0
-  dfh0 = 1.e-6
-!  turb_met = KE 
-!  turb_stab = KC
+  itur = 3  
+!  dfv0 = 0
+!  dfh0 = 1.e-6
+  turb_met = KE 
+  turb_stab = KC
 
 !-----------------------------------------------------------------------
 ! Nudging options for T,S.  If inu_st=0, no nudging is used. If inu_st=1,
@@ -289,8 +302,8 @@
 !-----------------------------------------------------------------------
   iout_sta = 0
   iwrite = 0 !not used
-  nspool = 5 !output step spool
-  ihfskip = 3600 !stack spool; every ihfskip steps will be put into 1_*, 2_*, etc...
+  nspool = 10 !output step spool
+  ihfskip = 1080 !stack spool; every ihfskip steps will be put into 1_*, 2_*, etc...
 
   elev = 1 !0: off; 1: on
   pres = 0 
@@ -305,7 +318,7 @@
   evap = 0 
   prcp = 0 
   bdrc = 0 
-  wind = 0 
+  wind = 1 
   wist = 0 
   dahv = 0 
   vert = 1 
@@ -319,6 +332,7 @@
   zcor = 1 
   qnon = 0 !hydrodynamic pressure
   hvel = 1 
+  z0st = 1
 
 !-----------------------------------------------------------------------
 ! Non-standard outputs section. Some of these need corresponding cpp flags
@@ -355,10 +369,7 @@
   mrsh_elem = 0 !marsh flags (USE_MARSH on)
 
 
-!-----------------------------------------------------------------------
-! Outputs from WWM (USE_WWM must be on in Makefile)
-!-----------------------------------------------------------------------
-  WWM_1 = 1 !sig. height
+  WWM_1  = 1 !sig. height (m)
   WWM_2  = 1 !Mean average period (sec) - TM01
   WWM_3  = 1 !Zero down crossing period for comparison with buoy (s) - TM02
   WWM_4  = 1 !Average period of wave runup/overtopping - TM10
@@ -386,12 +397,11 @@
   WWM_28  = 1 !Rougness length
   WWM_energy_dir = 1 !vector
 
-
 !-----------------------------------------------------------------------
 ! Option for hotstart outputs
 !-----------------------------------------------------------------------
   hotout = 0 !1: output *_hotstart every 'hotout_write' steps
-  hotout_write = 72000
+  hotout_write = 4320
 
 !-----------------------------------------------------------------------
 ! Conservation check option. If consv_check=1, some fluxes are computed
@@ -403,13 +413,6 @@
 ! Tracer parameters
 !-----------------------------------------------------------------------
 
-! Time
-  sim_day = 1
-  sim_month = 2
-  sim_year = 2000
-  sim_hour = 0
-  sim_minute = 0
-  sim_second = 0
 
 ! Model id (1-Sediments Model, 2-Ecological Model, 3-Oil Spill Model; 4-NAPZD)
 
@@ -417,30 +420,18 @@
 ! initial conditions (1,2 or 3; similar to icst; "3" is for analytical form) 
 
 
-  ibtrack_test = 0
-  inu_elev = 0 
-  inu_uv = 0
   ihydraulics = 0
+  ibtrack_test = 0
+  inu_elev = 0
+  inu_uv = 0
   nramp_elev = 0
   irouse_test = 0
- iharind = 0
-   if_source = 0
-   mass_source = 0
+  iharind = 0
+  if_source = 0
+  mass_source = 0
 
-              z0wr.66  = 0
-
-
-
-
- inv_atm_bnd =0
- prmsl_ref = 101325.
- hmin_radstress = 0.
-
-
-
-
-
-
+  inv_atm_bnd =0
+  prmsl_ref = 101325.
 
   ic_TEM = 1
   ic_SAL = 1
@@ -448,9 +439,9 @@
   inu_SAL = 0
   step_nu_tr = 86400. 
   ieos_type = 0 
- eps1_tvd_imp = 1.e-7
- eps2_tvd_imp = 1.e-14
- xlsc0 = 0.1
+  eps1_tvd_imp = 1.e-7
+  eps2_tvd_imp = 1.e-14
+  xlsc0 = 0.1
   iupwind_mom = 0
   rearth_pole = 6378206.4
   rearth_eq = 6378206.4
@@ -465,10 +456,6 @@
   start_year = 2002
   start_hour = 0
   utc_start = 8
-  shorewafo = 1
-  nrampwafo = 0
-  drampwafo = 1.
-  turbinj = 0.15
   h1_bcc = 50.
   h2_bcc = 100.
   niter_shap = 1

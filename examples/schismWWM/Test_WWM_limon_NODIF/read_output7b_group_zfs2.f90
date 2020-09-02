@@ -1,11 +1,17 @@
 !
 !****************************************************************************************
 !											*
-!	read_output7b with (x,y,z) read in from station.xy (z>=0 is distance from F.S.) 
+!	read_output7b with (x,y,z) read in from station.bp (z>=0 is distance from F.S.) 
 !         for 3D variables (surface values for 2D variables).
-!       Outputs: fort.1[89] 
+!       Outputs: fort.1[89]; ; fort.20 - local dapth for each pt.
+!       For ics=2 (lat/lon), use nearest node for output
 !											*
 !       ifort -Bstatic -assume byterecl -O3 -o read_output7b_group_zfs2 read_output7b_group_zfs2.f90
+!  PGI compiler:
+!  pgf90 -O2 -mcmodel=medium  -Bstatic -o read_output7b_group_zfs2 read_output7b_group_zfs2.f90
+!  On Ranch:
+!  f90 -Bdynamic -o read_output7b_group_zfs2 read_output7b_group_zfs2.f90
+
 !****************************************************************************************
 !
       program read_out
@@ -23,8 +29,11 @@
       dimension swild(3)
       allocatable :: sigma(:),cs(:),ztot(:),x(:),y(:),dp(:),kbp00(:),kfp(:)
       allocatable :: nm(:,:),out(:,:,:,:),out2(:,:,:),icum(:,:,:),eta2(:),node3(:,:),arco(:,:)
-      allocatable :: ztmp(:),x00(:),y00(:),iep(:),out3(:,:),z00(:)
+      allocatable :: ztmp(:),x00(:),y00(:),iep(:),out3(:,:),z00(:),rl2min(:),dep(:)
       
+      print*, 'Input ics (1-Cartesian; 2-lat/lon):'
+      read(*,*)ics
+
       print*, 'Input file to read from (without *_):'
       read(*,'(a30)')file63
       
@@ -34,10 +43,10 @@
       print*, 'Input start CORIE day (0 if none):'
       read(*,*) corieday
 
-      open(10,file='station.xy',status='old')
+      open(10,file='station.bp',status='old')
       read(10,*) 
       read(10,*) nxy
-      allocate(x00(nxy),y00(nxy),z00(nxy),stat=istat)
+      allocate(x00(nxy),y00(nxy),z00(nxy),rl2min(nxy),dep(nxy),stat=istat)
       if(istat/=0) stop 'Falied to allocate (1)'
 
       do i=1,nxy
@@ -145,52 +154,69 @@
 
 !...  Find parent element for (x00,y00)
       iep=0
-      do i=1,ne
-        do l=1,nxy
-          aa=0
-          ar=0 !area
-          do j=1,3
-            j1=j+1
-            j2=j+2
-            if(j1>3) j1=j1-3
-            if(j2>3) j2=j2-3
-            n0=nm(i,j)
-            n1=nm(i,j1)
-            n2=nm(i,j2)
-            swild(j)=signa(x(n1),x(n2),x00(l),y(n1),y(n2),y00(l)) !temporary storage
-            aa=aa+abs(swild(j))
-            if(j==1) ar=signa(x(n1),x(n2),x(n0),y(n1),y(n2),y(n0))
-          enddo !j
-          if(ar<=0) then
-            print*, 'Negative area:',ar
-            stop
-          endif
-          ae=abs(aa-ar)/ar
-          if(ae<=1.e-5) then
-            iep(l)=i
-            node3(l,1:3)=nm(i,1:3)
-            arco(l,1:3)=swild(1:3)/ar
-            arco(l,1)=max(0.,min(1.,arco(l,1)))
-            arco(l,2)=max(0.,min(1.,arco(l,2)))
-            if(arco(l,1)+arco(l,2)>1) then 
-              arco(l,3)=0
-              arco(l,2)=1-arco(l,1)
-            else
-              arco(l,3)=1-arco(l,1)-arco(l,2)
+      if(ics==1) then !Cartesian
+        do i=1,ne
+          do l=1,nxy
+            aa=0
+            ar=0 !area
+            do j=1,3
+              j1=j+1
+              j2=j+2
+              if(j1>3) j1=j1-3
+              if(j2>3) j2=j2-3
+              n0=nm(i,j)
+              n1=nm(i,j1)
+              n2=nm(i,j2)
+              swild(j)=signa(x(n1),x(n2),x00(l),y(n1),y(n2),y00(l)) !temporary storage
+              aa=aa+abs(swild(j))
+              if(j==1) then
+                ar=signa(x(n1),x(n2),x(n0),y(n1),y(n2),y(n0))
+                if(ar<=0) then
+                  print*, 'Negative area:',ar,i,n1,n2,n0,x(n1),y(n1),x(n2),y(n2),x(n0),y(n0)
+                  stop
+                endif
+              endif
+            enddo !j
+            ae=abs(aa-ar)/ar
+            if(ae<=1.e-5) then
+              iep(l)=i
+              node3(l,1:3)=nm(i,1:3)
+              arco(l,1:3)=swild(1:3)/ar
+              arco(l,1)=max(0.,min(1.,arco(l,1)))
+              arco(l,2)=max(0.,min(1.,arco(l,2)))
+              if(arco(l,1)+arco(l,2)>1) then 
+                arco(l,3)=0
+                arco(l,2)=1-arco(l,1)
+              else
+                arco(l,3)=1-arco(l,1)-arco(l,2)
+              endif
+              cycle
             endif
-            cycle
-          endif
-        enddo !l; build pts
+          enddo !l; build pts
 
-        ifl=0 !flag
-        do l=1,nxy
-          if(iep(l)==0) then
-            ifl=1
-            exit
-          endif
-        enddo !l
-        if(ifl==0) exit
-      enddo !i=1,ne
+          ifl=0 !flag
+          do l=1,nxy
+            if(iep(l)==0) then
+              ifl=1
+              exit
+            endif
+          enddo !l
+          if(ifl==0) exit
+        enddo !i=1,ne
+      else !lat/lon
+        rl2min=1.e25 !min distance^2
+        do i=1,np
+          do l=1,nxy
+            rl2=(x(i)-x00(l))**2+(y(i)-y00(l))**2
+            if(rl2<rl2min(l)) then
+              rl2min(l)=rl2
+              iep(l)=1 !actual elem. # not used
+              node3(l,1:3)=i
+              arco(l,1:3)=1./3
+            endif
+          enddo !l=1,nxy
+        enddo !i=1,np
+      endif !ics
 
       do j=1,nxy
         if(iep(j)==0) then
@@ -217,7 +243,10 @@
       do iday=iday1,iday2
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       write(it_char,'(i12)')iday
-      open(63,file=it_char//'_'//file63,status='old',access='direct',recl=nbyte)
+      it_char=adjustl(it_char)
+      leng=len_trim(it_char)
+      open(63,file=it_char(1:leng)//'_'//file63,status='old',access='direct',recl=nbyte)
+!'
 
       irec=irec0
       do it1=1,nrec
@@ -244,8 +273,12 @@
         out3=0
         if(i23d.eq.2) then
           do i=1,nxy
+            dep(i)=0
             do j=1,3 !nodes
               nd=node3(i,j)
+              !Compute local depth
+              dep(i)=dep(i)+arco(i,j)*dp(nd)
+
               do m=1,ivs
                 read(63,rec=irec+(nd-1)*ivs+m) tmp
                 out2(i,1,m)=out2(i,1,m)+arco(i,j)*tmp
@@ -253,13 +286,8 @@
             enddo !j
           enddo !i
           irec=irec+np*ivs
-          !write(18,'(e16.8,6000(1x,e14.6))')time/86400+corieday,(out2(i,1,1),i=1,nxy)
-          !if(ivs==2) write(19,'(e16.8,6000(1x,e14.6))')time/86400+corieday,(out2(i,1,2),i=1,nxy)
-          if(it1==nrec.and.iday==iday2) then
-            do i=1,nxy
-              write(18,*)real(x00(i)),real(out2(i,1,1))
-            enddo !i
-          endif
+          write(18,'(e16.8,6000(1x,e14.6))')time/86400+corieday,(out2(i,1,1),i=1,nxy)
+          if(ivs==2) write(19,'(e16.8,6000(1x,e14.6))')time/86400+corieday,(out2(i,1,2),i=1,nxy)
         else !i23d=3 
           do i=1,nxy
             do j=1,3 !nodes
@@ -275,12 +303,12 @@
 
 !         Do interpolation
           do i=1,nxy
-            etal=0; dep=0; idry=0
+            etal=0; dep(i)=0; idry=0
             do j=1,3
               nd=node3(i,j)
               if(eta2(nd)+dp(nd)<h0) idry=1
               etal=etal+arco(i,j)*eta2(nd)
-              dep=dep+arco(i,j)*dp(nd)
+              dep(i)=dep(i)+arco(i,j)*dp(nd)
       
 !             Debug
 !              write(11,*)i,j,nd,dp(nd),arco(i,j)
@@ -288,16 +316,16 @@
             enddo !j
             if(idry==1) then
               if(file63(1:7).eq.'hvel.64') then
-                out2(i,0:nvrt,1:2)=0
+                out3(i,1:2)=0
               else
-                out2(i,0:nvrt,1:2)=-99
+                out3(i,1:2)=-99
               endif
 !              write(65,*)'Dry'
             else !element wet
 !             Compute z-coordinates
               do k=kz,nvrt
                 kin=k-kz+1
-                hmod2=min(dep,h_s)
+                hmod2=min(dep(i),h_s)
                 if(hmod2<=h_c) then
                   ztmp(k)=sigma(kin)*(hmod2+etal)+etal
                 else if(etal<=-h_c-(hmod2-h_c)*theta_f/sinh(theta_f)) then
@@ -312,22 +340,22 @@
                 if(k==nvrt) ztmp(k)=etal
               enddo !k
 
-              if(dep<=h_s) then
+              if(dep(i)<=h_s) then
                 kbpl=kz
               else !z levels
 !               Find bottom index
                 kbpl=0
                 do k=1,kz-1
-                  if(-dep>=ztot(k).and.-dep<ztot(k+1)) then
+                  if(-dep(i)>=ztot(k).and.-dep(i)<ztot(k+1)) then
                     kbpl=k
                     exit
                   endif
                 enddo !k
                 if(kbpl==0) then
-                  write(*,*)'Cannot find a bottom level:',dep,i
+                  write(*,*)'Cannot find a bottom level:',dep(i),i
                   stop
                 endif
-                ztmp(kbpl)=-dep
+                ztmp(kbpl)=-dep(i)
                 do k=kbpl+1,kz-1
                   ztmp(k)=ztot(k)
                 enddo !k
@@ -335,7 +363,7 @@
 
               do k=kbpl+1,nvrt
                 if(ztmp(k)-ztmp(k-1)<=0) then
-                  write(*,*)'Inverted z-level:',etal,dep,ztmp(k)-ztmp(k-1)
+                  write(*,*)'Inverted z-level:',etal,dep(i),ztmp(k)-ztmp(k-1)
                   stop
                 endif
               enddo !k
@@ -369,14 +397,19 @@
               endif
             endif !dry/wet
           enddo !i=1,nxy
-          !write(18,'(e16.8,6000(1x,f12.3))')time/86400+corieday,(out3(i,1),i=1,nxy)
-          !if(ivs==2) write(19,'(e16.8,6000(1x,f12.3))')time/86400+corieday,(out3(i,2),i=1,nxy)
+          write(18,'(e16.8,6000(1x,f12.3))')time/86400+corieday,(out3(i,1),i=1,nxy)
+          if(ivs==2) write(19,'(e16.8,6000(1x,f12.3))')time/86400+corieday,(out3(i,2),i=1,nxy)
          
         endif !i23d
       enddo !it1=1,nrec
 
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       enddo !iday
+
+!     Output local depths info
+      do i=1,nxy
+        write(20,*)i,dep(i)
+      enddo !i
 
       stop
       end
