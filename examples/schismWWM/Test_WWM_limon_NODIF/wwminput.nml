@@ -40,7 +40,7 @@
  LSTAG          = T                  ! Stagger directional bins with a half Dtheta; may use T only for regular grid to avoid char. line aligning with grid line
  MINDIR         = 0.                 ! Minimum direction for simulation (unit: degrees; nautical convention; 0: from N; 90: from E); not used if LCIRD = .T.
  MAXDIR         = 360.               ! Maximum direction for simulation (unit: degrees); may be < MINDIR; not used if LCIRD = .T.
- MDC = 36                 ! Number of directional bins
+ MDC = 24                 ! Number of directional bins
  FRLOW          = 0.04               ! Low frequency limit of the discrete wave period (Hz; 1/period)
  FRHIGH         = 1.                 ! High frequency limit of the discrete wave period.
  MSC = 36                 ! Number of frequency bins
@@ -155,7 +155,7 @@
  MESBF          = 1                  ! Bottomg friction: JONSWAP(1) (Default at 1); 2 - Madsen
  FRICC          = 0.067              ! Cjon - Bottom friction coefficient (always positive)
  MESBR          = 1                  ! Shallow water wave breaking; 0: no; 1: BJ78 (Default at 1)
- MESUO         = 1
+ MESUO          = 1                  ! Unresolved Obstacles Source Term
  ICRIT          = 1                  ! Wave breaking criterion: set as 1 - SWAN, 2 - Dingemans - default = 2
  ALPBJ          = 1.                 ! Dissipation proportionality coefficient (0.5 is default)
  BRHD           = 0.73               ! Wave breaking coefficient for Const. type wave breaking criterion; range: 0.6-0.83 (suggested 0.78)

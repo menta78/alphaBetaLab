@@ -22,7 +22,7 @@
 
 ! Grid for WWM (USE_WWM)
   msc2 = 36     !same as msc in .nml ... for consitency check between SCHISM and WWM
-  mdc2 = 36     !same as mdc in .nml
+  mdc2 = 24     !same as mdc in .nml
 
 ! Define # of tracers in tracer modules (if enabled)
   ntracer_gen = 2 !user defined module (USE_GEN)
@@ -378,7 +378,10 @@
 ! If WWM is enabled and icou_elfe_wwm>0 and iwind_form=-2, stress is overwritten by WWM.
 ! In all cases, if USE_ICE the stress in ice-covered portion is calculated by ICE routine.
 !-----------------------------------------------------------------------
-  nws = 1 
+! menta
+! nws = 1 
+  nws = 0
+!!!!!!!!!!!!!!!!!!!!!!!
   wtiminc = 8640000. !time step for atmos. forcing
   nrampwind = 0 !ramp-up option for atmos. forcing
   drampwind = 2. !needed if nrampwind/=0; ramp-up period in days

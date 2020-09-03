@@ -9,7 +9,7 @@
  NSPOOL=         10,
  IHFSKIP=       1080,
  MSC2=         36,
- MDC2=         36,
+ MDC2=         24,
  DT=  5.0000000000000000     ,
  RNDAY=  2.0000000000000000E-003,
  /
@@ -165,7 +165,7 @@
  IOF_SED2D= 14*1          ,
  IOF_ICE= 10*1          ,
  IOF_ANA= 20*1          ,
- IOF_MARSH=   33526016,          0,
+ IOF_MARSH=   42017024,          0,
  NHOT=          0,
  NHOT_WRITE=       8640,
  IOUT_STA=          0,
