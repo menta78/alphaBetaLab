@@ -318,6 +318,20 @@ class testAbTriangularMesh(unittest.TestCase):
       self.assertEqual(yexp, xyfnd[1])
 
 
+  def testGetNodesDataFrame(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
+    df = feMeshSpec.getNodesDataframe()
+    # some random checks
+    self.assertEqual(410, len(df))
+    self.assertEqual(3, len(df.columns))
+    self.assertAlmostEqual(df[df.index==350].x.values[0], -77.3890650728)
+    self.assertAlmostEqual(df[df.index==350].y.values[0], 17.6616614616)
+    self.assertAlmostEqual(410, len(feMeshSpec.nodeBathy.keys()))
+    self.assertAlmostEqual(119.0, df[df.index==350].bathy.values[0])
+    
+
       
     
 
