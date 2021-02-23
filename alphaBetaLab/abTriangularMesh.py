@@ -125,7 +125,12 @@ class _abTriMeshSpec:
       fl.write(ln)
     fl.write('$EndElements')
     fl.close()
- 
+
+  def getNodesDataframe(self):
+    import pandas as pd
+    dfcrds = pd.DataFrame.from_dict(self.nodes, orient='index', columns=['x', 'y'])
+    dfbathy = pd.DataFrame.from_dict(self.nodeBathy, orient='index', columns=['bathy'])
+    return dfcrds.join(dfbathy)
 
 
 def loadFromGr3File(gr3FilePath):
