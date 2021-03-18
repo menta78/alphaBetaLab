@@ -161,7 +161,7 @@ class _abTriMeshSpec:
       print('WARINING: no open boundary found. Beware, if this mesh was loaded from a msh, the open boundary was not loaded')
     ln = str(nOpenBoundary) + ' Number of open boundaries\n'
     fl.write(ln)
-    nbndnodes = np.sum([len(itm[1]) for itm in m.openBoundaries.items()])
+    nbndnodes = int(np.sum([len(itm[1]) for itm in m.openBoundaries.items()]))
     ln = str(nbndnodes) + ' Total number of open boundary nodes\n'
     fl.write(ln)
     for ibnd in range(nOpenBoundary):
@@ -177,7 +177,7 @@ class _abTriMeshSpec:
     nLandBoundary = len(self.landBoundaries.keys())
     ln = str(nLandBoundary) + ' Number of land boundaries\n'
     fl.write(ln)
-    nbndnodes = np.sum([len(itm[1]) for itm in m.landBoundaries.items()])
+    nbndnodes = int(np.sum([len(itm[1]) for itm in m.landBoundaries.items()]))
     ln = str(nbndnodes) + ' Total number of land boundary nodes\n'
     fl.write(ln)
     for ibnd in range(nLandBoundary):
