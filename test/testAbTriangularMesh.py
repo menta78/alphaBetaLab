@@ -63,12 +63,48 @@ class testAbTriangularMesh(unittest.TestCase):
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     # some random checks
     self.assertEqual(1587, len(feMeshSpec.nodes.keys()))
+    self.assertEqual(2, len(feMeshSpec.openBoundaries.keys()))
+    bndnds = feMeshSpec.openBoundaries[2]
+    self.assertEqual(6, len(bndnds))
+    self.assertEqual(1556, bndnds[3])
     self.assertEqual(11, len(feMeshSpec.openBoundaryNodes.keys()))
     self.assertEqual(352, len(feMeshSpec.landBoundaryNodes.keys()))
     self.assertEqual(352, len(feMeshSpec.landBoundaryOrdered))
     self.assertEqual(5, len(feMeshSpec.landBoundaries.keys()))
-    self.assertEqual(abTriangularMesh.landBoundaryExteriorType, feMeshSpec.landBoundaries[1])
-    self.assertEqual(abTriangularMesh.landBoundaryIslandType, feMeshSpec.landBoundaries[5])
+    self.assertEqual(5, len(feMeshSpec.landBoundaryType.keys()))
+    self.assertEqual(abTriangularMesh.landBoundaryExteriorType, feMeshSpec.landBoundaryType[1])
+    self.assertEqual(abTriangularMesh.landBoundaryIslandType, feMeshSpec.landBoundaryType[5])
+    bndnds = feMeshSpec.landBoundaries[3]
+    self.assertEqual(8, len(bndnds))
+    self.assertEqual(453, bndnds[-1])
+
+   
+  def testSaveGr3File(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridWestMed.gr3')
+    feMeshSpec0 = abTriangularMesh.loadFromGr3File(mshFilePath)
+    tmpfnm = './_tmp.gr3'
+    feMeshSpec0.saveAsGr3(tmpfnm)
+    try:
+      feMeshSpec = abTriangularMesh.loadFromGr3File(tmpfnm)
+      # some random checks
+      self.assertEqual(1587, len(feMeshSpec.nodes.keys()))
+      self.assertEqual(2, len(feMeshSpec.openBoundaries.keys()))
+      bndnds = feMeshSpec.openBoundaries[2]
+      self.assertEqual(6, len(bndnds))
+      self.assertEqual(1556, bndnds[3])
+      self.assertEqual(11, len(feMeshSpec.openBoundaryNodes.keys()))
+      self.assertEqual(352, len(feMeshSpec.landBoundaryNodes.keys()))
+      self.assertEqual(352, len(feMeshSpec.landBoundaryOrdered))
+      self.assertEqual(5, len(feMeshSpec.landBoundaries.keys()))
+      self.assertEqual(5, len(feMeshSpec.landBoundaryType.keys()))
+      self.assertEqual(abTriangularMesh.landBoundaryExteriorType, feMeshSpec.landBoundaryType[1])
+      self.assertEqual(abTriangularMesh.landBoundaryIslandType, feMeshSpec.landBoundaryType[5])
+      bndnds = feMeshSpec.landBoundaries[3]
+      self.assertEqual(8, len(bndnds))
+      self.assertEqual(453, bndnds[-1])
+    finally:
+      os.remove(tmpfnm)
 
 
 
@@ -317,6 +353,20 @@ class testAbTriangularMesh(unittest.TestCase):
       self.assertEqual(xexp, xyfnd[0])
       self.assertEqual(yexp, xyfnd[1])
 
+
+  def testGetNodesDataFrame(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
+    df = feMeshSpec.getNodesDataframe()
+    # some random checks
+    self.assertEqual(410, len(df))
+    self.assertEqual(3, len(df.columns))
+    self.assertAlmostEqual(df[df.index==350].x.values[0], -77.3890650728)
+    self.assertAlmostEqual(df[df.index==350].y.values[0], 17.6616614616)
+    self.assertAlmostEqual(410, len(feMeshSpec.nodeBathy.keys()))
+    self.assertAlmostEqual(119.0, df[df.index==350].bathy.values[0])
+    
 
       
     

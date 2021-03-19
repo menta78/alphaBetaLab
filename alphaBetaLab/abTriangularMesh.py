@@ -17,12 +17,16 @@ class _abTriMeshSpec:
     self.nodeBathy = {}
     # polygon index -> vertice nodes indices
     self.connectionPolygons = {}
-    # boundary index -> boundary type: 0=main boundary, 1=island
+    # boundary index -> node index
     self.landBoundaries = {}
+    # boundary index -> boundary type: 0=main boundary, 1=island
+    self.landBoundaryType = {}
     # node index -> land boundary id
     self.landBoundaryNodes = {}
     # node index in the order they are loaded from the file
     self.landBoundaryOrdered = []
+    # open boundary id -> node index
+    self.openBoundaries = {}
     # node index -> open boundary id
     self.openBoundaryNodes = {}
 
@@ -75,7 +79,7 @@ class _abTriMeshSpec:
       nodeIds
       if nid in self.landBoundaryNodes:
         bndId = self.landBoundaryNodes[nid]
-        bndTyp = self.landBoundaries[bndId]
+        bndTyp = self.landBoundaryType[bndId]
         if bndTyp == landBoundaryExteriorType:
           bndtyp = 1
         else:
@@ -111,7 +115,7 @@ class _abTriMeshSpec:
     ntagStr = '2'.rjust(10)
     for bndNodeId, ibnd in zip(bndNodeIds, range(1,len(bndNodeIds)+1)):
       bndId = self.landBoundaryNodes[bndNodeId]
-      bndTyp = self.landBoundaries[bndId]
+      bndTyp = self.landBoundaryType[bndId]
       ln = str(ibnd).rjust(10) + elmTypStr + ntagStr + str(bndTyp).rjust(10)\
                            + '0'.rjust(10) + str(bndNodeId).rjust(10) + '\n' 
       fl.write(ln)
@@ -126,11 +130,74 @@ class _abTriMeshSpec:
     fl.write('$EndElements')
     fl.close()
 
+  def saveAsGr3(self, filePath, bathyFactor=-1):
+    m = self
+    fl = open(filePath, 'w')
+    fl.write('\n')
+    nodeCount = len(m.nodes.keys())
+    connPlysCount = len(m.connectionPolygons.keys())
+    ln = str(connPlysCount) + '   ' + str(nodeCount) + '\n'
+    fl.write(ln)
+    
+    # saving the nodes
+    for inode in range(nodeCount):
+      nodeId = inode + 1
+      lon, lat = m.nodes[nodeId]
+      dpth = m.nodeBathy[nodeId]
+      ln = '  '.join([str(nodeId), str(lon), str(lat), str(dpth*bathyFactor)]) + '\n'
+      fl.write(ln)
+
+    # saving the connection polygons
+    connPlysCount = len(m.connectionPolygons.keys())
+    for ipl in range(connPlysCount):
+      connPolyId = ipl + 1
+      nodeIds = m.connectionPolygons[connPolyId]
+      ln = str(connPolyId) + '  ' + '  '.join([str(n) for n in nodeIds]) + '\n'
+      fl.write(ln)
+
+    # saving the open boundaries
+    nOpenBoundary = len(self.openBoundaries.keys())
+    if nOpenBoundary == 0:
+      print('WARINING: no open boundary found. Beware, if this mesh was loaded from a msh, the open boundary was not loaded')
+    ln = str(nOpenBoundary) + ' Number of open boundaries\n'
+    fl.write(ln)
+    nbndnodes = int(np.sum([len(itm[1]) for itm in m.openBoundaries.items()]))
+    ln = str(nbndnodes) + ' Total number of open boundary nodes\n'
+    fl.write(ln)
+    for ibnd in range(nOpenBoundary):
+      bndId = ibnd + 1
+      obnds = m.openBoundaries[bndId]
+      ln = str(len(obnds)) + ' Number of nodes for open boundary ' + str(bndId) + '\n'
+      fl.write(ln)
+      for nodeId in obnds:
+        ln = str(nodeId) + '\n'
+        fl.write(ln)
+
+    # saving the land boundaries
+    nLandBoundary = len(self.landBoundaries.keys())
+    ln = str(nLandBoundary) + ' Number of land boundaries\n'
+    fl.write(ln)
+    nbndnodes = int(np.sum([len(itm[1]) for itm in m.landBoundaries.items()]))
+    ln = str(nbndnodes) + ' Total number of land boundary nodes\n'
+    fl.write(ln)
+    for ibnd in range(nLandBoundary):
+      bndId = ibnd + 1
+      obnds = m.landBoundaries[bndId]
+      bndTyp = m.landBoundaryType[bndId]
+      ln = str(len(obnds)) + ' ' + str(bndTyp) + ' Number of nodes for open boundary ' + str(bndId) + '\n'
+      fl.write(ln)
+      for nodeId in obnds:
+        ln = str(nodeId) + '\n'
+        fl.write(ln)
+
+    fl.close()
+
   def getNodesDataframe(self):
     import pandas as pd
     dfcrds = pd.DataFrame.from_dict(self.nodes, orient='index', columns=['x', 'y'])
     dfbathy = pd.DataFrame.from_dict(self.nodeBathy, orient='index', columns=['bathy'])
     return dfcrds.join(dfbathy)
+
 
 
 def loadFromGr3File(gr3FilePath):
@@ -176,10 +243,14 @@ def loadFromGr3File(gr3FilePath):
     line = fl.readline().strip('\n\t\r ')
     vlsstr = [s for s in line.split() if s]
     nNodes = int(vlsstr[0])
+    bndId = ibnd + 1
+    obnds = m.openBoundaries[bndId] if bndId in m.openBoundaries else []
+    m.openBoundaries[bndId] = obnds
     for ind in range(nNodes):
       line = fl.readline().strip('\n\t\r ')
       nodeId = int(line)
-      m.openBoundaryNodes[nodeId] = ibnd + 1
+      m.openBoundaryNodes[nodeId] = bndId
+      obnds.append(nodeId)
     
   # loading land boundary
   line = fl.readline().strip('\n\t\r ')
@@ -197,12 +268,16 @@ def loadFromGr3File(gr3FilePath):
     if bndTyp == 21:
       bndTyp = landBoundaryIslandType
 
-    m.landBoundaries[ibnd + 1] = bndTyp
+    bndId = ibnd + 1
+    lbnds = m.landBoundaries[bndId] if bndId in m.landBoundaries else []
+    m.landBoundaries[bndId] = lbnds
+    m.landBoundaryType[bndId] = bndTyp
     for ind in range(nNodes):
       line = fl.readline().strip('\n\t\r ')
       nodeId = int(line)
-      m.landBoundaryNodes[nodeId] = ibnd + 1
+      m.landBoundaryNodes[nodeId] = bndId
       m.landBoundaryOrdered.append(nodeId)
+      lbnds.append(nodeId)
 
   fl.close()
   return m
@@ -256,7 +331,7 @@ def loadFromMshFile(mshFilePath):
       nodeId = int(vlsstr[-1])
       bndType = int(vlsstr[3])
       m.landBoundaryNodes[nodeId] = ibnd
-      m.landBoundaries[ibnd] = bndType
+      m.landBoundaryType[ibnd] = bndType
       m.landBoundaryOrdered.append(nodeId)
     elif elmtyp == 2: # 2: triangle 
       nodeIds = [int(s) for s in vlsstr[6:]]
