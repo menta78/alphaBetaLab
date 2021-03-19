@@ -152,7 +152,8 @@ class _abTriMeshSpec:
     for ipl in range(connPlysCount):
       connPolyId = ipl + 1
       nodeIds = m.connectionPolygons[connPolyId]
-      ln = str(connPolyId) + '  ' + '  '.join([str(n) for n in nodeIds]) + '\n'
+      nsides = len(nodeIds)
+      ln = str(connPolyId) + '  ' + str(nsides) + '  ' + '  '.join([str(n) for n in nodeIds]) + '\n'
       fl.write(ln)
 
     # saving the open boundaries

@@ -63,6 +63,8 @@ class testAbTriangularMesh(unittest.TestCase):
     feMeshSpec = abTriangularMesh.loadFromGr3File(mshFilePath)
     # some random checks
     self.assertEqual(1587, len(feMeshSpec.nodes.keys()))
+    self.assertEqual(2819, len(feMeshSpec.connectionPolygons.keys()))
+    self.assertEqual([500, 537, 525], feMeshSpec.connectionPolygons[100])
     self.assertEqual(2, len(feMeshSpec.openBoundaries.keys()))
     bndnds = feMeshSpec.openBoundaries[2]
     self.assertEqual(6, len(bndnds))
@@ -89,6 +91,8 @@ class testAbTriangularMesh(unittest.TestCase):
       feMeshSpec = abTriangularMesh.loadFromGr3File(tmpfnm)
       # some random checks
       self.assertEqual(1587, len(feMeshSpec.nodes.keys()))
+      self.assertEqual(2819, len(feMeshSpec.connectionPolygons.keys()))
+      self.assertEqual([500, 537, 525], feMeshSpec.connectionPolygons[100])
       self.assertEqual(2, len(feMeshSpec.openBoundaries.keys()))
       bndnds = feMeshSpec.openBoundaries[2]
       self.assertEqual(6, len(bndnds))
