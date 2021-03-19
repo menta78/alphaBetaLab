@@ -40,12 +40,12 @@
  LSTAG          = T                  ! Stagger directional bins with a half Dtheta; may use T only for regular grid to avoid char. line aligning with grid line
  MINDIR         = 0.                 ! Minimum direction for simulation (unit: degrees; nautical convention; 0: from N; 90: from E); not used if LCIRD = .T.
  MAXDIR         = 360.               ! Maximum direction for simulation (unit: degrees); may be < MINDIR; not used if LCIRD = .T.
- MDC = 24                 ! Number of directional bins
+ NUMDIR = 24                 ! Number of directional bins
  FRLOW          = 0.04               ! Low frequency limit of the discrete wave period (Hz; 1/period)
  FRHIGH         = 1.                 ! High frequency limit of the discrete wave period.
- MSC = 36                 ! Number of frequency bins
+ NUMSIG = 36                 ! Number of frequency bins
  IGRIDTYPE      = 3                  ! Gridtype used. 1 ~ XFN, 2 ~ WWM-PERIODIC, 3 ~ SELFE, 4 ~ OLD WWM GRID
- FILEGRID       = 'hgrid_WWM.gr3'        ! Name of the grid file. hgrid.gr3 or hgrid.ll if IGRIDTYPE = 3 (SELFE)
+ FILEGRID       = 'hgrid.gr3'        ! Name of the grid file. hgrid.gr3 or hgrid.ll if IGRIDTYPE = 3 (SELFE)
  LSLOP          = F                  ! Bottom Slope limiter (default=F)
  SLMAX          = 0.2                ! Max Slope;
  LVAR1D         = F                  ! For 1d-mode if variable dx is used; not used with SELFE
@@ -223,7 +223,6 @@
  FXDSCUT =  0.000000000000000E+000
  /
 
-
 &NUMS
  ICOMP          = 3 
                                      ! This parameter controls the way how the splitting is done and whether implicit or explicit schemes are used for spectral advection
@@ -301,7 +300,6 @@ ASPAR_LOCAL_LEVEL = 0               ! locality level 0 - a lot of memory 10 - no
  LTHBOUND       = F                  ! Sigma space on wet land/island boundary
  LSOUBOUND      = F                  ! Source Terms on wet land/island boundary
  MELIM          = 1                  ! Numerical Limiter 
- LIMFAK         = 0.1
  LDIFR          = F                  ! Use phase decoupled diffraction approximation according to Holthuijsen et al. (2003) (usually T; if crash, use F)
  IDIFFR         = 1                  ! Extended WAE account for higher order effects WAE becomes nonlinear; 1: Holthuijsen et al. ; 2: Liau et al. ; 3: Toledo et al. (in preparation)
  LCONV          = F                  ! Estimate convergence criterian and write disk (quasi-steady - qstea.out)
@@ -313,7 +311,6 @@ ASPAR_LOCAL_LEVEL = 0               ! locality level 0 - a lot of memory 10 - no
  QSCONV4        = 0.98               ! Number of grid points [%/100] that have to fulfill avg. rel. wave period criteria EPSH4
  QSCONV5        = 0.98               ! Number of grid points [%/100] that have to fulfill avg. rel. wave steepness criteria EPSH5
  LEXPIMP        = F                  ! Use implicit schemes for freq. lower than given below by FREQEXP; used only if ICOMP=0
- FREQEXP        = 0.1                ! Minimum frequency for explicit schemes; only used if LEXPIMP=T and ICOMP=0
  EPSH1          = 0.01               ! Convergence criteria for rel. wave height ! EPSH1 < CONVK1 = REAL(ABS(HSOLD(IP)-HS2)/HS2)
  EPSH2          = 0.01               ! Convergence criteria for abs. wave height ! EPSH2 < CONVK2 = REAL(ABS(HS2-HSOLD(IP)))
  EPSH3          = 0.01               ! Convergence criteria for the rel. sum of wave action ! EPSH3 < CONVK3 = REAL(ABS(SUMACOLD(IP)-SUMAC)/SUMAC)
@@ -336,7 +333,6 @@ ASPAR_LOCAL_LEVEL = 0               ! locality level 0 - a lot of memory 10 - no
  NB_BLOCK        =           3,
  WAE_SOLVERTHR   =  1.E-6,
  MAXITER =          1000,
- LSOURCESWAM = F
  LNANINFCHK      = F,
  LZETA_SETUP     = F,
  ZETA_METH       =           0,
