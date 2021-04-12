@@ -13,7 +13,7 @@ def _computeAvgDir(cell):
   
   """
   rect = cell.minimum_rotated_rectangle
-  crds = np.array(list(cell.boundary.coords[:]))
+  crds = np.array(list(rect.boundary.coords[:]))
   xs = np.array([c[0] for c in crds[:2]])
   ys = np.array([c[1] for c in crds[:2]])
 

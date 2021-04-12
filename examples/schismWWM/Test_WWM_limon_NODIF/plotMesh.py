@@ -27,5 +27,13 @@ obsNodeId = 1414
 xnd, ynd = msh.nodes[obsNodeId][:]
 plt.plot(xnd, ynd, 'o', color='y')
 
+
+bcmsh = trmsh.loadFromGr3File('wwmbndred.gr3')
+xsbdc = [bcmsh.nodes[k][0] for k in bcmsh.nodes.keys()]
+ysbdc = [bcmsh.nodes[k][1] for k in bcmsh.nodes.keys()]
+bt = [bcmsh.nodeBathy[k] for k in bcmsh.nodes.keys()]
+
+plt.scatter(xsbdc, ysbdc, c=bt)
+
 plt.show()
 

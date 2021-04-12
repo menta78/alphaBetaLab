@@ -34,7 +34,10 @@ class testAbCellSize(unittest.TestCase):
   def testComputeAvgDir_romboidCell(self):
     crds = [[0, -2], [1, 0], [0, 2], [-1, 0], [0, -2]]
     cell0 = g.Polygon(crds)
-    angle0 = np.arctan2(2,1)
+    angle0 = np.arctan2(1,2)
+    angle1 = np.arctan2(2,1)
+    # given the geometry of this example angle0 and angle1 are equivalent
+    # they are the angle of the 2 possible minimum rectangles
 
     cell = cell0
     avgDir = _computeAvgDir(cell)
@@ -42,11 +45,11 @@ class testAbCellSize(unittest.TestCase):
 
     cell = a.rotate(cell0, np.pi/6, use_radians=True)
     avgDir = _computeAvgDir(cell)
-    self.assertAlmostEqual(angle0 + np.pi/6 - np.pi/2, avgDir)
+    self.assertAlmostEqual(angle0 + np.pi/6, avgDir)
 
     cell = a.rotate(cell0, -np.pi/6, use_radians=True)
     avgDir = _computeAvgDir(cell)
-    self.assertAlmostEqual(angle0-np.pi/6, avgDir)
+    self.assertAlmostEqual(angle1 - np.pi/6, avgDir)
 
 
   def test1(self):
