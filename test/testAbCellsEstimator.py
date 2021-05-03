@@ -65,10 +65,8 @@ class testAbCellsEstimator(unittest.TestCase):
 
     grd.meshType = abUtils.MESHTYPE_TRIANGULAR
     cellEst = abCellsEstimator(grd, hrmtx, dirs, freqs, None)
-   #self.assertAlmostEqual(1.8, cellEst.locRecalibFactor, 4)
-   #self.assertAlmostEqual(1.2*1.8, cellEst.shadRecalibFactor, 4)
-    self.assertAlmostEqual(2.0, cellEst.locRecalibFactor, 4)
-    self.assertAlmostEqual(1.2*2.0, cellEst.shadRecalibFactor, 4)
+    self.assertAlmostEqual(1.5, cellEst.locRecalibFactor, 4)
+    self.assertAlmostEqual(1.2*1.5, cellEst.shadRecalibFactor, 4)
     
 
   
