@@ -40,7 +40,11 @@ class _abGrid:
     self.cells = cells
     self.cellCoordinates = [tuple(l) for l in cellCoordinates]
     if centroids is None:
-      self.centroids = [c.centroid.coords[0] for c in cells]
+      try:
+        cellitr = cells.geoms
+      except:
+        cellitr = cells
+      self.centroids = [c.centroid.coords[0] for c in cellitr]
     else:
       self.centroids = centroids
     self.cellMap = dict(zip(self.cellCoordinates, cells))
