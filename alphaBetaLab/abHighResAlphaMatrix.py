@@ -107,7 +107,11 @@ class abHighResAlphaMatrix:
     aMtx = abHighResAlphaMatrix(submtxxs, submtxys, alps, freqs)
     singlePolygon = polygon.boundary.__class__ == g.LineString
     aMtx.polyon = polygon
-    aMtx.polygonCrds =  [list(polygon.boundary.coords)] if singlePolygon else [list(b.coords) for b in polygon.boundary]
+    try:
+      polybnd = polygon.boundary.geoms
+    except:
+      polybnd = polygon.boundary
+    aMtx.polygonCrds =  [list(polygon.boundary.coords)] if singlePolygon else [list(b.coords) for b in polybnd]
     aMtx.dx = self.dx
     aMtx.dy = self.dy
     return aMtx

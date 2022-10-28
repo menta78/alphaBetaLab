@@ -192,6 +192,10 @@ class abCellsEstimator:
   def computeShadowOneCell(self, crd, geoCrd, cell):
     try:
       cellNeighbors = self.grid.getNeighbors(cell)
+      try:
+        cellNeighbors = cellNeighbors.geoms
+      except:
+        pass
       if not len(cellNeighbors):
         self._print(' cell ' + str(crd) + ' has no neighbors. Skipping')
         return False, None, None, None, None, None

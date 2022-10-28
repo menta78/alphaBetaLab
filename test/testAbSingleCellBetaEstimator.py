@@ -250,7 +250,8 @@ class testSingleCellBetaEstimator(unittest.TestCase):
     dr = np.arctan(.5)
     beta = betaEst.computeBeta(dr, .1)
     
-    expbeta = 0.67258992805755391
+   #expbeta = 0.67258992805755391
+    expbeta = 0.6701060204468005
     self.assertAlmostEqual(expbeta, beta, delta = .0001)
     
 

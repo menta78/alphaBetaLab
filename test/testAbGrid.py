@@ -89,22 +89,38 @@ class testAbRectangularGridBuilder(unittest.TestCase):
     grd = gb.buildGrid(hiResMtx, cstClDet)
     self.assertEqual(1, grd.nParWorker)
     self.assertFalse(grd.wrapAroundDateline)
-    cells = grd.cells
+    
+    try:
+      cells = grd.cells.geoms
+    except:
+      cells = grd.cells
 
     cell = cells[0]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(3, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
 
     cell = cells[45]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(8, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
 
     cell = cells[100]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(5, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
@@ -125,22 +141,38 @@ class testAbRectangularGridBuilder(unittest.TestCase):
     grd = gb.buildGrid(hiResMtx, cstClDet)
     self.assertEqual(4, grd.nParWorker)
     self.assertFalse(grd.wrapAroundDateline)
-    cells = grd.cells
+    
+    try:
+      cells = grd.cells.geoms
+    except:
+      cells = grd.cells
 
     cell = cells[0]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(3, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
 
     cell = cells[45]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(8, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
 
     cell = cells[100]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(5, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
@@ -164,6 +196,10 @@ class testAbRectangularGridBuilder(unittest.TestCase):
 
     cell = cells[0]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(5, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
@@ -172,6 +208,10 @@ class testAbRectangularGridBuilder(unittest.TestCase):
 
     cell = cells[45]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(8, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
@@ -181,6 +221,10 @@ class testAbRectangularGridBuilder(unittest.TestCase):
 
     cell = cells[65]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(8, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
@@ -190,6 +234,10 @@ class testAbRectangularGridBuilder(unittest.TestCase):
 
     cell = cells[89]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(5, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
@@ -198,12 +246,20 @@ class testAbRectangularGridBuilder(unittest.TestCase):
 
     cell = cells[200]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(8, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
 
     cell = cells[nx*ny-22]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(8, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )
@@ -213,6 +269,10 @@ class testAbRectangularGridBuilder(unittest.TestCase):
 
     cell = cells[nx*ny-1]
     ncls = grd.getNeighbors(cell)
+    try:
+      ncls = ncls.geoms
+    except:
+      pass
     self.assertEqual(5, len(ncls))
     for nc in ncls:
       self.assertTrue( cell.distance(nc) < .000000001 )

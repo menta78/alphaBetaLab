@@ -134,10 +134,16 @@ class abSingleCellAlphaEstimator:
 
           hrCellBorder = [[xi, yi], [xi + dx, yi], [xi + dx, yi + dy], [xi, yi + dy]]
           hrcell = g.Polygon(hrCellBorder)
+
+          try:
+            celloverlaps = cell.overlaps(hrcell)
+          except:
+            celloverlaps = False
+            
           if cell.contains(hrcell):
             cellInts = g.Polygon(hrcell)
             hresCellIsInside = True
-          elif cell.overlaps(hrcell):
+          elif celloverlaps:
             try:
               cellInts = cell.intersection(hrcell)
             except:
@@ -161,7 +167,7 @@ class abSingleCellAlphaEstimator:
               if cellInts.__class__ == g.Polygon:
                 yield cellInts
               elif cellInts.__class__ in [g.GeometryCollection, g.MultiPolygon]:
-                for p in cellInts:
+                for p in cellInts.geoms:
                   if p.__class__ == g.Polygon:
                     yield p
               else:

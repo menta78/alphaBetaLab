@@ -37,16 +37,17 @@ class _abGrid:
        the x,y indexes of the cells. For unstructured grid the x index has a meaningful
        value, the y index is always 0.
     """
-    self.cells = cells
+    try:
+      self.cells = cells.geoms
+    except:
+      self.cells = cells
+    cells = self.cells
     self.cellCoordinates = [tuple(l) for l in cellCoordinates]
     if centroids is None:
-      try:
-        cellitr = cells.geoms
-      except:
-        cellitr = cells
-      self.centroids = [c.centroid.coords[0] for c in cellitr]
+      self.centroids = [c.centroid.coords[0] for c in cells]
     else:
       self.centroids = centroids
+
     self.cellMap = dict(zip(self.cellCoordinates, cells))
     self.cellSfc = [c.area for c in cells]
     self.cellBnd = [tuple(c.boundary.coords[:]) for c in cells]

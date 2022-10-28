@@ -153,9 +153,13 @@ class abSingleCellBetaEstimator:
         #Computing the alpha for each subpolygon, and 
         #weight-averaging to compute the overall alpha
         totDy = 0
-        for pl in subcell:
-          plobstrs = []
-          pldys = []
+        if isinstance(subcell, g.MultiPolygon):
+          cellitr = subcell.geoms
+        else:
+          cellitr = subcell
+        plobstrs = []
+        pldys = []
+        for pl in cellitr:
           if pl.__class__ == g.Polygon:
             alphaEst = abSingleCellAlphaEstimator(pl, alphaMtx, kshape = self.kshape)
             alphaEst.obstrAlleviationEnabled = self.obstrAlleviationEnabled
@@ -166,7 +170,7 @@ class abSingleCellBetaEstimator:
             totDy += dy
         plobstrs = np.array(plobstrs)
         pldys = np.array(pldys)
-        totobstr = plobstrs*pldys/sum(pldys)
+        totobstr = sum(plobstrs*pldys)/sum(pldys)
         alpha = 1 - totobstr
       else:
         raise TypeError('Unsupported geometry object: ' + str(subcell.__class__))
