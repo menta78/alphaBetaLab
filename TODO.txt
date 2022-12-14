@@ -1,0 +1,4 @@
+- for meshes >1M nodes the memory requirement is huge. Now the parallelization is achieved with the python multiprocessing framework, and by cloning the whole environment in each process. This is cleary a bit disoptimized from a p.o.v of memory. An improvement would be passing to each process only what's needed for the computation of the current cell.
+
+- extension of multiprocessing to run on multiple nodes, using the ray framework:
+https://medium.com/distributed-computing-with-ray/how-to-scale-python-multiprocessing-to-a-cluster-with-one-line-of-code-d19f242f60ff
