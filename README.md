@@ -1,5 +1,5 @@
 # alphaBetaLab
-The Unresolved Obstacles Source Term (UOST, Mentaschi et al. 2018, 2015, 2019) is a general methodology to parameterize the dissipative effects of 
+The Unresolved Obstacles Source Term (UOST, Mentaschi et al. 2018, 2015, 2019, 2020) is a general methodology to parameterize the dissipative effects of 
 subscale islands, cliffs and unresolved coastal features in ocean wave models. 
 It can be applied to any numerical scheme and modulates the dissipation with spectral direction. 
 Its applicability to practical contexts is now made possible by the development of the software package **alphaBetaLab**,
@@ -14,3 +14,5 @@ A real-world application. Ocean Modelling, 126, 77-84.
 Mentaschi, L., Pérez, J., Besio, G., Mendez, F. J., & Menendez, M. (2015). Parameterization of unresolved obstacles in wave modelling: A source term approach. Ocean Modelling, 96, 93-102.
 
 Mentaschi, L., Vousdoukas, M., Besio, G., & Feyen, L. (2019). alphaBetaLab: Automatic estimation of subscale transparencies for the Unresolved Obstacles Source Term in ocean wave modelling. SoftwareX, 9, 1-6.
+
+Mentaschi L, Vousdoukas M, Montblanc TF, Kakoulaki G, Voukouvalas E, Besio G, Salamon P. Assessment of global wave models on regular and unstructured grids using the Unresolved Obstacles Source Term. Ocean Dynamics. 2020 Nov;70:1475-83.
