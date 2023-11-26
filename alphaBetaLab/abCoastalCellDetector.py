@@ -1,7 +1,5 @@
 import numpy as np
 from shapely import geometry as g
-from . import abFixBasemap
-from mpl_toolkits import basemap
 from .abOptionManager import getOption
 
 
@@ -17,30 +15,52 @@ class abCoastalCellDetector:
     (the threshold can be parameterized).
     TODO: make the comparisons between sizes and surfaces in m, not in degrees
     """
+    self.coastalShapeFilePath = getOption(options, "coastalShapeFilePath", "cartopy")
     self.coveredSurfaceThresholdRatio = getOption(options, 'coveredSurfaceThresholdRatio', .1)
     self.coveredSurfaceThresholdRatioSmallBodies = getOption(options, 'coveredSurfaceThresholdRatioSmallBodies', .5)
     self.coarseCoastlineResolution = getOption(options, 'coarseCoastlineResolution', 'c')
     self.smallBodiesSizeRatio = getOption(options, 'smallBodiesSizeRatio', 10)
     self._loadDataStructure()
 
-  def _loadDataStructure(self):
-    mp = basemap.Basemap(resolution = self.coarseCoastlineResolution)
-    cstPls = mp.coastpolygons
-    self.cstPls = cstPls
+  def _loadDataStructureFromCartopy(self):
+    import cartopy
+    cstlgeomItr = cartopy.feature.LAND.geometries()
     cstGPls = []
     cstPlBnds = []
     cstPlSfc = []
-    for pl in cstPls:
-      xs = pl[0]
-      ys = pl[1]
-      pts = [c for c in zip(xs, ys)]
-      gpl = g.Polygon(pts)
+    for pl in cstlgeomItr:
+      gpl = g.Polygon(pl)
       cstGPls.append(gpl)
       cstPlBnds.append(gpl.boundary)
       cstPlSfc.append(gpl.area)
     self.cstGPls = cstGPls
     self.cstPlBnds = cstPlBnds
     self.cstPlSfc = cstPlSfc
+
+  def _loadCustomShapeFile(self):
+    import fiona
+    gfd = fiona.open(self.coastalShapeFilePath)
+    cstlgeomItr = iter(gfd)
+    cstGPls = []
+    cstPlBnds = []
+    cstPlSfc = []
+    for pl in cstlgeomItr:
+      crds = pl["geometry"]["coordinates"][0]
+      if len(crds) < 3:
+        continue
+      gpl = g.Polygon(crds)
+      cstGPls.append(gpl)
+      cstPlBnds.append(gpl.boundary)
+      cstPlSfc.append(gpl.area)
+    self.cstGPls = cstGPls
+    self.cstPlBnds = cstPlBnds
+    self.cstPlSfc = cstPlSfc
+
+  def _loadDataStructure(self):
+    if self.coastalShapeFilePath == "cartopy":
+      self._loadDataStructureFromCartopy()
+    else:
+      self._loadCustomShapeFile()
     
   def isCoastalCell(self, cellPolygon, cellPolygonBoundary=None, cellSurface=-1, cellCentroid=None):
     cstPlBnds = self.cstPlBnds
