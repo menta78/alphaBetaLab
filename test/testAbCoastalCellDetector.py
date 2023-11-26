@@ -1,7 +1,8 @@
-import unittest
+import unittest, os
 from shapely import geometry as g
+import cartopy
 
-from alphaBetaLab import abCoastalCellDetector
+from alphaBetaLab import abCoastalCellDetector, abOptionManager
 
 class testAbCoastalCellDetector(unittest.TestCase):
    
@@ -35,6 +36,19 @@ class testAbCoastalCellDetector(unittest.TestCase):
   def testCellOnCoast2(self):
     dtctr = abCoastalCellDetector.abCoastalCellDetector(None)
     cell = g.Polygon([[-9.5, 40], [-8.83, 40], [-8.83, 41], [-9.5, 41]])
+    cellbnd = cell.boundary
+    cellsfc = cell.area
+    self.assertTrue(dtctr.isCoastalCell(cell))
+    self.assertTrue(dtctr.isCoastalCell(cell, cellbnd))
+    self.assertTrue(dtctr.isCoastalCell(cell, cellbnd, cellsfc))
+   
+  def testCellOnCoastLoadingWithFiona(self):
+    cartopyDataDir = cartopy.config["data_dir"]
+    coastalShapeFilePath = os.path.join(cartopyDataDir, 
+            "shapefiles/natural_earth/physical/ne_110m_land.shp")
+    opts = abOptionManager.abOptions(coastalShapeFilePath=coastalShapeFilePath)
+    dtctr = abCoastalCellDetector.abCoastalCellDetector(opts)
+    cell = g.Polygon([[-9.5, 40], [-8, 40], [-8, 41.5], [-9.5, 41.5]])
     cellbnd = cell.boundary
     cellsfc = cell.area
     self.assertTrue(dtctr.isCoastalCell(cell))

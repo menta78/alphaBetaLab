@@ -153,7 +153,7 @@ class abSingleCellBetaEstimator:
         #Computing the alpha for each subpolygon, and 
         #weight-averaging to compute the overall alpha
         totDy = 0
-        if isinstance(subcell, g.MultiPolygon):
+        if isinstance(subcell, g.MultiPolygon) or isinstance(subcell, g.collection.GeometryCollection):
           cellitr = subcell.geoms
         else:
           cellitr = subcell

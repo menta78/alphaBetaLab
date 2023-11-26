@@ -45,11 +45,19 @@ class testAbCellSize(unittest.TestCase):
 
     cell = a.rotate(cell0, np.pi/6, use_radians=True)
     avgDir = _computeAvgDir(cell)
-    self.assertAlmostEqual(angle0 + np.pi/6, avgDir)
+    # given the geometry of the problem, there are 2 possible correct angles
+    # one at a pi/2 angle from 1 side of the romboid,
+    # the other at a pi/2 angle from the othe side of the romboid
+    condition = np.isclose(angle0 + np.pi/6, avgDir) or np.isclose(np.pi/6 - angle0, avgDir)
+    self.assertTrue(condition)
 
     cell = a.rotate(cell0, -np.pi/6, use_radians=True)
     avgDir = _computeAvgDir(cell)
-    self.assertAlmostEqual(angle1 - np.pi/6, avgDir)
+    # given the geometry of the problem, there are 2 possible correct angles
+    # one at a pi/2 angle from 1 side of the romboid,
+    # the other at a pi/2 angle from the othe side of the romboid
+    condition = np.isclose(angle1 - np.pi/6, avgDir) or np.isclose(np.pi - angle1 - np.pi/6, avgDir)
+    self.assertTrue(condition)
 
 
   def test1(self):
