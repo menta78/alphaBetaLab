@@ -199,6 +199,19 @@ class _abTriMeshSpec:
     dfbathy = pd.DataFrame.from_dict(self.nodeBathy, orient='index', columns=['bathy'])
     return dfcrds.join(dfbathy)
 
+  def removeElements(self, elementIds):
+    # removing the elements
+    for elmId in elementIds:
+      del self.connectionPolygons[elmId]
+    # redefining the element ids
+    connPlsOld = self.connectionPolygons
+    self.connectionPolygons = {}
+    ielm = 1
+    for elm in connPlsOld.values():
+      self.connectionPolygons[ielm] = elm
+      ielm += 1
+      
+
 
 
 def loadFromGr3File(gr3FilePath):

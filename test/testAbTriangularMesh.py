@@ -1,5 +1,5 @@
 import unittest
-import os
+import os, copy
 import numpy as np
 from shapely import geometry as g
 
@@ -370,6 +370,31 @@ class testAbTriangularMesh(unittest.TestCase):
     self.assertAlmostEqual(df[df.index==350].y.values[0], 17.6616614616)
     self.assertAlmostEqual(410, len(feMeshSpec.nodeBathy.keys()))
     self.assertAlmostEqual(119.0, df[df.index==350].bathy.values[0])
+
+
+  def testMeshRemoveElements(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/hgridGiamaica.gr3')
+    msh1 = abTriangularMesh.loadFromGr3File(mshFilePath)
+    msh2 = copy.deepcopy(msh1)
+    msh2.removeElements([10, 20])
+    self.assertEqual(len(msh1.connectionPolygons)-2, len(msh2.connectionPolygons))
+
+    for ii in range(9):
+        ielm1 = ii + 1
+        ielm2 = ii + 1
+        self.assertEqual(msh1.connectionPolygons[ielm1], 
+                         msh2.connectionPolygons[ielm2])
+    for ii in range(9, 18):
+        ielm1 = ii + 2
+        ielm2 = ii + 1
+        self.assertEqual(msh1.connectionPolygons[ielm1], 
+                         msh2.connectionPolygons[ielm2])
+    for ii in range(18, len(msh2.connectionPolygons)):
+        ielm1 = ii + 3
+        ielm2 = ii + 1
+        self.assertEqual(msh1.connectionPolygons[ielm1], 
+                         msh2.connectionPolygons[ielm2])
     
 
       
