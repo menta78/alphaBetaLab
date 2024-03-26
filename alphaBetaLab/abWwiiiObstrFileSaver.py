@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 class abWwiiiObstrFileSaver:
@@ -42,6 +43,7 @@ class abWwiiiObstrFileSaver:
       for bk in beta:
         ln = '  '.join('{:1.2f}'.format(b) for b in bk) + '\n'
         fl.write(ln)
+    os.fsync(fl) # ensures the file is written to the os, even for big files
     fl.close()
 
   def saveLocFile(self, locFileName):
