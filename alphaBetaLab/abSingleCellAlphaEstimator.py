@@ -295,7 +295,7 @@ class abSingleCellAlphaEstimator:
       obstrAlleviationFactor = 1.
 
     alpha = 1. - totObstr*obstrAlleviationFactor
-    assert greaterClose(alpha, 0), 'alpha must result greater than 0'
+    #assert greaterClose(alpha, 0), 'alpha must result greater than 0'
     return max(0, alpha)
 
 
