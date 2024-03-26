@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 from shapely import geometry as g
 
@@ -198,6 +199,91 @@ class _abTriMeshSpec:
     dfcrds = pd.DataFrame.from_dict(self.nodes, orient='index', columns=['x', 'y'])
     dfbathy = pd.DataFrame.from_dict(self.nodeBathy, orient='index', columns=['bathy'])
     return dfcrds.join(dfbathy)
+
+  def clipToPolygon(self, xsPolygon, ysPolygon) -> _abTriMeshSpec:
+    """
+    Reduces a mesh to the nodes/elements contained in a polygon.
+    All the information on land and open boundary are lost in the process.
+    """
+    import copy
+    out = copy.deepcopy(self)
+    # the output mesh has no land or open boundary set
+    out.landBoundaries = {}
+    out.landBoundaryType = {}
+    out.landBoundaryNodes = {}
+    out.landBoundaryOrdered = []
+    out.openBoundaries = {}
+    out.openBoundaryNodes = {}
+
+    # mapping the connection polygons by node
+    def mapPolygonsByNode():
+      plyByNode = {}
+      for plyId in out.connectionPolygons:
+        ply = out.connectionPolygons[plyId]
+        for nodeId in ply:
+          plys = plyByNode.get(nodeId, [])
+          plyByNode[nodeId] = plys
+          plys.append(plyId)
+      return plyByNode
+    plyByNode = mapPolygonsByNode()
+
+    # creating the polygon
+    polygon = g.Polygon([p for p in zip(xsPolygon, ysPolygon)])
+
+    # removing everything that is outside of the polygon
+    for nodeId in self.nodes:
+      crds = self.nodes[nodeId]
+      if not polygon.contains(g.Point(crds[0], crds[1])):
+        # removing the node
+        del out.nodes[nodeId]
+        # removing the bathymetry
+        del out.nodeBathy[nodeId]
+        # removing all the connection polygons containing the node
+        plys = plyByNode[nodeId]
+        for plyId in plys:
+          out.connectionPolygons.pop(plyId, None)
+
+    # remapping the node ids
+    plyByNode = mapPolygonsByNode()
+    newNodeIds = range(1, len(out.nodes)+1)
+    oldNodeIds = [k for k in out.nodes.keys()]
+    oldNodeIds.sort()
+    newNodes = {}
+    newNodeBathy = {}
+    for nodeIdOld, nodeIdNew in zip(oldNodeIds, newNodeIds):
+      # coordinates of the new node
+      newNodes[nodeIdNew] = out.nodes[nodeIdOld]
+      # bathy of the new node
+      newNodeBathy[nodeIdNew] = out.nodeBathy[nodeIdOld]
+      # propagating the new id the polygons
+      plyIds = plyByNode[nodeIdOld]
+      for plyId in plyIds:
+        ply = out.connectionPolygons[plyId]
+        newPly = []
+        for nid in ply:
+          nidnew = nodeIdNew if nid == nodeIdOld else nid
+          newPly.append(nidnew)
+        out.connectionPolygons[plyId] = newPly
+    out.nodes = newNodes
+    out.nodeBathy = newNodeBathy
+
+    # remapping the connection polygon ids
+    newPlyIds = range(1, len(out.connectionPolygons)+1)
+    oldPlyIds = [k for k in out.connectionPolygons.keys()]
+    oldPlyIds.sort()
+    newConnectionPolygons = {}
+    for plyIdOld, plyIdNew in zip(oldPlyIds, newPlyIds):
+      newConnectionPolygons[plyIdNew] = out.connectionPolygons[plyIdOld]
+    out.connectionPolygons = newConnectionPolygons
+
+    return out
+
+
+
+
+
+
+
 
 
 

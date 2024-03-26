@@ -370,6 +370,58 @@ class testAbTriangularMesh(unittest.TestCase):
     self.assertAlmostEqual(df[df.index==350].y.values[0], 17.6616614616)
     self.assertAlmostEqual(410, len(feMeshSpec.nodeBathy.keys()))
     self.assertAlmostEqual(119.0, df[df.index==350].bathy.values[0])
+
+
+  def testClipToPolygon(self):
+    mdldir = os.path.dirname( os.path.abspath(__file__) )
+    mshFilePath = os.path.join(mdldir, 'triangularMeshTest/redSea.msh')
+    meshSpec = abTriangularMesh.loadFromMshFile(mshFilePath)
+    # setting mock info to ensure that they are set to empty
+    meshSpec.landBoundaries = {1:"mock"}
+    meshSpec.landBoundaryType = {2:"mock"}
+    meshSpec.landBoundaryNodes = {3:"mock"}
+    meshSpec.landBoundaryOrdered = [1,2]
+    meshSpec.openBoundaries = {4:"mock"}
+    meshSpec.openBoundaryNodes = {5:"mock"}
+    clipPolygonXs = [33.2199, 36.8674, 34.5822, 31.3742]
+    clipPolygonYs = [26.1912, 27.4071, 30.7099, 29.6845]
+    clpMsh = meshSpec.clipToPolygon(clipPolygonXs, clipPolygonYs)
+
+    self.assertTrue(clpMsh.landBoundaries == {})
+    self.assertTrue(clpMsh.landBoundaryType == {})
+    self.assertTrue(clpMsh.landBoundaryNodes == {})
+    self.assertTrue(clpMsh.landBoundaryOrdered == [])
+    self.assertTrue(clpMsh.openBoundaries == {})
+    self.assertTrue(clpMsh.landBoundaryNodes == {})
+
+    self.assertEqual(1981, len(clpMsh.nodes))
+    ply = g.Polygon([p for p in zip(clipPolygonXs, clipPolygonYs)])
+    for crds in clpMsh.nodes.values():
+      self.assertTrue(ply.contains(g.Point(crds[0], crds[1])))
+    expIds = list(range(1, len(clpMsh.nodes)+1))
+    fndIds = list(clpMsh.nodes.keys())
+    self.assertEqual(expIds, fndIds)
+
+    self.assertEqual(3464, len(clpMsh.connectionPolygons))
+    expIds = list(range(1, len(clpMsh.connectionPolygons)+1))
+    fndIds = list(clpMsh.connectionPolygons.keys())
+    self.assertEqual(expIds, fndIds)
+    for ply in clpMsh.connectionPolygons.values():
+      ndids = []
+      for ndid in ply:
+        self.assertTrue(
+                (ndid <= len(clpMsh.nodes)) and
+                (ndid > 0))
+        self.assertFalse(ndid in ndids)
+        ndids.append(ndid)
+
+    # checking some random element that I verified as correct
+    self.assertEqual([969, 933, 932], clpMsh.connectionPolygons[308])
+    self.assertEqual([928, 932, 892], clpMsh.connectionPolygons[309])
+    self.assertEqual([1414, 1413, 1404], clpMsh.connectionPolygons[2592])
+    
+
+
     
 
       
