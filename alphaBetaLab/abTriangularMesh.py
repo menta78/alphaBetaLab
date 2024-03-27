@@ -256,7 +256,7 @@ class _abTriMeshSpec:
       # bathy of the new node
       newNodeBathy[nodeIdNew] = out.nodeBathy[nodeIdOld]
       # propagating the new id the polygons
-      plyIds = plyByNode[nodeIdOld]
+      plyIds = plyByNode.get(nodeIdOld, [])
       for plyId in plyIds:
         ply = out.connectionPolygons[plyId]
         newPly = []
